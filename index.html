@@ -466,6 +466,34 @@
 
   <script>
     // =========================================================================
+    // SAFE STORAGE HELPER (works on GitHub Pages & sandboxed preview iframes)
+    // =========================================================================
+    const memoryStorage = {};
+    const safeStorage = {
+      getItem(key) {
+        try {
+          return window.localStorage.getItem(key);
+        } catch (_) {
+          return Object.prototype.hasOwnProperty.call(memoryStorage, key) ? memoryStorage[key] : null;
+        }
+      },
+      setItem(key, value) {
+        try {
+          window.localStorage.setItem(key, value);
+        } catch (_) {
+          memoryStorage[key] = String(value);
+        }
+      },
+      removeItem(key) {
+        try {
+          window.localStorage.removeItem(key);
+        } catch (_) {
+          delete memoryStorage[key];
+        }
+      }
+    };
+
+    // =========================================================================
     // SUPABASE CONNECTION (CONFIGURED)
     // =========================================================================
     const SUPABASE_URL = 'https://rmchstkusaptekxarbjr.supabase.co';
@@ -476,14 +504,8 @@
       !SUPABASE_URL.includes('PASTE_YOUR') &&
       !SUPABASE_ANON_KEY.includes('PASTE_YOUR');
 
+    // App State (initialized before any network/SDK calls so buttons always work)
     let sb = null;
-    if (isConfigured) {
-      sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    } else {
-      document.getElementById('config-banner').classList.remove('hidden');
-    }
-
-    // App State
     let currentUser = null;
     let userRole = 'member'; // 'owner' | 'moderator' | 'member'
     let allTracks = [];
@@ -492,7 +514,15 @@
     let selectedGenre = 'All';
     let reviewFilter = 'pending';
     let authMode = 'signin';
-    let likedIds = new Set(JSON.parse(localStorage.getItem('lebronify_likes') || '[]'));
+    let toastTimer = null;
+    let pendingDeleteId = null;
+
+    let likedIds = new Set();
+    try {
+      likedIds = new Set(JSON.parse(safeStorage.getItem('lebronify_likes') || '[]'));
+    } catch (_) {
+      likedIds = new Set();
+    }
 
     // Audio Player State
     const audioEl = document.getElementById('audio-player');
@@ -502,6 +532,26 @@
     let analyser = null;
     let sourceNode = null;
     let animFrame = null;
+
+    if (isConfigured) {
+      try {
+        if (window.supabase && typeof window.supabase.createClient === 'function') {
+          sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+            auth: {
+              storage: safeStorage,
+              persistSession: true,
+              autoRefreshToken: true
+            }
+          });
+        } else {
+          console.error('Supabase SDK failed to load from CDN.');
+        }
+      } catch (err) {
+        console.error('Supabase init error:', err);
+      }
+    } else {
+      document.getElementById('config-banner').classList.remove('hidden');
+    }
 
     // =========================================================================
     // INITIALIZATION
@@ -516,108 +566,17 @@
         return;
       }
 
-      const { data: { session } } = await sb.auth.getSession();
-      await handleSessionChange(session);
-
-      sb.auth.onAuthStateChange(async (_event, session) => {
+      try {
+        const { data: { session } } = await sb.auth.getSession();
         await handleSessionChange(session);
-      });
-    }
 
-    async function handleSessionChange(session) {
-      currentUser = session?.user || null;
-      userRole = 'member';
-
-      if (currentUser && sb) {
-        const { data: modData } = await sb
-          .from('moderators')
-          .select('*');
-        moderators = modData || [];
-        const me = moderators.find(m => m.user_id === currentUser.id);
-        if (me) userRole = me.role;
-      } else {
-        moderators = [];
-      }
-
-      updateAuthUI();
-      await fetchTracks();
-    }
-
-    async function fetchTracks() {
-      if (!sb) {
-        allTracks = [];
+        sb.auth.onAuthStateChange(async (_event, session) => {
+          await handleSessionChange(session);
+        });
+      } catch (err) {
+        console.error('Session init error:', err);
+        showToast('Could not connect to Supabase: ' + err.message, true);
         renderAll();
-        return;
-      }
-      const { data, error } = await sb
-        .from('tracks')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        showToast('Error loading tracks: ' + error.message, true);
-        return;
-      }
-      allTracks = data || [];
-      renderAll();
-    }
-
-    // =========================================================================
-    // AUTHENTICATION
-    // =========================================================================
-    function openAuthModal(mode = 'signin') {
-      if (!sb) return showToast('Paste your Supabase keys in index.html first!', true);
-      setAuthMode(mode);
-      document.getElementById('auth-error').classList.add('hidden');
-      document.getElementById('auth-modal').classList.remove('hidden');
-    }
-
-    function closeAuthModal() {
-      document.getElementById('auth-modal').classList.add('hidden');
-    }
-
-    function setAuthMode(mode) {
-      authMode = mode;
-      const isSignIn = mode === 'signin';
-      document.getElementById('auth-modal-title').textContent = isSignIn ? 'Sign In to LeBronify' : 'Create LeBronify Account';
-      document.getElementById('auth-submit-btn').textContent = isSignIn ? 'Sign In' : 'Create Account';
-      document.getElementById('auth-tab-signin').className = `flex-1 py-2 text-xs font-bold rounded-lg transition ${isSignIn ? 'bg-bron-purple text-white' : 'text-zinc-400 hover:text-white'}`;
-      document.getElementById('auth-tab-signup').className = `flex-1 py-2 text-xs font-bold rounded-lg transition ${!isSignIn ? 'bg-bron-purple text-white' : 'text-zinc-400 hover:text-white'}`;
-    }
-
-    async function handleAuthSubmit(e) {
-      e.preventDefault();
-      if (!sb) return;
-      const email = document.getElementById('auth-email').value.trim();
-      const password = document.getElementById('auth-password').value;
-      const errBox = document.getElementById('auth-error');
-      const btn = document.getElementById('auth-submit-btn');
-
-      errBox.classList.add('hidden');
-      btn.disabled = true;
-      btn.textContent = 'Please wait...';
-
-      let result;
-      if (authMode === 'signin') {
-        result = await sb.auth.signInWithPassword({ email, password });
-      } else {
-        result = await sb.auth.signUp({ email, password });
-      }
-
-      btn.disabled = false;
-      btn.textContent = authMode === 'signin' ? 'Sign In' : 'Create Account';
-
-      if (result.error) {
-        errBox.textContent = result.error.message;
-        errBox.classList.remove('hidden');
-        return;
-      }
-
-      closeAuthModal();
-      if (authMode === 'signup' && !result.data.session) {
-        showToast('Account created! Check your email to confirm, then sign in.');
-      } else {
-        showToast(authMode === 'signin' ? 'Signed in!' : 'Account created & signed in!');
       }
     }
 
@@ -801,8 +760,6 @@
       showToast(decision === 'approved' ? 'Remix approved & published!' : 'Remix rejected.');
       await fetchTracks();
     }
-
-    let pendingDeleteId = null;
 
     async function deleteTrack(trackId) {
       if (!sb || !isReviewer()) return;
@@ -1235,7 +1192,7 @@
     function toggleLike(id) {
       if (likedIds.has(id)) likedIds.delete(id);
       else likedIds.add(id);
-      localStorage.setItem('lebronify_likes', JSON.stringify([...likedIds]));
+      safeStorage.setItem('lebronify_likes', JSON.stringify([...likedIds]));
       renderAll();
     }
 
@@ -1253,7 +1210,6 @@
         .replace(/"/g, '&quot;');
     }
 
-    let toastTimer;
     function showToast(msg, isError = false) {
       const el = document.getElementById('toast');
       el.textContent = msg;
