@@ -504,7 +504,7 @@
       !SUPABASE_URL.includes('PASTE_YOUR') &&
       !SUPABASE_ANON_KEY.includes('PASTE_YOUR');
 
-    // App State (initialized before any network/SDK calls so buttons always work)
+    // App State
     let sb = null;
     let currentUser = null;
     let userRole = 'member'; // 'owner' | 'moderator' | 'member'
@@ -554,7 +554,7 @@
     }
 
     // =========================================================================
-    // INITIALIZATION
+    // INITIALIZATION & SESSION
     // =========================================================================
     async function init() {
       audioEl.volume = 0.85;
@@ -577,6 +577,97 @@
         console.error('Session init error:', err);
         showToast('Could not connect to Supabase: ' + err.message, true);
         renderAll();
+      }
+    }
+
+    async function handleSessionChange(session) {
+      currentUser = session?.user || null;
+      userRole = 'member';
+      moderators = [];
+
+      if (currentUser && sb) {
+        const { data: mods, error } = await sb.from('moderators').select('*');
+        if (!error && mods) {
+          moderators = mods;
+          const me = mods.find(m => m.user_id === currentUser.id);
+          if (me) userRole = me.role;
+        }
+      }
+
+      updateAuthUI();
+      await fetchTracks();
+    }
+
+    async function fetchTracks() {
+      if (!sb) return;
+      const { data, error } = await sb
+        .from('tracks')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Fetch tracks error:', error);
+        showToast('Could not load tracks: ' + error.message, true);
+        return;
+      }
+
+      allTracks = data || [];
+      renderAll();
+    }
+
+    // =========================================================================
+    // AUTH MODAL & SIGN IN / SIGN UP
+    // =========================================================================
+    function openAuthModal(mode = 'signin') {
+      if (!sb) return showToast('Supabase is not configured yet.', true);
+      setAuthMode(mode);
+      document.getElementById('auth-email').value = '';
+      document.getElementById('auth-password').value = '';
+      document.getElementById('auth-error').classList.add('hidden');
+      document.getElementById('auth-modal').classList.remove('hidden');
+    }
+
+    function closeAuthModal() {
+      document.getElementById('auth-modal').classList.add('hidden');
+    }
+
+    function setAuthMode(mode) {
+      authMode = mode;
+      const isSignIn = mode === 'signin';
+      document.getElementById('auth-modal-title').textContent = isSignIn ? 'Sign In to LeBronify' : 'Create a LeBronify Account';
+      document.getElementById('auth-submit-btn').textContent = isSignIn ? 'Sign In' : 'Create Account';
+      document.getElementById('auth-tab-signin').className = `flex-1 py-2 text-xs font-bold rounded-lg transition ${isSignIn ? 'bg-bron-purple text-white' : 'text-zinc-400 hover:text-white'}`;
+      document.getElementById('auth-tab-signup').className = `flex-1 py-2 text-xs font-bold rounded-lg transition ${!isSignIn ? 'bg-bron-purple text-white' : 'text-zinc-400 hover:text-white'}`;
+      document.getElementById('auth-error').classList.add('hidden');
+    }
+
+    async function handleAuthSubmit(e) {
+      e.preventDefault();
+      if (!sb) return;
+      const email = document.getElementById('auth-email').value.trim();
+      const password = document.getElementById('auth-password').value;
+      const errEl = document.getElementById('auth-error');
+      const btn = document.getElementById('auth-submit-btn');
+
+      errEl.classList.add('hidden');
+      btn.disabled = true;
+      btn.textContent = authMode === 'signin' ? 'Signing in...' : 'Creating account...';
+
+      try {
+        const res = authMode === 'signin'
+          ? await sb.auth.signInWithPassword({ email, password })
+          : await sb.auth.signUp({ email, password });
+
+        if (res.error) throw res.error;
+
+        closeAuthModal();
+        showToast(authMode === 'signin' ? 'Welcome back!' : 'Account created! You are signed in.');
+      } catch (err) {
+        errEl.textContent = err.message;
+        errEl.classList.remove('hidden');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = authMode === 'signin' ? 'Sign In' : 'Create Account';
       }
     }
 
@@ -860,7 +951,7 @@
       `).join('');
     }
 
-    function renderTrackCard(track, list) {
+    function renderTrackCard(track) {
       const isPlaying = currentTrack?.id === track.id && !audioEl.paused;
       const isLiked = likedIds.has(track.id);
       const coverHtml = track.cover_url
@@ -922,7 +1013,7 @@
         `;
         return;
       }
-      grid.innerHTML = filtered.map(t => renderTrackCard(t, filtered)).join('');
+      grid.innerHTML = filtered.map(t => renderTrackCard(t)).join('');
     }
 
     function renderLiked() {
@@ -932,7 +1023,7 @@
         grid.innerHTML = `<div class="col-span-full rounded-2xl border border-dashed border-zinc-800 p-10 text-center text-sm text-zinc-400">No liked remixes yet. Tap 🤍 on any verified remix to save it here.</div>`;
         return;
       }
-      grid.innerHTML = liked.map(t => renderTrackCard(t, liked)).join('');
+      grid.innerHTML = liked.map(t => renderTrackCard(t)).join('');
     }
 
     function renderMyUploads() {
