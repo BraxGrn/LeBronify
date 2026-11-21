@@ -108,7 +108,7 @@
           <h1 class="text-xl font-black tracking-tight bg-gradient-to-r from-bron-gold via-yellow-200 to-purple-300 bg-clip-text text-transparent">
             LeBronify
           </h1>
-          <p class="text-[11px] uppercase tracking-widest text-zinc-400 font-semibold">King James Remixes · v2.3</p>
+          <p class="text-[11px] uppercase tracking-widest text-zinc-400 font-semibold">King James Remixes · v2.4</p>
         </div>
       </div>
 
@@ -714,6 +714,20 @@
 
     async function signOut() {
       if (!sb) return;
+      // Stop playback and clear active track when signing out
+      audioEl.pause();
+      audioEl.removeAttribute('src');
+      audioEl.load();
+      currentTrack = null;
+      playQueue = [];
+      document.getElementById('player-title').textContent = 'No track playing';
+      document.getElementById('player-artist').textContent = 'Sign in to listen';
+      document.getElementById('player-cover').innerHTML = '👑';
+      document.getElementById('seek-bar').value = 0;
+      document.getElementById('time-current').textContent = '0:00';
+      document.getElementById('time-duration').textContent = '0:00';
+      document.getElementById('play-icon').classList.remove('hidden');
+      document.getElementById('pause-icon').classList.add('hidden');
       await sb.auth.signOut();
       showToast('Signed out.');
     }
@@ -742,11 +756,17 @@
 
         mobileAuthBtn.textContent = 'Sign Out';
         mobileAuthBtn.onclick = signOut;
+        if (!currentTrack) {
+          document.getElementById('player-artist').textContent = 'Select a verified remix';
+        }
       } else {
         signedOutEl.classList.remove('hidden');
         signedInEl.classList.add('hidden');
         mobileAuthBtn.textContent = 'Sign In';
         mobileAuthBtn.onclick = () => openAuthModal('signin');
+        if (!currentTrack) {
+          document.getElementById('player-artist').textContent = 'Sign in to listen';
+        }
       }
     }
 
@@ -1011,6 +1031,20 @@
       const container = document.getElementById('now-playing-content');
       if (!container) return;
 
+      if (!currentUser) {
+        container.innerHTML = `
+          <div class="flex-1 flex flex-col items-center justify-center text-center py-12 px-4 space-y-3">
+            <div class="w-16 h-16 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-3xl">🔒</div>
+            <p class="text-sm font-bold text-white">Sign In to Listen</p>
+            <p class="text-xs text-zinc-400">Create a free LeBronify account or sign in to stream verified LeBron James remixes.</p>
+            <button onclick="openAuthModal('signin')" class="mt-2 px-4 py-2 rounded-xl bg-bron-gold hover:bg-bron-goldLight text-black font-extrabold text-xs transition">
+              Sign In / Create Account
+            </button>
+          </div>
+        `;
+        return;
+      }
+
       if (!currentTrack) {
         container.innerHTML = `
           <div class="flex-1 flex flex-col items-center justify-center text-center py-12 px-4 space-y-3">
@@ -1138,16 +1172,23 @@
       const isCurrent = currentTrack?.id === t.id;
       const isPlaying = isCurrent && !audioEl.paused;
       const isLiked = likedIds.has(t.id);
+      const isLocked = !currentUser;
       const cover = t.cover_url
         ? `<img src="${escapeHtml(t.cover_url)}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" />`
         : `<div class="w-full h-full bg-gradient-to-br from-bron-purple via-bron-card to-zinc-900 flex items-center justify-center text-4xl">👑</div>`;
+
+      const actionIcon = isLocked
+        ? '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a5 5 0 00-5 5v3H6a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2v-8a2 2 0 00-2-2h-1V7a5 5 0 00-5-5zm-3 8V7a3 3 0 016 0v3H9z"/></svg>'
+        : isPlaying
+          ? '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>'
+          : '<svg class="w-5 h-5 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
 
       return `
         <div class="group rounded-2xl bg-bron-surface border ${isCurrent ? 'border-bron-gold/70 shadow-lg shadow-bron-gold/10' : 'border-zinc-800/80 hover:border-bron-purple/60'} p-4 flex flex-col gap-3 transition">
           <div class="relative aspect-square rounded-xl overflow-hidden bg-zinc-900 border border-zinc-800">
             ${cover}
-            <button onclick='playTrackById("${t.id}")' class="absolute bottom-3 right-3 w-11 h-11 rounded-full bg-bron-gold hover:bg-bron-goldLight text-black flex items-center justify-center shadow-xl transition transform group-hover:scale-105 active:scale-95">
-              ${isPlaying ? '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>' : '<svg class="w-5 h-5 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>'}
+            <button onclick='playTrackById("${t.id}")' title="${isLocked ? 'Sign in to listen' : (isPlaying ? 'Pause' : 'Play')}" class="absolute bottom-3 right-3 w-11 h-11 rounded-full bg-bron-gold hover:bg-bron-goldLight text-black flex items-center justify-center shadow-xl transition transform group-hover:scale-105 active:scale-95">
+              ${actionIcon}
             </button>
             <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-md bg-black/75 backdrop-blur text-[10px] font-bold text-emerald-400 border border-emerald-500/30">
               ✓ Verified
@@ -1341,6 +1382,12 @@
     // AUDIO PLAYER & VISUALIZER
     // =========================================================================
     function playTrackById(id) {
+      if (!currentUser) {
+        showToast('Sign in or create an account to listen.');
+        openAuthModal('signin');
+        return;
+      }
+
       const track = allTracks.find(t => t.id === id);
       if (!track) return;
 
@@ -1366,6 +1413,11 @@
     }
 
     function togglePlay() {
+      if (!currentUser) {
+        showToast('Sign in or create an account to listen.');
+        openAuthModal('signin');
+        return;
+      }
       if (!currentTrack) return;
       if (audioEl.paused) {
         if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
