@@ -108,7 +108,7 @@
           <h1 class="text-xl font-black tracking-tight bg-gradient-to-r from-bron-gold via-yellow-200 to-purple-300 bg-clip-text text-transparent">
             LeBronify
           </h1>
-          <p class="text-[11px] uppercase tracking-widest text-zinc-400 font-semibold">King James Remixes · v2.2</p>
+          <p class="text-[11px] uppercase tracking-widest text-zinc-400 font-semibold">King James Remixes · v2.3</p>
         </div>
       </div>
 
@@ -346,6 +346,12 @@
         </button>
       </div>
       <div class="w-full flex items-center gap-2.5 text-[11px] text-zinc-400 font-mono">
+        <span id="time-current">0:00</span>
+        <input id="seek-bar" type="range" min="0" max="100" value="0" oninput="seekAudio(this.value)" class="flex-1" />
+        <span id="time-duration">0:00</span>
+      </div>
+    </div>
+
     <!-- Visualizer, Volume & Currently Playing Toggle -->
     <div class="flex items-center justify-end gap-2.5 sm:gap-3 w-auto sm:w-1/4">
       <canvas id="visualizer" width="90" height="34" class="hidden md:block rounded bg-zinc-900/70 border border-zinc-800/80"></canvas>
@@ -1108,6 +1114,62 @@
       `;
     }
 
+    function setGenre(genre) {
+      selectedGenre = genre;
+      renderGenreFilters();
+      renderCatalog();
+    }
+
+    function renderGenreFilters() {
+      const container = document.getElementById('genre-filters');
+      if (!container) return;
+      const approved = allTracks.filter(t => t.status === 'approved');
+      const genres = ['All', ...new Set(approved.map(t => t.genre).filter(Boolean))];
+      if (!genres.includes(selectedGenre)) selectedGenre = 'All';
+
+      container.innerHTML = genres.map(g => `
+        <button onclick="setGenre('${escapeHtml(g)}')" class="shrink-0 px-3.5 py-2 rounded-xl text-xs font-bold transition ${selectedGenre === g ? 'bg-bron-gold text-black' : 'bg-bron-surface border border-zinc-800 text-zinc-400 hover:text-white'}">
+          ${escapeHtml(g)}
+        </button>
+      `).join('');
+    }
+
+    function renderTrackCard(t) {
+      const isCurrent = currentTrack?.id === t.id;
+      const isPlaying = isCurrent && !audioEl.paused;
+      const isLiked = likedIds.has(t.id);
+      const cover = t.cover_url
+        ? `<img src="${escapeHtml(t.cover_url)}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" />`
+        : `<div class="w-full h-full bg-gradient-to-br from-bron-purple via-bron-card to-zinc-900 flex items-center justify-center text-4xl">👑</div>`;
+
+      return `
+        <div class="group rounded-2xl bg-bron-surface border ${isCurrent ? 'border-bron-gold/70 shadow-lg shadow-bron-gold/10' : 'border-zinc-800/80 hover:border-bron-purple/60'} p-4 flex flex-col gap-3 transition">
+          <div class="relative aspect-square rounded-xl overflow-hidden bg-zinc-900 border border-zinc-800">
+            ${cover}
+            <button onclick='playTrackById("${t.id}")' class="absolute bottom-3 right-3 w-11 h-11 rounded-full bg-bron-gold hover:bg-bron-goldLight text-black flex items-center justify-center shadow-xl transition transform group-hover:scale-105 active:scale-95">
+              ${isPlaying ? '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>' : '<svg class="w-5 h-5 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>'}
+            </button>
+            <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-md bg-black/75 backdrop-blur text-[10px] font-bold text-emerald-400 border border-emerald-500/30">
+              ✓ Verified
+            </span>
+          </div>
+          <div class="flex items-start justify-between gap-2 min-w-0">
+            <div class="min-w-0">
+              <h3 class="font-bold text-white text-sm truncate">${escapeHtml(t.title)}</h3>
+              <p class="text-xs text-zinc-400 truncate mt-0.5">${escapeHtml(t.artist)}</p>
+            </div>
+            <button onclick="toggleLike('${t.id}')" class="text-lg hover:scale-110 transition shrink-0" title="Like">
+              ${isLiked ? '💛' : '🤍'}
+            </button>
+          </div>
+          <div class="flex items-center justify-between text-[11px] text-zinc-500 pt-2 border-t border-zinc-800/70">
+            <span class="px-2 py-0.5 rounded-md bg-zinc-900 text-zinc-300 font-semibold">${escapeHtml(t.genre)}</span>
+            <span class="truncate ml-2">${escapeHtml(t.rights_basis)}</span>
+          </div>
+        </div>
+      `;
+    }
+
     function renderCatalog() {
       const q = (document.getElementById('search-input')?.value || '').toLowerCase();
       const approved = allTracks.filter(t => t.status === 'approved');
@@ -1348,11 +1410,6 @@
         document.getElementById('pause-icon').classList.add('hidden');
         renderCatalog();
         renderNowPlayingPanel();
-      });
-      audioEl.addEventListener('pause', () => {
-        document.getElementById('play-icon').classList.remove('hidden');
-        document.getElementById('pause-icon').classList.add('hidden');
-        renderCatalog();
       });
       audioEl.addEventListener('timeupdate', () => {
         if (!audioEl.duration) return;
