@@ -1,0 +1,2045 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LeBronify — Verified King James Remix Streaming</title>
+
+  <!-- Inter Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif']
+          },
+          colors: {
+            bron: {
+              dark: '#0B0A10',
+              surface: '#14121D',
+              card: '#1C1929',
+              purple: '#552583',
+              purpleLight: '#7B3FB8',
+              gold: '#FDB927',
+              goldLight: '#FFD166'
+            }
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-bron-dark text-zinc-100 font-sans antialiased selection:bg-bron-gold selection:text-bron-dark overflow-x-hidden">
+
+  <!-- Main App Shell -->
+  <div class="min-h-screen flex flex-col lg:flex-row pb-28 lg:pb-24">
+
+    <!-- Mobile Top Bar -->
+    <header class="lg:hidden sticky top-0 z-30 flex items-center justify-between px-4 py-3 bg-bron-dark/95 backdrop-blur border-b border-zinc-800/80">
+      <div class="flex items-center gap-2.5">
+        <button id="mobile-menu-btn" aria-label="Open menu" class="p-2 rounded-xl bg-bron-surface border border-zinc-800 text-zinc-200 hover:border-bron-gold transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+        <div class="flex items-center gap-2">
+          <span class="w-8 h-8 rounded-xl bg-gradient-to-br from-bron-purple to-bron-gold flex items-center justify-center text-sm font-black text-bron-dark shadow">👑</span>
+          <span class="text-lg font-black tracking-tight text-white">LeBron<span class="text-bron-gold">ify</span></span>
+        </div>
+      </div>
+      <button id="mobile-upload-btn" class="px-3.5 py-2 rounded-xl bg-bron-gold hover:bg-bron-goldLight text-bron-dark font-extrabold text-xs transition shadow">
+        + Upload
+      </button>
+    </header>
+
+    <!-- Mobile Sidebar Backdrop -->
+    <div id="sidebar-backdrop" class="hidden fixed inset-0 z-40 bg-black/70 backdrop-blur-sm lg:hidden"></div>
+
+    <!-- Left Navigation Sidebar -->
+    <aside id="sidebar" class="fixed lg:sticky top-0 left-0 z-50 lg:z-20 h-screen w-72 max-w-[85vw] bg-bron-surface border-r border-zinc-800/80 flex flex-col justify-between p-5 transform -translate-x-full lg:translate-x-0 transition-transform duration-200 overflow-y-auto">
+      <div class="space-y-6">
+        <!-- Brand Logo -->
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-bron-purple via-bron-purpleLight to-bron-gold flex items-center justify-center text-xl shadow-lg shadow-bron-purple/30">
+              👑
+            </div>
+            <div>
+              <h1 class="text-xl font-black tracking-tight text-white leading-none">
+                LeBron<span class="text-bron-gold">ify</span>
+              </h1>
+              <p class="text-[11px] font-medium text-zinc-400 mt-0.5">Verified Remix Archive</p>
+            </div>
+          </div>
+          <button id="close-sidebar-btn" aria-label="Close menu" class="lg:hidden p-2 rounded-xl text-zinc-400 hover:text-white hover:bg-zinc-800 transition">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Upload CTA Button -->
+        <button id="sidebar-upload-btn" class="w-full py-3 px-4 rounded-2xl bg-gradient-to-r from-bron-gold to-bron-goldLight hover:brightness-105 text-bron-dark font-extrabold text-sm shadow-lg shadow-bron-gold/20 transition flex items-center justify-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+          </svg>
+          Upload Remix
+        </button>
+
+        <!-- Main Navigation Links -->
+        <nav class="space-y-1.5">
+          <button data-nav="home" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition">
+            <span class="flex items-center gap-3">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2z" />
+              </svg>
+              Verified Catalog
+            </span>
+            <span id="badge-approved" class="px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-300 text-[11px] font-bold">0</span>
+          </button>
+
+          <button data-nav="liked" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition">
+            <span class="flex items-center gap-3">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+              Liked Remixes
+            </span>
+            <span id="badge-liked" class="px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-300 text-[11px] font-bold">0</span>
+          </button>
+
+          <button data-nav="review" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition">
+            <span class="flex items-center gap-3">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+              Copyright Review
+            </span>
+            <span id="badge-pending" class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[11px] font-bold">0</span>
+          </button>
+        </nav>
+
+        <!-- Account & Cloud Storage Status Cards -->
+        <div class="pt-4 border-t border-zinc-800/80 space-y-3">
+          <div class="p-3.5 rounded-2xl bg-bron-card border border-zinc-800/90 space-y-2">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Your Account</span>
+              <span id="sidebar-role-badge" class="px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-300 text-[10px] font-bold">Connecting...</span>
+            </div>
+            <div class="p-2 rounded-xl bg-bron-dark border border-zinc-800/90">
+              <p id="sidebar-user-id" class="text-[10px] font-mono text-zinc-300 break-all select-all">Signing in...</p>
+            </div>
+            <button id="copy-uid-btn" class="w-full py-1.5 px-2.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-[11px] font-semibold transition flex items-center justify-center gap-1.5">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
+              Copy Account ID
+            </button>
+          </div>
+
+          <div class="p-3.5 rounded-2xl bg-bron-card border border-zinc-800/90 space-y-2">
+            <div class="flex items-center gap-2 text-xs font-bold text-emerald-400">
+              <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+              </svg>
+              <span id="storage-mode-label">Cloud-Synced &amp; Verified</span>
+            </div>
+            <p class="text-[11px] leading-relaxed text-zinc-400">
+              Uploads are saved online in free chunked storage. Only the Owner and authorized moderators can confirm songs.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-[11px] text-zinc-500 pt-6">LeBronify &bull; Human Copyright Audit</p>
+    </aside>
+
+    <!-- Main Content Workspace -->
+    <main class="flex-1 min-w-0 px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+      <!-- Top Search & Live Audio Visualizer Banner -->
+      <section class="rounded-3xl bg-gradient-to-br from-bron-purple/40 via-bron-surface to-bron-surface border border-zinc-800/80 p-5 sm:p-6 space-y-5">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-bron-gold/15 border border-bron-gold/30 text-bron-gold text-[11px] font-bold uppercase tracking-wider mb-2">
+              <span>🛡️</span> 100% Human-Verified Remix Library
+            </div>
+            <h2 id="view-heading" class="text-2xl sm:text-3xl font-black tracking-tight text-white">Verified Live Catalog</h2>
+            <p id="view-subheading" class="text-sm text-zinc-400 mt-1">
+              Every LeBron James remix here is uploaded by creators and manually cleared by authorized moderators.
+            </p>
+          </div>
+
+          <!-- Search Input -->
+          <div id="search-wrap" class="relative w-full md:w-72 shrink-0">
+            <svg class="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input
+              id="search-input"
+              type="text"
+              placeholder="Search remixes or artists..."
+              class="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-bron-dark/90 border border-zinc-700/80 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-bron-gold transition"
+            />
+          </div>
+        </div>
+
+        <!-- Live Frequency Visualizer Canvas -->
+        <div class="relative rounded-2xl bg-bron-dark/80 border border-zinc-800/90 overflow-hidden h-24 sm:h-28">
+          <canvas id="visualizer-canvas" class="w-full h-full block"></canvas>
+          <div class="absolute inset-x-4 top-2.5 flex items-center justify-between pointer-events-none">
+            <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Live Spectrum Analyzer</span>
+            <span id="visualizer-status" class="text-[10px] font-semibold text-bron-gold">Idle — Select a remix to play</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 1 & 2: CATALOG / LIKED VIEW -->
+      <section id="catalog-view" class="space-y-5">
+        <!-- Genre Filter Chips -->
+        <div id="genre-filters" class="flex items-center gap-2 overflow-x-auto pb-1">
+          <!-- Populated via JS -->
+        </div>
+
+        <!-- Track Grid -->
+        <div id="catalog-grid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+          <!-- Populated via JS -->
+        </div>
+      </section>
+
+      <!-- VIEW 3: HUMAN COPYRIGHT VERIFICATION QUEUE -->
+      <section id="review-view" class="hidden space-y-5">
+        <!-- Queue Filter Tabs -->
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div class="inline-flex items-center gap-1.5 p-1.5 rounded-2xl bg-bron-surface border border-zinc-800/80">
+            <button data-queue-filter="pending" class="queue-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-bron-gold text-bron-dark transition">
+              Pending Review (<span id="count-pending">0</span>)
+            </button>
+            <button data-queue-filter="approved" class="queue-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white transition">
+              Approved (<span id="count-approved">0</span>)
+            </button>
+            <button data-queue-filter="rejected" class="queue-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white transition">
+              Rejected (<span id="count-rejected">0</span>)
+            </button>
+          </div>
+        </div>
+
+        <!-- Active Reviewer Name -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl bg-bron-surface border border-zinc-800/80">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-bold text-xs">
+              MOD
+            </div>
+            <div>
+              <p class="text-xs font-bold text-white">Active Human Reviewer</p>
+              <p class="text-[11px] text-zinc-400">Logged on every approval or rejection decision.</p>
+            </div>
+          </div>
+          <input
+            id="reviewer-name-input"
+            type="text"
+            value="Lead Rights Reviewer"
+            placeholder="Enter reviewer name..."
+            class="sm:w-64 px-3.5 py-2 rounded-xl bg-bron-card border border-zinc-700 text-xs font-semibold text-white focus:outline-none focus:border-emerald-400"
+          />
+        </div>
+
+        <!-- Owner & Moderator Access Control Panel -->
+        <div id="moderator-access-panel" class="rounded-2xl bg-bron-surface border border-zinc-800/80 p-5 space-y-4">
+          <!-- Populated dynamically based on Owner / Moderator / Member role -->
+        </div>
+
+        <!-- Review Cards List -->
+        <div id="review-list" class="space-y-4">
+          <!-- Populated via JS -->
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Fixed Bottom Audio Player Bar -->
+  <footer class="fixed bottom-0 inset-x-0 z-30 bg-bron-surface/95 backdrop-blur-md border-t border-zinc-800/90 px-4 sm:px-6 py-3">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+
+      <!-- Track Info -->
+      <div class="flex items-center gap-3 w-full sm:w-1/3 min-w-0">
+        <div id="player-cover" class="w-11 h-11 rounded-xl bg-bron-card border border-zinc-700/80 flex items-center justify-center text-lg shrink-0 overflow-hidden">
+          👑
+        </div>
+        <div class="min-w-0 flex-1">
+          <p id="player-title" class="text-sm font-bold text-white truncate">No remix playing</p>
+          <p id="player-artist" class="text-xs text-zinc-400 truncate">Upload &amp; approve a track to stream</p>
+        </div>
+        <button id="player-like-btn" disabled aria-label="Like track" class="p-2 rounded-xl text-zinc-500 hover:text-rose-400 disabled:opacity-40 transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Playback Controls & Scrubber -->
+      <div class="flex flex-col items-center w-full sm:w-1/3 gap-1.5">
+        <div class="flex items-center gap-3">
+          <button id="btn-shuffle" title="Shuffle" class="p-1.5 rounded-lg text-zinc-400 hover:text-white transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5" />
+            </svg>
+          </button>
+          <button id="btn-prev" title="Previous" class="p-1.5 rounded-lg text-zinc-300 hover:text-white transition">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z" />
+            </svg>
+          </button>
+          <button id="btn-play-pause" title="Play / Pause" class="w-10 h-10 rounded-full bg-bron-gold hover:bg-bron-goldLight text-bron-dark flex items-center justify-center shadow-lg shadow-bron-gold/25 transition">
+            <svg id="icon-play" class="w-5 h-5 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+            <svg id="icon-pause" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+            </svg>
+          </button>
+          <button id="btn-next" title="Next" class="p-1.5 rounded-lg text-zinc-300 hover:text-white transition">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z" />
+            </svg>
+          </button>
+          <button id="btn-repeat" title="Repeat" class="p-1.5 rounded-lg text-zinc-400 hover:text-white transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="w-full flex items-center gap-2 text-[11px] font-mono text-zinc-400">
+          <span id="time-current" class="w-9 text-right">0:00</span>
+          <input id="seek-slider" type="range" min="0" max="100" value="0" step="0.1" class="flex-1 accent-bron-gold h-1.5 rounded-lg cursor-pointer bg-zinc-700" />
+          <span id="time-total" class="w-9">0:00</span>
+        </div>
+      </div>
+
+      <!-- Bass Boost & Volume -->
+      <div class="hidden sm:flex items-center justify-end gap-3 w-1/3">
+        <button id="btn-bass" class="px-2.5 py-1.5 rounded-xl border border-zinc-700 bg-bron-card text-[11px] font-bold text-zinc-300 hover:border-bron-gold transition">
+          👑 Bass Boost
+        </button>
+        <button id="btn-mute" aria-label="Mute" class="p-1.5 rounded-lg text-zinc-400 hover:text-white transition">
+          <svg id="icon-vol" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+          </svg>
+        </button>
+        <input id="volume-slider" type="range" min="0" max="1" step="0.02" value="0.85" class="w-24 accent-bron-gold h-1.5 rounded-lg cursor-pointer bg-zinc-700" />
+      </div>
+    </div>
+  </footer>
+
+  <!-- Upload Remix Modal -->
+  <div id="upload-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm overflow-y-auto">
+    <div class="w-full max-w-xl rounded-3xl bg-bron-surface border border-zinc-800 shadow-2xl p-6 my-8 space-y-5">
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 class="text-xl font-black text-white">Upload a LeBron Remix</h3>
+          <p class="text-xs text-zinc-400 mt-0.5">All uploads enter the Human Copyright Verification Queue before going live.</p>
+        </div>
+        <button id="close-upload-modal" class="p-2 rounded-xl text-zinc-400 hover:text-white hover:bg-zinc-800 transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <form id="upload-form" class="space-y-4">
+        <!-- Audio File Dropzone -->
+        <div>
+          <label class="block text-xs font-semibold text-zinc-400 uppercase mb-1.5">Audio File (MP3, WAV, OGG, M4A — Max 8 MB) *</label>
+          <label id="dropzone" for="audio-file-input" class="flex flex-col items-center justify-center w-full p-5 rounded-2xl border-2 border-dashed border-zinc-700 hover:border-bron-gold bg-bron-card/60 cursor-pointer transition text-center">
+            <svg class="w-7 h-7 text-bron-gold mb-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2z" />
+            </svg>
+            <span id="file-label-text" class="text-sm font-semibold text-zinc-200">Click to select or drag &amp; drop an audio file</span>
+            <span id="file-sub-text" class="text-xs text-zinc-500 mt-1">Saved online in free chunked cloud storage</span>
+            <input id="audio-file-input" type="file" accept="audio/*" class="hidden" required />
+          </label>
+        </div>
+
+        <!-- Track Metadata -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label for="new-title" class="block text-xs font-semibold text-zinc-400 uppercase mb-1">Remix Title *</label>
+            <input id="new-title" type="text" required placeholder="e.g. King James 4th Quarter Flip" class="w-full px-3.5 py-2.5 rounded-xl bg-bron-card border border-zinc-700 text-sm text-white focus:outline-none focus:border-bron-gold" />
+          </div>
+          <div>
+            <label for="new-artist" class="block text-xs font-semibold text-zinc-400 uppercase mb-1">Remixer / Producer *</label>
+            <input id="new-artist" type="text" required placeholder="e.g. DJ Akron" class="w-full px-3.5 py-2.5 rounded-xl bg-bron-card border border-zinc-700 text-sm text-white focus:outline-none focus:border-bron-gold" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label for="new-genre" class="block text-xs font-semibold text-zinc-400 uppercase mb-1">Genre</label>
+            <select id="new-genre" class="w-full px-3.5 py-2.5 rounded-xl bg-bron-card border border-zinc-700 text-sm text-white focus:outline-none focus:border-bron-gold">
+              <option value="Trap">Trap</option>
+              <option value="Phonk">Phonk</option>
+              <option value="Lo-Fi">Lo-Fi</option>
+              <option value="Drill">Drill</option>
+              <option value="House">House</option>
+              <option value="Orchestral">Orchestral</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div>
+            <label for="cover-file-input" class="block text-xs font-semibold text-zinc-400 uppercase mb-1">Cover Art (Optional)</label>
+            <input id="cover-file-input" type="file" accept="image/*" class="w-full px-3 py-2 rounded-xl bg-bron-card border border-zinc-700 text-xs text-zinc-300 file:mr-3 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:bg-zinc-800 file:text-zinc-200 file:font-semibold" />
+          </div>
+        </div>
+
+        <!-- Copyright & Rights Declaration -->
+        <div class="p-4 rounded-2xl bg-bron-card/70 border border-zinc-800 space-y-3">
+          <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-emerald-400">
+            <span>🛡️</span> Copyright &amp; Rights Declaration
+          </div>
+          <div>
+            <label for="rights-type" class="block text-xs font-semibold text-zinc-400 mb-1">Rights Basis *</label>
+            <select id="rights-type" required class="w-full px-3.5 py-2 rounded-xl bg-bron-dark border border-zinc-700 text-xs text-white focus:outline-none focus:border-emerald-400">
+              <option value="Original Beat + Transformative Parody / Vocal Chop">Original Beat + Transformative Parody / Vocal Chop</option>
+              <option value="100% Original Composition">100% Original Composition</option>
+              <option value="Licensed / Royalty-Free Samples">Licensed / Royalty-Free Samples</option>
+              <option value="Creative Commons (CC-BY / CC0)">Creative Commons (CC-BY / CC0)</option>
+            </select>
+          </div>
+          <div>
+            <label for="rights-sources" class="block text-xs font-semibold text-zinc-400 mb-1">Declared Samples / Voice Sources *</label>
+            <input id="rights-sources" type="text" required placeholder="e.g. Original FL Studio synth + public interview clip" class="w-full px-3.5 py-2 rounded-xl bg-bron-dark border border-zinc-700 text-xs text-white focus:outline-none focus:border-emerald-400" />
+          </div>
+          <div>
+            <label for="rights-notes" class="block text-xs font-semibold text-zinc-400 mb-1">License / Proof Notes (Optional)</label>
+            <input id="rights-notes" type="text" placeholder="Link to sample pack license or creator statement" class="w-full px-3.5 py-2 rounded-xl bg-bron-dark border border-zinc-700 text-xs text-white focus:outline-none focus:border-emerald-400" />
+          </div>
+          <label class="flex items-start gap-2.5 cursor-pointer pt-1">
+            <input id="rights-attest-checkbox" type="checkbox" required class="mt-0.5 rounded accent-emerald-400" />
+            <span class="text-[11px] leading-snug text-zinc-300">
+              I confirm this remix does not infringe third-party copyrights and agree to have an authorized human moderator review it before publication.
+            </span>
+          </label>
+        </div>
+
+        <!-- Upload Progress Indicator -->
+        <div id="upload-progress-wrap" class="hidden space-y-1.5">
+          <div class="flex items-center justify-between text-xs">
+            <span id="upload-progress-label" class="font-semibold text-bron-gold">Uploading to online storage...</span>
+            <span id="upload-progress-pct" class="font-mono text-zinc-300">0%</span>
+          </div>
+          <div class="w-full h-2 rounded-full bg-zinc-800 overflow-hidden">
+            <div id="upload-progress-bar" class="h-full w-0 bg-gradient-to-r from-bron-purple to-bron-gold transition-all duration-200"></div>
+          </div>
+        </div>
+
+        <button id="upload-submit-btn" type="submit" class="w-full py-3 rounded-xl bg-bron-gold hover:bg-bron-goldLight text-bron-dark font-extrabold text-sm transition shadow-lg shadow-bron-gold/20 disabled:opacity-50 disabled:cursor-not-allowed">
+          Upload &amp; Submit for Human Review
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- Application Logic: Free Cloud Storage + Role-Based Human Copyright Verification -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      getDoc,
+      setDoc,
+      updateDoc,
+      deleteDoc,
+      onSnapshot,
+      collection
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    /**
+     * ============================================================================
+     * CLOUD STORAGE & AUTH CONFIGURATION
+     * ============================================================================
+     */
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+    const firebaseConfig = typeof __firebase_config !== 'undefined'
+      ? JSON.parse(__firebase_config)
+      : null;
+
+    let app = null;
+    let db = null;
+    let auth = null;
+    let currentUser = null;
+    let isCloudConnected = false;
+
+    // Role & permissions state synced from cloud (or local fallback if offline)
+    let ownerId = null;
+    let moderators = []; // Array of { uid: string, label: string }
+
+    /**
+     * ============================================================================
+     * LEBRONIFY — CLEAN STATE (ZERO PRE-MADE TRACKS)
+     * ============================================================================
+     */
+    const GENRES = ['All', 'Trap', 'Phonk', 'Lo-Fi', 'Drill', 'House', 'Orchestral', 'Other'];
+    const MAX_AUDIO_SIZE_BYTES = 8 * 1024 * 1024; // 8 MB max per track
+    const RAW_CHUNK_BYTES = 450 * 1024; // ~450 KB raw -> ~600 KB base64 (under 1 MB Firestore limit)
+
+    let submissions = [];
+    let likedIds = new Set();
+    const audioUrlCache = new Map();
+
+    let currentView = 'home'; // 'home' | 'liked' | 'review'
+    let activeQueueFilter = 'pending'; // 'pending' | 'approved' | 'rejected'
+    let activeGenre = 'All';
+    let searchQuery = '';
+
+    let currentTrackId = null;
+    let isPlaying = false;
+    let isShuffle = false;
+    let isRepeat = false;
+    let isMuted = false;
+    let isBassBoost = false;
+
+    /**
+     * ============================================================================
+     * ROLE HELPERS
+     * ============================================================================
+     */
+    function isOwner() {
+      return Boolean(currentUser && ownerId && currentUser.uid === ownerId);
+    }
+
+    function canModerate() {
+      if (!currentUser || !ownerId) return false;
+      if (currentUser.uid === ownerId) return true;
+      return moderators.some(m => m.uid === currentUser.uid);
+    }
+
+    /**
+     * ============================================================================
+     * CLOUD INITIALIZATION (WITH GRACEFUL LOCAL FALLBACK)
+     * ============================================================================
+     */
+    async function initCloudBackend() {
+      if (!firebaseConfig) {
+        // Fallback so preview still works cleanly if opened outside cloud sandbox
+        let localUid = localStorage.getItem('lebronify_local_uid');
+        if (!localUid) {
+          localUid = 'local-' + Math.random().toString(36).slice(2, 12);
+          localStorage.setItem('lebronify_local_uid', localUid);
+        }
+        currentUser = { uid: localUid };
+        isCloudConnected = false;
+        document.getElementById('storage-mode-label').textContent = 'Local Preview Mode';
+        updateAccountSidebar();
+        renderModeratorPanel();
+        renderAllViews();
+        return;
+      }
+
+      try {
+        app = initializeApp(firebaseConfig);
+        db = getFirestore(app);
+        auth = getAuth(app);
+
+        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+          const cred = await signInWithCustomToken(auth, __initial_auth_token);
+          currentUser = cred.user;
+        } else {
+          const cred = await signInAnonymously(auth);
+          currentUser = cred.user;
+        }
+
+        isCloudConnected = true;
+        updateAccountSidebar();
+        subscribeToCloudData();
+      } catch (err) {
+        console.error('Cloud initialization error:', err);
+        showToast('Failed to connect to online storage.', 'error');
+      }
+    }
+
+    /**
+     * Subscribes to moderator permissions, public submissions, and private likes.
+     */
+    function subscribeToCloudData() {
+      if (!currentUser || !db) return;
+
+      // 1. Moderator Access Config
+      const modDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'config', 'moderators');
+      onSnapshot(
+        modDocRef,
+        (snap) => {
+          if (snap.exists()) {
+            const data = snap.data();
+            ownerId = data.ownerId || null;
+            moderators = Array.isArray(data.moderators) ? data.moderators : [];
+          } else {
+            ownerId = null;
+            moderators = [];
+          }
+          updateAccountSidebar();
+          renderModeratorPanel();
+          renderReviewQueue();
+        },
+        (err) => console.error('Moderator config sync error:', err)
+      );
+
+      // 2. Public Submissions
+      const subsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'submissions');
+      onSnapshot(
+        subsColRef,
+        (snapshot) => {
+          const loaded = [];
+          snapshot.forEach((docSnap) => {
+            loaded.push({ id: docSnap.id, ...docSnap.data() });
+          });
+          loaded.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+          submissions = loaded;
+
+          updateBadges();
+          updatePlayerUI();
+          renderAllViews();
+        },
+        (err) => {
+          console.error('Submissions sync error:', err);
+          showToast('Error syncing remixes from online storage.', 'error');
+        }
+      );
+
+      // 3. Private User Likes
+      const likesColRef = collection(db, 'artifacts', appId, 'users', currentUser.uid, 'likes');
+      onSnapshot(
+        likesColRef,
+        (snapshot) => {
+          const nextLikes = new Set();
+          snapshot.forEach((docSnap) => nextLikes.add(docSnap.id));
+          likedIds = nextLikes;
+          updateBadges();
+          updatePlayerUI();
+          renderCatalog();
+        },
+        (err) => console.error('Likes sync error:', err)
+      );
+    }
+
+    /**
+     * Updates the sidebar Account ID and Role badge.
+     */
+    function updateAccountSidebar() {
+      const uidEl = document.getElementById('sidebar-user-id');
+      const roleEl = document.getElementById('sidebar-role-badge');
+      if (!currentUser) return;
+
+      uidEl.textContent = currentUser.uid;
+
+      if (!ownerId) {
+        roleEl.textContent = 'Unclaimed Site';
+        roleEl.className = 'px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-bold';
+      } else if (isOwner()) {
+        roleEl.textContent = 'Owner';
+        roleEl.className = 'px-2 py-0.5 rounded-full bg-bron-gold text-bron-dark text-[10px] font-extrabold';
+      } else if (canModerate()) {
+        roleEl.textContent = 'Moderator';
+        roleEl.className = 'px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold';
+      } else {
+        roleEl.textContent = 'Member';
+        roleEl.className = 'px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-300 text-[10px] font-bold';
+      }
+    }
+
+    /**
+     * ============================================================================
+     * OWNER & MODERATOR MANAGEMENT ACTIONS
+     * ============================================================================
+     */
+    async function claimOwnerAccount() {
+      if (!currentUser) return;
+      if (!isCloudConnected || !db) {
+        ownerId = currentUser.uid;
+        updateAccountSidebar();
+        renderModeratorPanel();
+        renderReviewQueue();
+        showToast('👑 You are now the Owner (Local Mode).', 'gold');
+        return;
+      }
+
+      const modDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'config', 'moderators');
+      try {
+        const existing = await getDoc(modDocRef);
+        if (existing.exists() && existing.data().ownerId) {
+          showToast('An owner account has already been claimed.', 'error');
+          return;
+        }
+        await setDoc(modDocRef, {
+          ownerId: currentUser.uid,
+          moderators: [],
+          claimedAt: Date.now()
+        });
+        showToast('👑 You are now the Owner! Only you (and accounts you add) can confirm songs.', 'gold');
+      } catch (err) {
+        console.error('Claim owner error:', err);
+        showToast('Could not claim owner account.', 'error');
+      }
+    }
+
+    async function addModeratorAccount(uidInput, labelInput) {
+      if (!currentUser || !isOwner()) {
+        showToast('Only the Owner can add moderator accounts.', 'error');
+        return;
+      }
+      const cleanUid = uidInput.trim();
+      const cleanLabel = labelInput.trim() || 'Authorized Moderator';
+      if (!cleanUid) {
+        showToast('Please paste an Account ID to add.', 'error');
+        return;
+      }
+      if (cleanUid === ownerId) {
+        showToast('Your Owner account already has full confirmation rights.');
+        return;
+      }
+      if (moderators.some(m => m.uid === cleanUid)) {
+        showToast('That Account ID is already a moderator.');
+        return;
+      }
+
+      const updated = [...moderators, { uid: cleanUid, label: cleanLabel }];
+      if (!isCloudConnected || !db) {
+        moderators = updated;
+        renderModeratorPanel();
+        showToast(`Added ${cleanLabel} as an authorized moderator! 🛡️`, 'gold');
+        return;
+      }
+
+      const modDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'config', 'moderators');
+      try {
+        await updateDoc(modDocRef, { moderators: updated });
+        showToast(`Added ${cleanLabel} as an authorized moderator! 🛡️`, 'gold');
+      } catch (err) {
+        console.error('Add moderator error:', err);
+        showToast('Could not add moderator.', 'error');
+      }
+    }
+
+    async function removeModeratorAccount(uidToRemove) {
+      if (!currentUser || !isOwner()) return;
+      const updated = moderators.filter(m => m.uid !== uidToRemove);
+
+      if (!isCloudConnected || !db) {
+        moderators = updated;
+        renderModeratorPanel();
+        showToast('Removed moderator access.');
+        return;
+      }
+
+      const modDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'config', 'moderators');
+      try {
+        await updateDoc(modDocRef, { moderators: updated });
+        showToast('Removed moderator access.');
+      } catch (err) {
+        console.error('Remove moderator error:', err);
+        showToast('Could not remove moderator.', 'error');
+      }
+    }
+
+    /**
+     * Renders the Owner / Moderator permissions management box in the Review tab.
+     */
+    function renderModeratorPanel() {
+      const panel = document.getElementById('moderator-access-panel');
+      if (!panel) return;
+
+      if (!currentUser) {
+        panel.innerHTML = `<p class="text-xs text-zinc-400">Connecting to account services...</p>`;
+        return;
+      }
+
+      if (!ownerId) {
+        panel.innerHTML = `
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="space-y-1">
+              <div class="inline-flex items-center gap-1.5 text-xs font-extrabold text-bron-gold uppercase tracking-wider">
+                <span>👑</span> Setup Owner Account
+              </div>
+              <p class="text-sm font-bold text-white">No Owner Account Assigned Yet</p>
+              <p class="text-xs text-zinc-400 max-w-xl">
+                Claim this account as the <strong class="text-white">Owner</strong> so only you—and any Account IDs you authorize—can approve or reject uploaded songs.
+              </p>
+            </div>
+            <button id="claim-owner-btn" class="shrink-0 px-5 py-2.5 rounded-xl bg-bron-gold hover:bg-bron-goldLight text-bron-dark font-extrabold text-xs shadow-lg shadow-bron-gold/20 transition">
+              Claim Owner Account
+            </button>
+          </div>
+        `;
+        document.getElementById('claim-owner-btn').addEventListener('click', claimOwnerAccount);
+        return;
+      }
+
+      if (isOwner()) {
+        const modListHtml = moderators.length === 0
+          ? `<p class="text-xs text-zinc-500 italic">No extra moderators added yet. Only your Owner account can confirm songs.</p>`
+          : moderators.map(m => `
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 rounded-xl bg-bron-dark border border-zinc-800">
+                <div class="min-w-0">
+                  <p class="text-xs font-bold text-white">${escapeHtml(m.label)}</p>
+                  <p class="text-[11px] font-mono text-zinc-400 break-all">${escapeHtml(m.uid)}</p>
+                </div>
+                <button data-remove-mod="${escapeHtml(m.uid)}" class="shrink-0 px-3 py-1.5 rounded-lg bg-red-500/15 hover:bg-red-500/25 text-red-300 text-xs font-bold transition self-start sm:self-auto">
+                  Remove
+                </button>
+              </div>
+            `).join('');
+
+        panel.innerHTML = `
+          <div class="space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <div class="inline-flex items-center gap-1.5 text-xs font-extrabold text-bron-gold uppercase tracking-wider">
+                  <span>👑</span> Owner Access Control
+                </div>
+                <p class="text-xs text-zinc-400 mt-0.5">
+                  Only your Owner account and the Account IDs listed below can confirm or reject songs.
+                </p>
+              </div>
+              <span class="px-2.5 py-1 rounded-full bg-bron-gold/15 border border-bron-gold/30 text-bron-gold text-[11px] font-bold self-start">
+                Owner Verified
+              </span>
+            </div>
+
+            <form id="add-mod-form" class="grid grid-cols-1 sm:grid-cols-12 gap-2.5">
+              <input id="mod-uid-input" type="text" required placeholder="Paste user's full Account ID..." class="sm:col-span-6 px-3.5 py-2 rounded-xl bg-bron-dark border border-zinc-700 text-xs font-mono text-white focus:outline-none focus:border-bron-gold" />
+              <input id="mod-label-input" type="text" placeholder="Name / Label (e.g. Co-Admin)" class="sm:col-span-4 px-3.5 py-2 rounded-xl bg-bron-dark border border-zinc-700 text-xs text-white focus:outline-none focus:border-bron-gold" />
+              <button type="submit" class="sm:col-span-2 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-bron-dark font-extrabold text-xs transition">
+                + Add Mod
+              </button>
+            </form>
+
+            <div class="space-y-2">
+              <p class="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Authorized Moderators (${moderators.length})</p>
+              ${modListHtml}
+            </div>
+          </div>
+        `;
+
+        document.getElementById('add-mod-form').addEventListener('submit', (e) => {
+          e.preventDefault();
+          const uidVal = document.getElementById('mod-uid-input').value;
+          const labelVal = document.getElementById('mod-label-input').value;
+          addModeratorAccount(uidVal, labelVal);
+          e.target.reset();
+        });
+
+        panel.querySelectorAll('[data-remove-mod]').forEach(btn => {
+          btn.addEventListener('click', () => removeModeratorAccount(btn.dataset.removeMod));
+        });
+        return;
+      }
+
+      if (canModerate()) {
+        panel.innerHTML = `
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <p class="text-xs font-extrabold text-emerald-400 uppercase tracking-wider">🛡️ Authorized Moderator</p>
+              <p class="text-xs text-zinc-300 mt-0.5">Your account has been authorized by the Owner to audit, approve, and reject songs.</p>
+            </div>
+            <span class="px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-bold self-start">
+              Confirmation Enabled
+            </span>
+          </div>
+        `;
+        return;
+      }
+
+      panel.innerHTML = `
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="space-y-1">
+            <p class="text-xs font-extrabold text-amber-300 uppercase tracking-wider">🔒 Moderator Access Required</p>
+            <p class="text-xs text-zinc-300">
+              Only the site Owner and authorized moderators can confirm or reject songs. Copy your Account ID from the sidebar and send it to the Owner to request moderator access.
+            </p>
+          </div>
+          <span class="px-3 py-1 rounded-full bg-zinc-800 text-zinc-400 text-xs font-bold shrink-0 self-start">
+            Read-Only Queue
+          </span>
+        </div>
+      `;
+    }
+
+    /**
+     * ============================================================================
+     * CHUNKED ONLINE AUDIO STORAGE HELPERS
+     * ============================================================================
+     */
+    function uint8ToBase64(bytes) {
+      let binary = '';
+      const step = 0x8000;
+      for (let i = 0; i < bytes.length; i += step) {
+        binary += String.fromCharCode.apply(null, bytes.subarray(i, i + step));
+      }
+      return btoa(binary);
+    }
+
+    function base64ToUint8(base64) {
+      const binary = atob(base64);
+      const len = binary.length;
+      const bytes = new Uint8Array(len);
+      for (let i = 0; i < len; i++) {
+        bytes[i] = binary.charCodeAt(i);
+      }
+      return bytes;
+    }
+
+    function compressCoverImage(file) {
+      return new Promise((resolve) => {
+        if (!file) return resolve(null);
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const img = new Image();
+          img.onload = () => {
+            const maxDim = 240;
+            let w = img.width;
+            let h = img.height;
+            if (w > h && w > maxDim) {
+              h = Math.round((h * maxDim) / w);
+              w = maxDim;
+            } else if (h > maxDim) {
+              w = Math.round((w * maxDim) / h);
+              h = maxDim;
+            }
+            const c = document.createElement('canvas');
+            c.width = w;
+            c.height = h;
+            c.getContext('2d').drawImage(img, 0, 0, w, h);
+            resolve(c.toDataURL('image/jpeg', 0.75));
+          };
+          img.onerror = () => resolve(null);
+          img.src = ev.target.result;
+        };
+        reader.onerror = () => resolve(null);
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function readAudioDuration(file) {
+      return new Promise((resolve) => {
+        const tempUrl = URL.createObjectURL(file);
+        const tempAudio = new Audio(tempUrl);
+        tempAudio.addEventListener('loadedmetadata', () => {
+          const dur = tempAudio.duration || 0;
+          URL.revokeObjectURL(tempUrl);
+          resolve(dur);
+        });
+        tempAudio.addEventListener('error', () => {
+          URL.revokeObjectURL(tempUrl);
+          resolve(0);
+        });
+      });
+    }
+
+    async function uploadAudioChunksToCloud(subId, audioFile, onProgress) {
+      const arrayBuffer = await audioFile.arrayBuffer();
+      const totalBytes = arrayBuffer.byteLength;
+      const totalChunks = Math.ceil(totalBytes / RAW_CHUNK_BYTES);
+      const chunkIds = [];
+
+      for (let i = 0; i < totalChunks; i++) {
+        const start = i * RAW_CHUNK_BYTES;
+        const end = Math.min(start + RAW_CHUNK_BYTES, totalBytes);
+        const slice = new Uint8Array(arrayBuffer.slice(start, end));
+        const b64 = uint8ToBase64(slice);
+
+        const chunkId = `${subId}_chunk_${i}`;
+        const chunkRef = doc(db, 'artifacts', appId, 'public', 'data', 'audio_chunks', chunkId);
+        await setDoc(chunkRef, {
+          submissionId: subId,
+          index: i,
+          data: b64
+        });
+
+        chunkIds.push(chunkId);
+        if (onProgress) {
+          onProgress(Math.round(((i + 1) / totalChunks) * 100));
+        }
+      }
+
+      return chunkIds;
+    }
+
+    async function resolvePlayableAudioUrl(track) {
+      if (audioUrlCache.has(track.id)) {
+        return audioUrlCache.get(track.id);
+      }
+      if (!isCloudConnected || !db || !track.chunkIds || track.chunkIds.length === 0) {
+        return null;
+      }
+
+      showToast(`Loading "${track.title}" from online storage...`);
+      const byteArrays = [];
+
+      for (const chunkId of track.chunkIds) {
+        const chunkRef = doc(db, 'artifacts', appId, 'public', 'data', 'audio_chunks', chunkId);
+        const snap = await getDoc(chunkRef);
+        if (!snap.exists()) {
+          throw new Error(`Missing audio chunk: ${chunkId}`);
+        }
+        byteArrays.push(base64ToUint8(snap.data().data));
+      }
+
+      const blob = new Blob(byteArrays, { type: track.mimeType || 'audio/mpeg' });
+      const blobUrl = URL.createObjectURL(blob);
+      audioUrlCache.set(track.id, blobUrl);
+      return blobUrl;
+    }
+
+    /**
+     * ============================================================================
+     * REAL AUDIO ENGINE (HTML5 <audio> + Web Audio API Visualizer & Bass Boost)
+     * ============================================================================
+     */
+    const audioEl = new Audio();
+    audioEl.crossOrigin = 'anonymous';
+    audioEl.volume = 0.85;
+
+    let audioCtx = null;
+    let analyser = null;
+    let bassFilter = null;
+    let sourceNode = null;
+    let freqData = null;
+
+    function ensureWebAudio() {
+      if (!audioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextClass) return;
+        audioCtx = new AudioContextClass();
+        sourceNode = audioCtx.createMediaElementSource(audioEl);
+        bassFilter = audioCtx.createBiquadFilter();
+        bassFilter.type = 'lowshelf';
+        bassFilter.frequency.value = 120;
+        bassFilter.gain.value = isBassBoost ? 10 : 0;
+
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 128;
+        freqData = new Uint8Array(analyser.frequencyBinCount);
+
+        sourceNode.connect(bassFilter);
+        bassFilter.connect(analyser);
+        analyser.connect(audioCtx.destination);
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    async function playTrackById(id) {
+      const track = submissions.find(t => t.id === id);
+      if (!track) return;
+
+      ensureWebAudio();
+
+      if (currentTrackId !== id) {
+        try {
+          const playableUrl = await resolvePlayableAudioUrl(track);
+          if (!playableUrl) {
+            showToast('Audio data could not be found in storage.', 'error');
+            return;
+          }
+          currentTrackId = id;
+          audioEl.src = playableUrl;
+          audioEl.load();
+        } catch (err) {
+          console.error('Error loading audio from cloud:', err);
+          showToast('Failed to download audio from online storage.', 'error');
+          return;
+        }
+      }
+
+      try {
+        await audioEl.play();
+        isPlaying = true;
+      } catch (err) {
+        console.error('Playback error:', err);
+        showToast('Could not play this audio file format.', 'error');
+        isPlaying = false;
+      }
+
+      updatePlayerUI();
+      renderAllViews();
+    }
+
+    function togglePlayPause() {
+      if (!currentTrackId) {
+        const approved = submissions.filter(t => t.status === 'approved');
+        if (approved.length > 0) {
+          playTrackById(approved[0].id);
+        } else {
+          showToast('Upload and approve a remix first to start playing.');
+        }
+        return;
+      }
+
+      ensureWebAudio();
+      if (isPlaying) {
+        audioEl.pause();
+        isPlaying = false;
+      } else {
+        audioEl.play().catch(() => {});
+        isPlaying = true;
+      }
+      updatePlayerUI();
+      renderAllViews();
+    }
+
+    function playNextPrev(direction) {
+      const approved = submissions.filter(t => t.status === 'approved');
+      if (approved.length === 0) return;
+
+      if (isShuffle && approved.length > 1) {
+        const candidates = approved.filter(t => t.id !== currentTrackId);
+        const pick = candidates[Math.floor(Math.random() * candidates.length)];
+        playTrackById(pick.id);
+        return;
+      }
+
+      const idx = approved.findIndex(t => t.id === currentTrackId);
+      const nextIdx = idx === -1
+        ? 0
+        : (idx + direction + approved.length) % approved.length;
+      playTrackById(approved[nextIdx].id);
+    }
+
+    audioEl.addEventListener('timeupdate', () => {
+      const dur = audioEl.duration || 0;
+      const cur = audioEl.currentTime || 0;
+      document.getElementById('time-current').textContent = formatTime(cur);
+      document.getElementById('time-total').textContent = formatTime(dur);
+      if (dur > 0) {
+        document.getElementById('seek-slider').value = (cur / dur) * 100;
+      }
+    });
+
+    audioEl.addEventListener('ended', () => {
+      if (isRepeat) {
+        audioEl.currentTime = 0;
+        audioEl.play().catch(() => {});
+      } else {
+        isPlaying = false;
+        updatePlayerUI();
+        playNextPrev(1);
+      }
+    });
+
+    /**
+     * ============================================================================
+     * LIVE AUDIO VISUALIZER (RESPONSIVE CANVAS)
+     * ============================================================================
+     */
+    const canvas = document.getElementById('visualizer-canvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = Math.max(1, Math.floor(rect.width * dpr));
+      canvas.height = Math.max(1, Math.floor(rect.height * dpr));
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function drawVisualizer() {
+      requestAnimationFrame(drawVisualizer);
+      const width = canvas.parentElement.clientWidth;
+      const height = canvas.parentElement.clientHeight;
+      ctx.clearRect(0, 0, width, height);
+
+      const barCount = 48;
+      const gap = 4;
+      const barWidth = Math.max(2, (width - gap * (barCount - 1)) / barCount);
+
+      if (analyser && isPlaying && freqData) {
+        analyser.getByteFrequencyData(freqData);
+      }
+
+      for (let i = 0; i < barCount; i++) {
+        let value = 0.06;
+        if (analyser && isPlaying && freqData) {
+          const binIdx = Math.min(freqData.length - 1, Math.floor((i / barCount) * freqData.length));
+          value = Math.max(0.06, freqData[binIdx] / 255);
+        }
+
+        const barH = value * (height - 26);
+        const x = i * (barWidth + gap);
+        const y = height - barH;
+
+        const grad = ctx.createLinearGradient(0, y, 0, height);
+        grad.addColorStop(0, '#FDB927');
+        grad.addColorStop(1, '#552583');
+
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.roundRect(x, y, barWidth, barH, [4, 4, 0, 0]);
+        ctx.fill();
+      }
+    }
+
+    /**
+     * ============================================================================
+     * LIKES & HUMAN COPYRIGHT VERIFICATION ACTIONS
+     * ============================================================================
+     */
+    async function toggleLike(id) {
+      if (!currentUser) return;
+      if (!isCloudConnected || !db) {
+        if (likedIds.has(id)) {
+          likedIds.delete(id);
+          showToast('Removed from Liked Remixes');
+        } else {
+          likedIds.add(id);
+          showToast('Added to Liked Remixes ❤️', 'gold');
+        }
+        updateBadges();
+        updatePlayerUI();
+        renderCatalog();
+        return;
+      }
+
+      const likeDocRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'likes', id);
+      try {
+        if (likedIds.has(id)) {
+          await deleteDoc(likeDocRef);
+          showToast('Removed from Liked Remixes');
+        } else {
+          await setDoc(likeDocRef, { likedAt: Date.now() });
+          showToast('Added to Liked Remixes ❤️', 'gold');
+        }
+      } catch (err) {
+        console.error('Like update error:', err);
+        showToast('Could not save like online.', 'error');
+      }
+    }
+
+    async function approveSubmission(id) {
+      if (!currentUser) return;
+      if (!canModerate()) {
+        showToast('Only the Owner or authorized moderators can confirm songs.', 'error');
+        return;
+      }
+
+      const track = submissions.find(t => t.id === id);
+      if (!track) return;
+
+      const c1 = document.getElementById(`check-listened-${id}`);
+      const c2 = document.getElementById(`check-original-${id}`);
+      const c3 = document.getElementById(`check-meta-${id}`);
+      if (!c1?.checked || !c2?.checked || !c3?.checked) {
+        showToast('Please complete all 3 human verification checkboxes before approving.', 'error');
+        return;
+      }
+
+      const reviewerName = document.getElementById('reviewer-name-input').value.trim() || 'Authorized Moderator';
+      const notesEl = document.getElementById(`mod-notes-${id}`);
+      const updatePayload = {
+        status: 'approved',
+        reviewedBy: reviewerName,
+        reviewedByUid: currentUser.uid,
+        reviewedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        reviewerNotes: notesEl ? notesEl.value.trim() : ''
+      };
+
+      if (!isCloudConnected || !db) {
+        Object.assign(track, updatePayload);
+        updateBadges();
+        renderAllViews();
+        showToast(`✅ Approved "${track.title}" — Now live!`, 'gold');
+        return;
+      }
+
+      try {
+        const subRef = doc(db, 'artifacts', appId, 'public', 'data', 'submissions', id);
+        await updateDoc(subRef, updatePayload);
+        showToast(`✅ Approved "${track.title}" — Now live for everyone!`, 'gold');
+      } catch (err) {
+        console.error('Approve error:', err);
+        showToast('Could not save approval online.', 'error');
+      }
+    }
+
+    async function rejectSubmission(id) {
+      if (!currentUser) return;
+      if (!canModerate()) {
+        showToast('Only the Owner or authorized moderators can reject songs.', 'error');
+        return;
+      }
+
+      const track = submissions.find(t => t.id === id);
+      if (!track) return;
+
+      const reviewerName = document.getElementById('reviewer-name-input').value.trim() || 'Authorized Moderator';
+      const notesEl = document.getElementById(`mod-notes-${id}`);
+      const reason = notesEl ? notesEl.value.trim() : '';
+
+      if (!reason) {
+        showToast('Please enter a copyright rejection reason in Reviewer Notes.', 'error');
+        if (notesEl) notesEl.focus();
+        return;
+      }
+
+      const updatePayload = {
+        status: 'rejected',
+        reviewedBy: reviewerName,
+        reviewedByUid: currentUser.uid,
+        reviewedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        reviewerNotes: reason
+      };
+
+      if (!isCloudConnected || !db) {
+        Object.assign(track, updatePayload);
+        if (currentTrackId === id && isPlaying) {
+          audioEl.pause();
+          isPlaying = false;
+        }
+        updateBadges();
+        renderAllViews();
+        showToast(`❌ Rejected "${track.title}" for copyright review.`, 'error');
+        return;
+      }
+
+      try {
+        const subRef = doc(db, 'artifacts', appId, 'public', 'data', 'submissions', id);
+        await updateDoc(subRef, updatePayload);
+        if (currentTrackId === id && isPlaying) {
+          audioEl.pause();
+          isPlaying = false;
+        }
+        showToast(`❌ Rejected "${track.title}" for copyright review.`, 'error');
+      } catch (err) {
+        console.error('Reject error:', err);
+        showToast('Could not save rejection online.', 'error');
+      }
+    }
+
+    async function moveBackToPending(id) {
+      if (!currentUser || !canModerate()) {
+        showToast('Only authorized moderators can reopen reviews.', 'error');
+        return;
+      }
+      const track = submissions.find(t => t.id === id);
+      if (!track) return;
+
+      const updatePayload = {
+        status: 'pending',
+        reviewedBy: null,
+        reviewedByUid: null,
+        reviewedAt: null
+      };
+
+      if (!isCloudConnected || !db) {
+        Object.assign(track, updatePayload);
+        updateBadges();
+        renderAllViews();
+        showToast(`Moved "${track.title}" back to Pending Review.`);
+        return;
+      }
+
+      try {
+        const subRef = doc(db, 'artifacts', appId, 'public', 'data', 'submissions', id);
+        await updateDoc(subRef, updatePayload);
+        showToast(`Moved "${track.title}" back to Pending Review.`);
+      } catch (err) {
+        console.error('Reopen error:', err);
+        showToast('Could not update status online.', 'error');
+      }
+    }
+
+    /**
+     * ============================================================================
+     * UI RENDERING FUNCTIONS
+     * ============================================================================
+     */
+    function updateBadges() {
+      const approvedCount = submissions.filter(t => t.status === 'approved').length;
+      const pendingCount = submissions.filter(t => t.status === 'pending').length;
+      const rejectedCount = submissions.filter(t => t.status === 'rejected').length;
+      const likedApprovedCount = submissions.filter(t => t.status === 'approved' && likedIds.has(t.id)).length;
+
+      document.getElementById('badge-approved').textContent = approvedCount;
+      document.getElementById('badge-pending').textContent = pendingCount;
+      document.getElementById('badge-liked').textContent = likedApprovedCount;
+
+      document.getElementById('count-pending').textContent = pendingCount;
+      document.getElementById('count-approved').textContent = approvedCount;
+      document.getElementById('count-rejected').textContent = rejectedCount;
+    }
+
+    function updatePlayerUI() {
+      const track = submissions.find(t => t.id === currentTrackId);
+      const titleEl = document.getElementById('player-title');
+      const artistEl = document.getElementById('player-artist');
+      const coverEl = document.getElementById('player-cover');
+      const likeBtn = document.getElementById('player-like-btn');
+      const iconPlay = document.getElementById('icon-play');
+      const iconPause = document.getElementById('icon-pause');
+      const visStatus = document.getElementById('visualizer-status');
+
+      if (track) {
+        titleEl.textContent = track.title;
+        artistEl.textContent = `${track.artist} • ${track.genre}`;
+        coverEl.innerHTML = track.coverUrl
+          ? `<img src="${track.coverUrl}" alt="" class="w-full h-full object-cover" />`
+          : '👑';
+        likeBtn.disabled = false;
+        const liked = likedIds.has(track.id);
+        likeBtn.classList.toggle('text-rose-500', liked);
+        likeBtn.classList.toggle('text-zinc-400', !liked);
+        visStatus.textContent = isPlaying ? `Playing: ${track.title}` : `Paused: ${track.title}`;
+      } else {
+        titleEl.textContent = 'No remix playing';
+        artistEl.textContent = 'Upload & approve a track to stream';
+        coverEl.innerHTML = '👑';
+        likeBtn.disabled = true;
+        visStatus.textContent = 'Idle — Select a remix to play';
+      }
+
+      iconPlay.classList.toggle('hidden', isPlaying);
+      iconPause.classList.toggle('hidden', !isPlaying);
+    }
+
+    function renderGenreFilters() {
+      const container = document.getElementById('genre-filters');
+      container.innerHTML = GENRES.map(genre => {
+        const active = genre === activeGenre;
+        return `
+          <button data-genre="${genre}" class="px-3.5 py-1.5 rounded-xl text-xs font-bold shrink-0 transition ${
+            active
+              ? 'bg-bron-gold text-bron-dark shadow'
+              : 'bg-bron-surface border border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700'
+          }">
+            ${genre}
+          </button>
+        `;
+      }).join('');
+
+      container.querySelectorAll('[data-genre]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          activeGenre = btn.dataset.genre;
+          renderGenreFilters();
+          renderCatalog();
+        });
+      });
+    }
+
+    function renderCatalog() {
+      const grid = document.getElementById('catalog-grid');
+      const q = searchQuery.trim().toLowerCase();
+
+      let list = submissions.filter(t => t.status === 'approved');
+      if (currentView === 'liked') {
+        list = list.filter(t => likedIds.has(t.id));
+      }
+      if (activeGenre !== 'All') {
+        list = list.filter(t => t.genre === activeGenre);
+      }
+      if (q) {
+        list = list.filter(t =>
+          t.title.toLowerCase().includes(q) ||
+          t.artist.toLowerCase().includes(q) ||
+          t.genre.toLowerCase().includes(q)
+        );
+      }
+
+      if (list.length === 0) {
+        const isLikedEmpty = currentView === 'liked';
+        grid.innerHTML = `
+          <div class="col-span-full rounded-3xl bg-bron-surface border border-dashed border-zinc-800 p-10 text-center space-y-3">
+            <div class="w-14 h-14 mx-auto rounded-2xl bg-bron-card border border-zinc-800 flex items-center justify-center text-2xl">
+              ${isLikedEmpty ? '❤️' : '👑'}
+            </div>
+            <h3 class="text-lg font-extrabold text-white">
+              ${isLikedEmpty ? 'No Liked Remixes Yet' : 'No Verified Remixes Live Yet'}
+            </h3>
+            <p class="text-xs text-zinc-400 max-w-md mx-auto leading-relaxed">
+              ${isLikedEmpty
+                ? 'Tap the heart icon on any approved remix in the Verified Catalog to save it here.'
+                : 'LeBronify starts with a completely clean catalog. Upload your own remix and confirm it in the Copyright Review queue to publish it here.'}
+            </p>
+            ${!isLikedEmpty ? `
+              <div class="pt-2 flex flex-wrap items-center justify-center gap-2.5">
+                <button onclick="openUploadModal()" class="px-4 py-2.5 rounded-xl bg-bron-gold hover:bg-bron-goldLight text-bron-dark font-extrabold text-xs transition">
+                  + Upload First Remix
+                </button>
+                <button onclick="setView('review')" class="px-4 py-2.5 rounded-xl bg-bron-card border border-zinc-700 hover:border-bron-gold text-zinc-200 font-bold text-xs transition">
+                  Open Copyright Review
+                </button>
+              </div>
+            ` : ''}
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = list.map(track => {
+        const active = currentTrackId === track.id;
+        const playingThis = active && isPlaying;
+        const liked = likedIds.has(track.id);
+
+        return `
+          <article class="group rounded-2xl bg-bron-surface border ${active ? 'border-bron-gold/70' : 'border-zinc-800/80 hover:border-zinc-700'} p-4 transition flex flex-col justify-between gap-4">
+            <div class="flex items-start gap-3.5">
+              <button data-play-id="${track.id}" class="relative w-16 h-16 rounded-2xl bg-bron-card border border-zinc-700/80 flex items-center justify-center text-2xl shrink-0 overflow-hidden">
+                ${track.coverUrl ? `<img src="${track.coverUrl}" alt="" class="w-full h-full object-cover" />` : '👑'}
+                <span class="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 ${playingThis ? '!opacity-100' : ''} transition">
+                  <span class="w-9 h-9 rounded-full bg-bron-gold text-bron-dark flex items-center justify-center text-xs font-black">
+                    ${playingThis ? '❚❚' : '▶'}
+                  </span>
+                </span>
+              </button>
+
+              <div class="min-w-0 flex-1">
+                <div class="flex items-start justify-between gap-2">
+                  <h3 class="text-sm font-extrabold text-white truncate">${escapeHtml(track.title)}</h3>
+                  <button data-like-id="${track.id}" aria-label="Like" class="shrink-0 p-1 rounded-lg ${liked ? 'text-rose-500' : 'text-zinc-500 hover:text-rose-400'} transition">
+                    <svg class="w-4 h-4" fill="${liked ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
+                  </button>
+                </div>
+                <p class="text-xs text-zinc-400 truncate mt-0.5">${escapeHtml(track.artist)}</p>
+                <div class="flex flex-wrap items-center gap-1.5 mt-2">
+                  <span class="px-2 py-0.5 rounded-md bg-bron-purple/30 border border-bron-purple/40 text-purple-200 text-[10px] font-bold">${escapeHtml(track.genre)}</span>
+                  <span class="px-2 py-0.5 rounded-md bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-[10px] font-bold">✓ Human Verified</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between pt-2.5 border-t border-zinc-800/80 text-[11px] text-zinc-400">
+              <span>${formatTime(track.duration || 0)}</span>
+              <span class="truncate max-w-[65%]">Cleared by ${escapeHtml(track.reviewedBy || 'Moderator')}</span>
+            </div>
+          </article>
+        `;
+      }).join('');
+
+      grid.querySelectorAll('[data-play-id]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.playId;
+          if (currentTrackId === id && isPlaying) {
+            togglePlayPause();
+          } else {
+            playTrackById(id);
+          }
+        });
+      });
+
+      grid.querySelectorAll('[data-like-id]').forEach(btn => {
+        btn.addEventListener('click', () => toggleLike(btn.dataset.likeId));
+      });
+    }
+
+    function renderReviewQueue() {
+      const container = document.getElementById('review-list');
+      const filtered = submissions.filter(t => t.status === activeQueueFilter);
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="rounded-3xl bg-bron-surface border border-dashed border-zinc-800 p-10 text-center space-y-2">
+            <p class="text-2xl">🛡️</p>
+            <h3 class="text-base font-extrabold text-white">No ${activeQueueFilter} submissions</h3>
+            <p class="text-xs text-zinc-400">Upload a LeBron remix to submit it for human copyright verification.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(track => {
+        const playingThis = currentTrackId === track.id && isPlaying;
+        const statusBadge = track.status === 'approved'
+          ? `<span class="px-2.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-[11px] font-bold">✓ Approved</span>`
+          : track.status === 'rejected'
+            ? `<span class="px-2.5 py-1 rounded-full bg-red-500/15 border border-red-500/30 text-red-300 text-[11px] font-bold">✕ Rejected</span>`
+            : `<span class="px-2.5 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-[11px] font-bold">⏳ Pending Audit</span>`;
+
+        return `
+          <article class="rounded-2xl bg-bron-surface border border-zinc-800/90 p-5 space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div class="flex items-center gap-3.5 min-w-0">
+                <div class="w-14 h-14 rounded-2xl bg-bron-card border border-zinc-700/80 flex items-center justify-center text-xl shrink-0 overflow-hidden">
+                  ${track.coverUrl ? `<img src="${track.coverUrl}" alt="" class="w-full h-full object-cover" />` : '👑'}
+                </div>
+                <div class="min-w-0">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <h3 class="text-base font-extrabold text-white truncate">${escapeHtml(track.title)}</h3>
+                    ${statusBadge}
+                  </div>
+                  <p class="text-xs text-zinc-400 mt-0.5">
+                    By <span class="text-zinc-200 font-semibold">${escapeHtml(track.artist)}</span>
+                    &bull; ${escapeHtml(track.genre)}
+                    &bull; ${formatTime(track.duration || 0)}
+                    &bull; Uploaded ${track.submittedAt || ''}
+                  </p>
+                </div>
+              </div>
+
+              <button data-audit-play="${track.id}" class="shrink-0 px-4 py-2 rounded-xl bg-bron-card border border-zinc-700 hover:border-bron-gold text-xs font-bold text-white transition flex items-center justify-center gap-2">
+                <span>${playingThis ? '❚❚ Pause Audit' : '▶ Listen & Audit'}</span>
+              </button>
+            </div>
+
+            <!-- Copyright Declaration Summary -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3.5 rounded-2xl bg-bron-dark/80 border border-zinc-800/80 text-xs">
+              <div>
+                <p class="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Rights Basis</p>
+                <p class="text-zinc-200 font-medium mt-0.5">${escapeHtml(track.rightsType || 'Not specified')}</p>
+              </div>
+              <div>
+                <p class="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Declared Sources</p>
+                <p class="text-zinc-200 font-medium mt-0.5">${escapeHtml(track.rightsSources || 'None listed')}</p>
+              </div>
+              <div>
+                <p class="text-[10px] font-bold uppercase tracking-wider text-zinc-500">License Notes</p>
+                <p class="text-zinc-300 mt-0.5">${escapeHtml(track.rightsNotes || '—')}</p>
+              </div>
+            </div>
+
+            ${track.status === 'pending' ? (canModerate() ? `
+              <!-- Human Moderator Verification Checklist -->
+              <div class="space-y-3 pt-1">
+                <p class="text-xs font-bold uppercase tracking-wider text-zinc-400">Human Verification Checklist</p>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
+                  <label class="flex items-center gap-2 p-2.5 rounded-xl bg-bron-dark border border-zinc-800 cursor-pointer hover:border-zinc-700">
+                    <input id="check-listened-${track.id}" type="checkbox" class="rounded accent-emerald-400" />
+                    <span class="text-zinc-300">Audio audited by human</span>
+                  </label>
+                  <label class="flex items-center gap-2 p-2.5 rounded-xl bg-bron-dark border border-zinc-800 cursor-pointer hover:border-zinc-700">
+                    <input id="check-original-${track.id}" type="checkbox" class="rounded accent-emerald-400" />
+                    <span class="text-zinc-300">No uncleared master track</span>
+                  </label>
+                  <label class="flex items-center gap-2 p-2.5 rounded-xl bg-bron-dark border border-zinc-800 cursor-pointer hover:border-zinc-700">
+                    <input id="check-meta-${track.id}" type="checkbox" class="rounded accent-emerald-400" />
+                    <span class="text-zinc-300">Attribution &amp; title valid</span>
+                  </label>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-3 pt-1">
+                  <input
+                    id="mod-notes-${track.id}"
+                    type="text"
+                    placeholder="Reviewer notes (required if rejecting for copyright)..."
+                    class="flex-1 px-3.5 py-2.5 rounded-xl bg-bron-dark border border-zinc-700 text-xs text-white focus:outline-none focus:border-emerald-400"
+                  />
+                  <div class="flex items-center gap-2 shrink-0">
+                    <button data-approve-id="${track.id}" class="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-bron-dark font-extrabold text-xs transition">
+                      Approve &amp; Publish
+                    </button>
+                    <button data-reject-id="${track.id}" class="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-red-500/15 border border-red-500/40 hover:bg-red-500/25 text-red-300 font-bold text-xs transition">
+                      Reject
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ` : `
+              <!-- Locked Notice for Non-Moderators -->
+              <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/25 text-xs text-amber-200 flex items-center gap-2">
+                <span>🔒</span>
+                <span>Awaiting confirmation from the Owner or an authorized Moderator.</span>
+              </div>
+            `) : `
+              <!-- Decision Audit Log -->
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2 border-t border-zinc-800/80 text-xs">
+                <div class="text-zinc-400">
+                  Reviewed by <span class="text-zinc-200 font-semibold">${escapeHtml(track.reviewedBy || 'Moderator')}</span> at ${track.reviewedAt || ''}
+                  ${track.reviewerNotes ? ` — <span class="italic text-zinc-300">"${escapeHtml(track.reviewerNotes)}"</span>` : ''}
+                </div>
+                ${canModerate() ? `
+                  <button data-reopen-id="${track.id}" class="text-xs font-semibold text-zinc-400 hover:text-bron-gold transition self-start sm:self-auto">
+                    Move Back to Pending
+                  </button>
+                ` : ''}
+              </div>
+            `}
+          </article>
+        `;
+      }).join('');
+
+      container.querySelectorAll('[data-audit-play]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.auditPlay;
+          if (currentTrackId === id && isPlaying) {
+            togglePlayPause();
+          } else {
+            playTrackById(id);
+          }
+        });
+      });
+
+      container.querySelectorAll('[data-approve-id]').forEach(btn => {
+        btn.addEventListener('click', () => approveSubmission(btn.dataset.approveId));
+      });
+
+      container.querySelectorAll('[data-reject-id]').forEach(btn => {
+        btn.addEventListener('click', () => rejectSubmission(btn.dataset.rejectId));
+      });
+
+      container.querySelectorAll('[data-reopen-id]').forEach(btn => {
+        btn.addEventListener('click', () => moveBackToPending(btn.dataset.reopenId));
+      });
+    }
+
+    function renderAllViews() {
+      renderGenreFilters();
+      renderCatalog();
+      renderReviewQueue();
+    }
+
+    /**
+     * ============================================================================
+     * VIEW NAVIGATION, MODALS & UTILITIES
+     * ============================================================================
+     */
+    function setView(view) {
+      currentView = view;
+
+      const catalogView = document.getElementById('catalog-view');
+      const reviewView = document.getElementById('review-view');
+      const searchWrap = document.getElementById('search-wrap');
+      const heading = document.getElementById('view-heading');
+      const subheading = document.getElementById('view-subheading');
+
+      if (view === 'review') {
+        catalogView.classList.add('hidden');
+        reviewView.classList.remove('hidden');
+        searchWrap.classList.add('hidden');
+        heading.textContent = 'Human Copyright Verification Queue';
+        subheading.textContent = 'Audit uploaded remixes, verify rights declarations, and manage authorized moderator accounts.';
+      } else {
+        catalogView.classList.remove('hidden');
+        reviewView.classList.add('hidden');
+        searchWrap.classList.remove('hidden');
+        if (view === 'liked') {
+          heading.textContent = 'Liked Remixes';
+          subheading.textContent = 'Your personal collection of favorite verified LeBron James remixes.';
+        } else {
+          heading.textContent = 'Verified Live Catalog';
+          subheading.textContent = 'Every LeBron James remix here is uploaded by creators and manually cleared by authorized moderators.';
+        }
+      }
+
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        const active = btn.dataset.nav === view;
+        btn.className = active
+          ? 'nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-bold bg-bron-card text-bron-gold border border-zinc-700/80 transition'
+          : 'nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold text-zinc-400 hover:text-white hover:bg-bron-card/60 transition';
+      });
+
+      closeMobileSidebar();
+      renderAllViews();
+    }
+
+    function openUploadModal() {
+      document.getElementById('upload-modal').classList.remove('hidden');
+      closeMobileSidebar();
+    }
+
+    function closeUploadModal() {
+      document.getElementById('upload-modal').classList.add('hidden');
+    }
+
+    function openMobileSidebar() {
+      document.getElementById('sidebar').classList.remove('-translate-x-full');
+      document.getElementById('sidebar-backdrop').classList.remove('hidden');
+    }
+
+    function closeMobileSidebar() {
+      document.getElementById('sidebar').classList.add('-translate-x-full');
+      document.getElementById('sidebar-backdrop').classList.add('hidden');
+    }
+
+    // Expose helpers for inline onclick buttons inside empty states
+    window.setView = setView;
+    window.openUploadModal = openUploadModal;
+
+    function copyTextToClipboard(text) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showToast('Account ID copied to clipboard! 📋', 'gold');
+      } catch (err) {
+        showToast('Could not copy Account ID.', 'error');
+      }
+      document.body.removeChild(ta);
+    }
+
+    function formatTime(sec) {
+      if (!sec || !Number.isFinite(sec)) return '0:00';
+      const m = Math.floor(sec / 60);
+      const s = Math.floor(sec % 60);
+      return `${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function showToast(message, variant = 'default') {
+      const container = document.getElementById('toast-container');
+      const el = document.createElement('div');
+      const styleMap = {
+        gold: 'bg-bron-gold text-bron-dark font-extrabold',
+        error: 'bg-red-600 text-white font-bold',
+        default: 'bg-bron-card border border-zinc-700 text-zinc-100 font-semibold'
+      };
+      el.className = `pointer-events-auto px-4 py-2.5 rounded-2xl text-xs shadow-xl transition-all duration-300 ${styleMap[variant] || styleMap.default}`;
+      el.textContent = message;
+      container.appendChild(el);
+      setTimeout(() => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(-6px)';
+        setTimeout(() => el.remove(), 300);
+      }, 3400);
+    }
+
+    /**
+     * ============================================================================
+     * EVENT LISTENERS & BOOTSTRAP
+     * ============================================================================
+     */
+    window.addEventListener('DOMContentLoaded', () => {
+      setView('home');
+      updateBadges();
+      updatePlayerUI();
+      resizeCanvas();
+      drawVisualizer();
+      initCloudBackend();
+
+      window.addEventListener('resize', resizeCanvas);
+
+      // Sidebar & Modal Controls
+      document.getElementById('mobile-menu-btn').addEventListener('click', openMobileSidebar);
+      document.getElementById('close-sidebar-btn').addEventListener('click', closeMobileSidebar);
+      document.getElementById('sidebar-backdrop').addEventListener('click', closeMobileSidebar);
+
+      document.getElementById('sidebar-upload-btn').addEventListener('click', openUploadModal);
+      document.getElementById('mobile-upload-btn').addEventListener('click', openUploadModal);
+      document.getElementById('close-upload-modal').addEventListener('click', closeUploadModal);
+
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.addEventListener('click', () => setView(btn.dataset.nav));
+      });
+
+      document.getElementById('copy-uid-btn').addEventListener('click', () => {
+        if (currentUser) copyTextToClipboard(currentUser.uid);
+      });
+
+      // Search Input
+      document.getElementById('search-input').addEventListener('input', (e) => {
+        searchQuery = e.target.value;
+        renderCatalog();
+      });
+
+      // Review Queue Filter Buttons
+      document.querySelectorAll('.queue-filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          activeQueueFilter = btn.dataset.queueFilter;
+          document.querySelectorAll('.queue-filter-btn').forEach(b => {
+            const active = b.dataset.queueFilter === activeQueueFilter;
+            b.className = active
+              ? 'queue-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-bron-gold text-bron-dark transition'
+              : 'queue-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white transition';
+          });
+          renderReviewQueue();
+        });
+      });
+
+      // Player Controls
+      document.getElementById('btn-play-pause').addEventListener('click', togglePlayPause);
+      document.getElementById('btn-next').addEventListener('click', () => playNextPrev(1));
+      document.getElementById('btn-prev').addEventListener('click', () => playNextPrev(-1));
+
+      document.getElementById('player-like-btn').addEventListener('click', () => {
+        if (currentTrackId) toggleLike(currentTrackId);
+      });
+
+      document.getElementById('btn-shuffle').addEventListener('click', (e) => {
+        isShuffle = !isShuffle;
+        e.currentTarget.classList.toggle('text-bron-gold', isShuffle);
+        e.currentTarget.classList.toggle('text-zinc-400', !isShuffle);
+      });
+
+      document.getElementById('btn-repeat').addEventListener('click', (e) => {
+        isRepeat = !isRepeat;
+        e.currentTarget.classList.toggle('text-bron-gold', isRepeat);
+        e.currentTarget.classList.toggle('text-zinc-400', !isRepeat);
+      });
+
+      document.getElementById('seek-slider').addEventListener('input', (e) => {
+        if (audioEl.duration) {
+          audioEl.currentTime = (parseFloat(e.target.value) / 100) * audioEl.duration;
+        }
+      });
+
+      document.getElementById('volume-slider').addEventListener('input', (e) => {
+        audioEl.volume = parseFloat(e.target.value);
+        isMuted = audioEl.volume === 0;
+        audioEl.muted = isMuted;
+      });
+
+      document.getElementById('btn-mute').addEventListener('click', () => {
+        isMuted = !isMuted;
+        audioEl.muted = isMuted;
+        document.getElementById('btn-mute').classList.toggle('text-rose-400', isMuted);
+      });
+
+      document.getElementById('btn-bass').addEventListener('click', (e) => {
+        isBassBoost = !isBassBoost;
+        ensureWebAudio();
+        if (bassFilter) {
+          bassFilter.gain.value = isBassBoost ? 10 : 0;
+        }
+        e.currentTarget.classList.toggle('border-bron-gold', isBassBoost);
+        e.currentTarget.classList.toggle('text-bron-gold', isBassBoost);
+        showToast(isBassBoost ? '👑 Crown Bass Boost ON' : 'Crown Bass Boost OFF');
+      });
+
+      // Audio File Picker Label Update
+      const audioFileInput = document.getElementById('audio-file-input');
+      audioFileInput.addEventListener('change', () => {
+        const f = audioFileInput.files[0];
+        if (f) {
+          document.getElementById('file-label-text').textContent = f.name;
+          document.getElementById('file-sub-text').textContent = `${(f.size / (1024 * 1024)).toFixed(2)} MB ready to upload`;
+        }
+      });
+
+      // Upload Form Submission
+      document.getElementById('upload-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        if (!currentUser) {
+          showToast('Still connecting to account services. Please try again in a moment.', 'error');
+          return;
+        }
+
+        const audioFile = audioFileInput.files[0];
+        if (!audioFile) {
+          showToast('Please select an audio file to upload.', 'error');
+          return;
+        }
+
+        if (audioFile.size > MAX_AUDIO_SIZE_BYTES) {
+          showToast('File is over 8 MB. Please upload an MP3/OGG under 8 MB for free cloud storage.', 'error');
+          return;
+        }
+
+        const submitBtn = document.getElementById('upload-submit-btn');
+        const progressWrap = document.getElementById('upload-progress-wrap');
+        const progressBar = document.getElementById('upload-progress-bar');
+        const progressPct = document.getElementById('upload-progress-pct');
+        const progressLabel = document.getElementById('upload-progress-label');
+
+        submitBtn.disabled = true;
+        progressWrap.classList.remove('hidden');
+        progressBar.style.width = '5%';
+        progressPct.textContent = '5%';
+        progressLabel.textContent = 'Preparing audio & cover art...';
+
+        try {
+          const subId = 'sub-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7);
+          const coverFile = document.getElementById('cover-file-input').files[0];
+
+          const [duration, coverDataUrl] = await Promise.all([
+            readAudioDuration(audioFile),
+            compressCoverImage(coverFile)
+          ]);
+
+          let chunkIds = [];
+          if (isCloudConnected && db) {
+            progressLabel.textContent = 'Uploading audio to free cloud storage...';
+            chunkIds = await uploadAudioChunksToCloud(subId, audioFile, (pct) => {
+              progressBar.style.width = `${pct}%`;
+              progressPct.textContent = `${pct}%`;
+            });
+          } else {
+            progressBar.style.width = '100%';
+            progressPct.textContent = '100%';
+          }
+
+          progressLabel.textContent = 'Saving submission metadata...';
+          const newSubmission = {
+            title: document.getElementById('new-title').value.trim(),
+            artist: document.getElementById('new-artist').value.trim(),
+            genre: document.getElementById('new-genre').value,
+            fileName: audioFile.name,
+            mimeType: audioFile.type || 'audio/mpeg',
+            chunkIds,
+            coverUrl: coverDataUrl,
+            duration,
+            rightsType: document.getElementById('rights-type').value,
+            rightsSources: document.getElementById('rights-sources').value.trim(),
+            rightsNotes: document.getElementById('rights-notes').value.trim(),
+            submittedByUid: currentUser.uid,
+            submittedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            createdAt: Date.now(),
+            status: 'pending',
+            reviewedBy: null,
+            reviewedByUid: null,
+            reviewedAt: null,
+            reviewerNotes: ''
+          };
+
+          // Cache local playable URL immediately for fast playback on this device
+          audioUrlCache.set(subId, URL.createObjectURL(audioFile));
+
+          if (isCloudConnected && db) {
+            const subRef = doc(db, 'artifacts', appId, 'public', 'data', 'submissions', subId);
+            await setDoc(subRef, newSubmission);
+          } else {
+            submissions.unshift({ id: subId, ...newSubmission });
+            updateBadges();
+          }
+
+          e.target.reset();
+          document.getElementById('file-label-text').textContent = 'Click to select or drag & drop an audio file';
+          document.getElementById('file-sub-text').textContent = 'Saved online in free chunked cloud storage';
+          closeUploadModal();
+
+          activeQueueFilter = 'pending';
+          document.querySelectorAll('.queue-filter-btn').forEach(b => {
+            const active = b.dataset.queueFilter === 'pending';
+            b.className = active
+              ? 'queue-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-bron-gold text-bron-dark transition'
+              : 'queue-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white transition';
+          });
+
+          setView('review');
+          showToast(`Uploaded "${newSubmission.title}" for human copyright review! 🛡️`, 'gold');
+        } catch (err) {
+          console.error('Upload failed:', err);
+          showToast('Upload failed. Please check your connection or try a smaller audio file.', 'error');
+        } finally {
+          submitBtn.disabled = false;
+          progressWrap.classList.add('hidden');
+          progressBar.style.width = '0%';
+          progressPct.textContent = '0%';
+        }
+      });
+    });
+  </script>
+</body>
+</html>
