@@ -72,7 +72,7 @@
         </div>
         <div>
           <h1 class="text-base font-black tracking-tight bg-gradient-to-r from-bron-gold via-yellow-200 to-purple-300 bg-clip-text text-transparent leading-none">LeBronify</h1>
-          <p class="text-[10px] uppercase tracking-widest text-zinc-400 font-semibold mt-0.5">v3.0.1</p>
+          <p class="text-[10px] uppercase tracking-widest text-zinc-400 font-semibold mt-0.5">v3.1</p>
         </div>
       </div>
       <div class="flex items-center gap-2">
@@ -95,7 +95,7 @@
             <h1 class="text-xl font-black tracking-tight bg-gradient-to-r from-bron-gold via-yellow-200 to-purple-300 bg-clip-text text-transparent">
               LeBronify
             </h1>
-            <p class="text-[11px] uppercase tracking-widest text-zinc-400 font-semibold">King James Remixes · v3.0.1</p>
+            <p class="text-[11px] uppercase tracking-widest text-zinc-400 font-semibold">King James Remixes · v3.1</p>
           </div>
         </div>
 
@@ -487,13 +487,13 @@
 
         <div>
           <label class="block text-xs font-semibold text-zinc-400 mb-1.5">Declared Samples / Original Sources</label>
-          <input id="up-samples" type="text" placeholder="List any instrumentals, vocals, or beats used (or 'None')" class="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 focus:border-bron-gold focus:outline-none text-sm text-white" />
-        </div>
-
-        <div>
-          <label class="block text-xs font-semibold text-zinc-400 mb-1.5">License / Reviewer Notes (Optional)</label>
-          <textarea id="up-notes" rows="2" placeholder="Link to beat license, CC attribution, or notes for the human reviewer..." class="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 focus:border-bron-gold focus:outline-none text-sm text-white"></textarea>
-        </div>
+        <label class="flex items-start gap-2.5 text-xs text-zinc-200 bg-bron-purple/15 border border-bron-purple/40 p-3 rounded-xl cursor-pointer">
+          <input id="up-is-lebron" type="checkbox" checked class="mt-0.5 accent-bron-gold" />
+          <span>
+            <strong class="text-bron-gold block">🏀 Confirm this is a LeBron James song / remix</strong>
+            <span class="text-zinc-400">Only confirmed LeBron songs appear on the Front Page. Uncheck if this is a non-LeBron track (it will still appear on Artist Pages, Albums &amp; Playlists once verified).</span>
+          </span>
+        </label>
 
         <label class="flex items-start gap-2.5 text-xs text-zinc-300 bg-zinc-900/80 border border-zinc-800 p-3 rounded-xl cursor-pointer">
           <input id="up-attest" required type="checkbox" class="mt-0.5 accent-bron-gold" />
@@ -520,24 +520,11 @@
         <div>
           <label class="block text-xs font-semibold text-zinc-400 mb-1.5">Profile Picture Web URL *</label>
           <input id="pfp-url-input" required type="url" placeholder="https://example.com/artist-pfp.jpg" class="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 focus:border-bron-gold focus:outline-none text-sm text-white" />
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-zinc-400 mb-1.5">Artist Bio (Optional)</label>
-          <textarea id="pfp-bio-input" rows="2" maxlength="220" placeholder="Short bio for this artist page..." class="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 focus:border-bron-gold focus:outline-none text-sm text-white"></textarea>
-        </div>
-        <div class="flex justify-end gap-3 pt-1">
-          <button type="button" onclick="closeArtistPfpModal()" class="px-4 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-sm font-semibold">Cancel</button>
-          <button id="pfp-save-btn" type="submit" class="px-5 py-2.5 rounded-xl bg-bron-gold hover:bg-bron-goldLight text-black font-extrabold text-sm transition">Save PFP</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- MODAL: CREATE ARTIST ALBUM (VERIFIERS ONLY) -->
+  <!-- MODAL: CREATE / EDIT ARTIST ALBUM & TRACKLIST (VERIFIERS ONLY) -->
   <div id="create-album-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
     <div class="w-full max-w-lg rounded-2xl bg-bron-surface border border-zinc-800 shadow-2xl overflow-hidden my-8">
       <div class="px-6 py-4 border-b border-zinc-800 flex items-center justify-between">
-        <h3 class="text-lg font-black text-white">💿 Create Artist Album</h3>
+        <h3 id="album-modal-title" class="text-lg font-black text-white">💿 Create Artist Album</h3>
         <button onclick="closeCreateAlbumModal()" class="text-zinc-400 hover:text-white text-sm">✕</button>
       </div>
       <form onsubmit="handleCreateAlbum(event)" class="p-6 space-y-4">
@@ -560,9 +547,22 @@
           <label class="block text-xs font-semibold text-zinc-400 mb-1.5">Album Description (Optional)</label>
           <textarea id="album-desc-input" rows="2" maxlength="200" placeholder="Notes about this album or mixtape..." class="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 focus:border-bron-gold focus:outline-none text-sm text-white"></textarea>
         </div>
-        <div>
-          <label class="block text-xs font-semibold text-zinc-400 mb-1.5">Select Artist Tracks to Include</label>
-          <div id="album-tracks-selector" class="space-y-1.5 max-h-44 overflow-y-auto rounded-xl bg-zinc-900/70 border border-zinc-800 p-2.5"></div>
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <label class="block text-xs font-semibold text-bron-gold">Tracklist Order (Use ↑ / ↓ to reorder)</label>
+            <span id="album-tracklist-count" class="text-[11px] text-zinc-400">0 tracks</span>
+          </div>
+          <div id="album-tracklist-editor" class="space-y-1.5 max-h-40 overflow-y-auto rounded-xl bg-zinc-950/80 border border-zinc-800 p-2.5"></div>
+        </div>
+        <div class="space-y-2">
+          <div class="flex items-center justify-between gap-2">
+            <label class="block text-xs font-semibold text-zinc-400">Add Tracks to Tracklist</label>
+            <label class="flex items-center gap-1.5 text-[11px] text-zinc-400 cursor-pointer">
+              <input id="album-show-all-tracks" type="checkbox" onchange="renderAlbumTracklistEditor()" class="accent-bron-gold" />
+              <span>Show all catalog tracks</span>
+            </label>
+          </div>
+          <div id="album-tracks-selector" class="space-y-1.5 max-h-36 overflow-y-auto rounded-xl bg-zinc-900/70 border border-zinc-800 p-2.5"></div>
         </div>
         <div class="flex justify-end gap-3 pt-1">
           <button type="button" onclick="closeCreateAlbumModal()" class="px-4 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-sm font-semibold">Cancel</button>
@@ -733,6 +733,8 @@
     let selectedGenre = 'All';
     let selectedArtistName = null;
     let selectedAlbumId = null;
+    let editingAlbumId = null;
+    let albumDraftTrackIds = [];
     let selectedPlaylistId = null;
     let addToPlaylistTrackId = null;
     let authMode = 'signin';
@@ -1189,168 +1191,234 @@
       if (currentUser.id === OWNER_UID) {
         userRole = 'owner';
       } else {
-        const modEntry = moderators.find(m => m.user_id === currentUser.id);
-        userRole = modEntry ? 'verifier' : 'member';
+        const modEntry = moderators.find(m =>
+          (m.user_id && m.user_id.toLowerCase() === currentUser.id.toLowerCase()) ||
+          (m.email && currentUser.email && m.email.toLowerCase() === currentUser.email.toLowerCase())
+        );
+        let rpcVerified = false;
+        if (!modEntry && sb) {
+          try {
+            const { data } = await sb.rpc('is_verifier');
+            rpcVerified = Boolean(data);
+          } catch (_) {}
+        }
+        userRole = (modEntry || rpcVerified) ? 'verifier' : 'member';
       }
 
       updateAuthUI();
-      await fetchPlaylists();
-      renderAll();
+    function openCreateAlbumModal(artistName, albumIdToEdit = null) {
+      if (!isVerifier()) return showToast('Only the Owner and verified staff can manage Albums.', true);
+      const artist = getArtistsList().find(a => a.name.toLowerCase() === artistName.toLowerCase());
+      const tracks = artist ? artist.tracks : [];
+      const existingAlbum = albumIdToEdit ? artistAlbums.find(a => a.id === albumIdToEdit) : null;
+
+      editingAlbumId = existingAlbum ? existingAlbum.id : null;
+      albumDraftTrackIds = existingAlbum
+        ? [...(existingAlbum.trackIds || [])]
+        : tracks.map(t => t.id);
+
+      document.getElementById('album-modal-title').textContent = existingAlbum ? '💿 Edit Album & Tracklist' : '💿 Create Artist Album';
+      document.getElementById('album-create-btn').textContent = existingAlbum ? 'Save Changes' : 'Publish Album';
+      document.getElementById('album-artist-label').textContent = `Artist: ${artistName}`;
+      document.getElementById('album-title-input').value = existingAlbum ? existingAlbum.title : '';
+      document.getElementById('album-year-input').value = existingAlbum ? (existingAlbum.release_year || '') : String(new Date().getFullYear());
+      document.getElementById('album-cover-input').value = existingAlbum ? (existingAlbum.cover_url || '') : '';
+      document.getElementById('album-desc-input').value = existingAlbum ? (existingAlbum.description || '') : '';
+      const showAllChk = document.getElementById('album-show-all-tracks');
+      if (showAllChk) showAllChk.checked = false;
+
+      const modal = document.getElementById('create-album-modal');
+      modal.dataset.artistName = artistName;
+      renderAlbumTracklistEditor();
+      modal.classList.remove('hidden');
     }
 
-    // Universal Verifier Permission: Owner or anyone approved in moderators can do everything
-    function isVerifier() {
-      return userRole === 'owner' || userRole === 'verifier';
-    }
-    function isReviewer() {
-      return isVerifier();
-    }
-    function canMakePublicPlaylists() {
-      return isVerifier();
-    }
+    function renderAlbumTracklistEditor() {
+      const modal = document.getElementById('create-album-modal');
+      const artistName = modal?.dataset.artistName || '';
+      const showAll = Boolean(document.getElementById('album-show-all-tracks')?.checked);
+      const editorEl = document.getElementById('album-tracklist-editor');
+      const selectorEl = document.getElementById('album-tracks-selector');
+      const countEl = document.getElementById('album-tracklist-count');
+      if (!editorEl || !selectorEl) return;
 
-    // =========================================================================
-    // TRACKS & STREAM COUNTER
-    // =========================================================================
-    async function fetchTracks() {
-      if (!sb) return;
-      try {
-        const { data, error } = await sb.from('tracks').select('*').order('created_at', { ascending: false });
-        if (error) throw error;
-        allTracks = data || [];
-        renderAll();
-      } catch (err) {
-        showToast('Could not load tracks: ' + err.message, true);
+      const approvedTracks = allTracks.filter(t => t.status === 'approved');
+      const selectedTracks = albumDraftTrackIds
+        .map(id => approvedTracks.find(t => t.id === id))
+        .filter(Boolean);
+
+      if (countEl) countEl.textContent = `${selectedTracks.length} ${selectedTracks.length === 1 ? 'track' : 'tracks'}`;
+
+      if (selectedTracks.length === 0) {
+        editorEl.innerHTML = `<p class="text-xs text-zinc-500 p-2 text-center">No tracks in tracklist yet. Click <strong>+ Add</strong> below.</p>`;
+      } else {
+        editorEl.innerHTML = selectedTracks.map((t, idx) => `
+          <div class="flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs">
+            <div class="flex items-center gap-2 min-w-0 flex-1">
+              <span class="w-5 text-center font-mono text-bron-gold font-bold shrink-0">${idx + 1}</span>
+              <span class="font-semibold text-white truncate">${escapeHtml(t.title)}</span>
+            </div>
+            <div class="flex items-center gap-1 shrink-0">
+              <button type="button" onclick="moveAlbumDraftTrack(${idx}, -1)" ${idx === 0 ? 'disabled' : ''} class="w-6 h-6 rounded bg-zinc-800 hover:bg-zinc-700 disabled:opacity-30 text-zinc-200 font-bold">↑</button>
+              <button type="button" onclick="moveAlbumDraftTrack(${idx}, 1)" ${idx === selectedTracks.length - 1 ? 'disabled' : ''} class="w-6 h-6 rounded bg-zinc-800 hover:bg-zinc-700 disabled:opacity-30 text-zinc-200 font-bold">↓</button>
+              <button type="button" onclick="removeAlbumDraftTrack('${t.id}')" class="w-6 h-6 rounded bg-red-500/15 hover:bg-red-500/30 text-red-400 font-bold">✕</button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      const pool = showAll
+        ? approvedTracks
+        : approvedTracks.filter(t => (t.artist || '').trim().toLowerCase() === artistName.trim().toLowerCase());
+      const available = pool.filter(t => !albumDraftTrackIds.includes(t.id));
+
+      if (available.length === 0) {
+        selectorEl.innerHTML = `<p class="text-xs text-zinc-500 p-2 text-center">${showAll ? 'All approved tracks are already in this tracklist.' : 'All tracks by this artist are in the tracklist. Check "Show all catalog tracks" to add features.'}</p>`;
+      } else {
+        selectorEl.innerHTML = available.map(t => `
+          <div class="flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg hover:bg-zinc-800/70 text-xs text-zinc-200">
+            <div class="min-w-0 flex-1">
+              <span class="font-semibold truncate block">${escapeHtml(t.title)}</span>
+              ${showAll ? `<span class="text-[10px] text-zinc-500 truncate block">${escapeHtml(t.artist)}</span>` : ''}
+            </div>
+            <button type="button" onclick="addAlbumDraftTrack('${t.id}')" class="shrink-0 px-2.5 py-1 rounded-lg bg-bron-gold/15 hover:bg-bron-gold hover:text-black text-bron-gold font-bold transition">+ Add</button>
+          </div>
+        `).join('');
       }
     }
 
-    function getStreamCount(track) {
-      if (!track) return 0;
-      const dbCount = Number(track.play_count || 0);
-      const localCount = Number(localStreamCounts[track.id] || 0);
-      return Math.max(dbCount, localCount);
-    }
-
-    function formatStreams(n) {
-      const num = Number(n || 0);
-      if (num >= 1000000) return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
-      if (num >= 1000) return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
-      return num.toLocaleString();
-    }
-
-    async function recordStream(track) {
-      if (!track) return;
-      const nextCount = getStreamCount(track) + 1;
-      track.play_count = nextCount;
-      localStreamCounts[track.id] = nextCount;
-      safeSetStorage('lebronify_streams', localStreamCounts);
-
-      if (sb && currentUser) {
-        try {
-          await sb.rpc('increment_stream', { p_track_id: track.id });
-        } catch (_) {}
+    function addAlbumDraftTrack(trackId) {
+      if (!albumDraftTrackIds.includes(trackId)) {
+        albumDraftTrackIds.push(trackId);
+        renderAlbumTracklistEditor();
       }
     }
 
-    // =========================================================================
-    // PLAYLIST SYSTEM (PRIVATE + VERIFIER-ONLY PUBLIC PLAYLISTS)
-    // =========================================================================
-    function getLocalPlaylistsKey() {
-      return 'lebronify_playlists_' + (currentUser ? currentUser.id : 'guest');
+    function removeAlbumDraftTrack(trackId) {
+      albumDraftTrackIds = albumDraftTrackIds.filter(id => id !== trackId);
+      renderAlbumTracklistEditor();
     }
 
-    async function fetchPlaylists() {
-      const localList = safeGetStorage(getLocalPlaylistsKey(), []);
-      if (!sb) {
-        userPlaylists = localList;
-        renderPlaylistsView();
-        renderSidebarPlaylists();
-        return;
-      }
-
-      try {
-        const { data: pls, error: pErr } = await sb.from('playlists').select('*').order('created_at', { ascending: false });
-        if (pErr) throw pErr;
-        const { data: pts, error: ptErr } = await sb.from('playlist_tracks').select('*').order('added_at', { ascending: true });
-        if (ptErr) throw ptErr;
-
-        useCloudPlaylists = true;
-        userPlaylists = (pls || []).map(pl => ({
-          ...pl,
-          is_public: Boolean(pl.is_public),
-          trackIds: (pts || []).filter(pt => pt.playlist_id === pl.id).map(pt => pt.track_id)
-        }));
-      } catch (_) {
-        useCloudPlaylists = false;
-        userPlaylists = localList;
-      }
-
-      renderPlaylistsView();
-      renderSidebarPlaylists();
+    function moveAlbumDraftTrack(index, delta) {
+      const target = index + delta;
+      if (target < 0 || target >= albumDraftTrackIds.length) return;
+      const tmp = albumDraftTrackIds[index];
+      albumDraftTrackIds[index] = albumDraftTrackIds[target];
+      albumDraftTrackIds[target] = tmp;
+      renderAlbumTracklistEditor();
     }
 
-    function openCreatePlaylistModal() {
-      if (!currentUser) {
-        showToast('Please sign in to create a playlist.');
-        openAuthModal('signin');
-        return;
-      }
-      const canPub = canMakePublicPlaylists();
-      const pubWrap = document.getElementById('pl-public-wrapper');
-      const pubChk = document.getElementById('pl-public-input');
-      const privNote = document.getElementById('pl-private-note');
-      if (pubWrap) pubWrap.classList.toggle('hidden', !canPub);
-      if (pubChk) pubChk.checked = false;
-      if (privNote) privNote.classList.toggle('hidden', canPub);
-      document.getElementById('create-playlist-modal').classList.remove('hidden');
+    function closeCreateAlbumModal() {
+      editingAlbumId = null;
+      document.getElementById('create-album-modal').classList.add('hidden');
     }
 
-    function closeCreatePlaylistModal() {
-      document.getElementById('create-playlist-modal').classList.add('hidden');
-    }
-
-    async function handleCreatePlaylist(e) {
+    async function handleCreateAlbum(e) {
       e.preventDefault();
-      if (!currentUser) return;
+      if (!isVerifier()) return;
+      const modal = document.getElementById('create-album-modal');
+      const artistName = modal.dataset.artistName;
+      const artistKey = artistName.trim().toLowerCase();
+      const title = document.getElementById('album-title-input').value.trim();
+      const releaseYear = document.getElementById('album-year-input').value.trim();
+      const coverUrl = normalizeAudioUrl(document.getElementById('album-cover-input').value.trim());
+      const description = document.getElementById('album-desc-input').value.trim();
+      const selectedTrackIds = [...albumDraftTrackIds];
 
-      const name = document.getElementById('pl-name-input').value.trim();
-      const description = document.getElementById('pl-desc-input').value.trim();
-      const isPublic = canMakePublicPlaylists() && Boolean(document.getElementById('pl-public-input')?.checked);
-      if (!name) return;
+      if (!/^https?:\/\/.+/i.test(coverUrl)) {
+        return showToast('Album cover must be a valid https:// web link.', true);
+      }
 
-      const btn = document.getElementById('pl-create-btn');
+      const btn = document.getElementById('album-create-btn');
       btn.disabled = true;
 
       try {
-        if (sb && useCloudPlaylists) {
-          const { data, error } = await sb
-            .from('playlists')
-            .insert({ user_id: currentUser.id, name, description, is_public: isPublic })
-            .select()
-            .single();
-          if (error) throw error;
-          userPlaylists.unshift({ ...data, is_public: Boolean(data.is_public), trackIds: [] });
-        } else {
-          const pl = {
-            id: 'pl_' + Date.now(),
-            user_id: currentUser.id,
-            name,
-            description,
-            is_public: isPublic,
-            trackIds: [],
-            created_at: new Date().toISOString()
-          };
-          userPlaylists.unshift(pl);
-          safeSetStorage(getLocalPlaylistsKey(), userPlaylists);
+        if (editingAlbumId) {
+          // UPDATE EXISTING ALBUM & TRACKLIST
+          if (sb && !String(editingAlbumId).startsWith('alb_')) {
+            const { error: uErr } = await sb
+              .from('albums')
+              .update({ title, cover_url: coverUrl, release_year: releaseYear, description })
+              .eq('id', editingAlbumId);
+            if (uErr) throw uErr;
+
+            const { error: delErr } = await sb.from('album_tracks').delete().eq('album_id', editingAlbumId);
+            if (delErr) throw delErr;
+
+            if (selectedTrackIds.length > 0) {
+              const rows = selectedTrackIds.map((tid, i) => ({ album_id: editingAlbumId, track_id: tid, track_order: i }));
+              const { error: insErr } = await sb.from('album_tracks').insert(rows);
+              if (insErr) throw insErr;
+            }
+          }
+
+          const idx = artistAlbums.findIndex(a => a.id === editingAlbumId);
+          if (idx >= 0) {
+            artistAlbums[idx] = {
+              ...artistAlbums[idx],
+              title,
+              cover_url: coverUrl,
+              release_year: releaseYear,
+              description,
+              trackIds: selectedTrackIds
+            };
+          }
+          safeSetStorage('lebronify_albums', artistAlbums);
+          closeCreateAlbumModal();
+          showToast(`Updated album "${title}" & tracklist!`);
+          renderArtistsView();
+          return;
         }
 
-        e.target.reset();
-        closeCreatePlaylistModal();
-        showToast(isPublic ? `Published public playlist "${name}"!` : `Created playlist "${name}"!`);
-        renderPlaylistsView();
-        renderSidebarPlaylists();
+        // CREATE NEW ALBUM
+        let newAlbum = null;
+        if (sb) {
+          const { data, error } = await sb
+            .from('albums')
+            .insert({
+              artist_name: artistName,
+              artist_name_key: artistKey,
+              title,
+              cover_url: coverUrl,
+              release_year: releaseYear,
+              description,
+              created_by: currentUser.id
+            })
+            .select()
+            .single();
+
+          if (!error && data) {
+            if (selectedTrackIds.length > 0) {
+              const rows = selectedTrackIds.map((tid, i) => ({ album_id: data.id, track_id: tid, track_order: i }));
+              await sb.from('album_tracks').insert(rows);
+            }
+            newAlbum = { ...data, trackIds: selectedTrackIds };
+          } else if (error && !/does not exist|schema cache/i.test(error.message)) {
+            throw error;
+          }
+        }
+
+        if (!newAlbum) {
+          newAlbum = {
+            id: 'alb_' + Date.now(),
+            artist_name: artistName,
+            artist_name_key: artistKey,
+            title,
+            cover_url: coverUrl,
+            release_year: releaseYear,
+            description,
+            trackIds: selectedTrackIds,
+            created_at: new Date().toISOString()
+          };
+        }
+
+        artistAlbums.unshift(newAlbum);
+        safeSetStorage('lebronify_albums', artistAlbums);
+        closeCreateAlbumModal();
+        showToast(`Published album "${title}" on ${artistName}'s page!`);
+        renderArtistsView();
       } catch (err) {
-        showToast('Could not create playlist: ' + err.message, true);
+        showToast('Could not save album: ' + err.message, true);
       } finally {
         btn.disabled = false;
       }
@@ -2121,6 +2189,7 @@
       const notes = document.getElementById('up-notes').value.trim();
       const rawAudioUrl = document.getElementById('up-audio-url').value.trim();
       const rawCoverUrl = document.getElementById('up-cover-url').value.trim();
+      const isLebronSong = Boolean(document.getElementById('up-is-lebron')?.checked);
 
       const btn = document.getElementById('up-submit-btn');
       btn.disabled = true;
@@ -2136,15 +2205,7 @@
 
         const media = detectMediaSource(rawAudioUrl);
         let finalAudioUrl = media.type === 'youtube'
-          ? `https://www.youtube.com/watch?v=${media.videoId}`
-          : (media.type === 'embed' ? media.originalUrl : media.originalUrl);
-
-        let finalCoverUrl = rawCoverUrl ? normalizeAudioUrl(rawCoverUrl) : null;
-        if (!finalCoverUrl && media.type === 'youtube') {
-          finalCoverUrl = `https://i.ytimg.com/vi/${media.videoId}/hqdefault.jpg`;
-        }
-
-        const { error: dbErr } = await sb.from('tracks').insert({
+        const insertPayload = {
           title,
           artist,
           genre,
@@ -2153,10 +2214,18 @@
           rights_basis: rights,
           declared_samples: samples,
           license_notes: notes,
+          is_lebron_song: isLebronSong,
           uploader_id: currentUser.id,
           uploader_email: currentUser.email,
           status: 'pending'
-        });
+        };
+
+        let { error: dbErr } = await sb.from('tracks').insert(insertPayload);
+        if (dbErr && /is_lebron_song/i.test(dbErr.message)) {
+          delete insertPayload.is_lebron_song;
+          const retry = await sb.from('tracks').insert(insertPayload);
+          dbErr = retry.error;
+        }
 
         if (dbErr) throw dbErr;
 
@@ -2189,19 +2258,31 @@
       }
 
       const reviewerNotes = document.getElementById(`rev-notes-${trackId}`)?.value.trim() || '';
-      const { error } = await sb
+      const confirmedLebron = Boolean(document.getElementById(`chk-lebron-${trackId}`)?.checked);
+      const updatePayload = {
+        status: decision,
+        is_lebron_song: confirmedLebron,
+        reviewer_notes: reviewerNotes,
+        reviewed_by: currentUser.id,
+        reviewed_at: new Date().toISOString()
+      };
+
+      let { error } = await sb
         .from('tracks')
-        .update({
-          status: decision,
-          reviewer_notes: reviewerNotes,
-          reviewed_by: currentUser.id,
-          reviewed_at: new Date().toISOString()
-        })
+        .update(updatePayload)
         .eq('id', trackId);
+
+      if (error && /is_lebron_song/i.test(error.message)) {
+        delete updatePayload.is_lebron_song;
+        const retry = await sb.from('tracks').update(updatePayload).eq('id', trackId);
+        error = retry.error;
+      }
 
       if (error) return showToast('Review failed: ' + error.message, true);
       auditAudioEl.pause();
-      showToast(decision === 'approved' ? 'Track approved & published to Verified Catalog!' : 'Track rejected.');
+      showToast(decision === 'approved'
+        ? (confirmedLebron ? 'Approved & published to Front Page (LeBron Catalog)!' : 'Approved & published to Artist Page (Non-LeBron track).')
+        : 'Track rejected.');
       await fetchTracks();
     }
 
@@ -2394,6 +2475,7 @@
                     </div>
                     <div class="flex items-center gap-2 shrink-0">
                       <button onclick="playAlbum('${activeAlbum.id}')" class="px-4 py-2 rounded-xl bg-bron-gold hover:bg-bron-goldLight text-black font-extrabold text-xs transition">▶ Play Album</button>
+                      ${isVerifier() ? `<button onclick="openCreateAlbumModal(decodeURIComponent('${encodedArtist}'), '${activeAlbum.id}')" class="px-3 py-2 rounded-xl bg-bron-purple/30 hover:bg-bron-purple/50 text-purple-100 border border-bron-purple/50 font-bold text-xs transition">✏️ Edit Tracklist</button>` : ''}
                       ${isVerifier() ? `<button onclick="deleteAlbum('${activeAlbum.id}')" class="px-3 py-2 rounded-xl bg-red-500/15 hover:bg-red-500/30 text-red-400 font-bold text-xs transition">Delete</button>` : ''}
                       <button onclick="selectedAlbumId = null; renderArtistsView();" class="px-3 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold text-xs transition">✕ Close</button>
                     </div>
@@ -2547,7 +2629,7 @@
     function renderGenreFilters() {
       const container = document.getElementById('genre-filters');
       if (!container) return;
-      const approved = allTracks.filter(t => t.status === 'approved');
+      const approved = allTracks.filter(t => t.status === 'approved' && t.is_lebron_song !== false);
       const genres = ['All', ...new Set(approved.map(t => t.genre).filter(Boolean))];
       container.innerHTML = genres.map(g => `
         <button onclick="selectedGenre = '${escapeHtml(g)}'; renderCatalog();" class="shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition ${selectedGenre === g ? 'bg-bron-gold text-black' : 'bg-bron-surface border border-zinc-800 text-zinc-400 hover:text-white'}">
@@ -2600,7 +2682,7 @@
       if (!grid) return;
 
       const q = (document.getElementById('search-input')?.value || '').toLowerCase();
-      const approved = allTracks.filter(t => t.status === 'approved');
+      const approved = allTracks.filter(t => t.status === 'approved' && t.is_lebron_song !== false);
       const filtered = approved.filter(t => {
         const matchGenre = selectedGenre === 'All' || t.genre === selectedGenre;
         const matchQ = !q ||
@@ -2692,7 +2774,7 @@
                   <div class="min-w-0">
                     <h4 class="font-extrabold text-white text-base truncate">${escapeHtml(t.title)}</h4>
                     <p class="text-xs text-zinc-400 truncate">${escapeHtml(t.artist)} • ${escapeHtml(t.genre)}</p>
-                    <p class="text-[11px] text-zinc-500 mt-0.5">Uploaded by ${escapeHtml(t.uploader_email || 'Unknown')}</p>
+                    <p class="text-[11px] text-zinc-500 mt-0.5">Uploaded by ${escapeHtml(t.uploader_email || 'Unknown')} · <span class="${t.is_lebron_song !== false ? 'text-bron-gold font-bold' : 'text-zinc-400'}">${t.is_lebron_song !== false ? '🏀 Marked LeBron Song (Front Page)' : '🎵 Non-LeBron Track (Artist/Albums Only)'}</span></p>
                   </div>
                 </div>
                 <button onclick="previewAuditAudio('${escapeHtml(t.audio_url)}', this)" class="audit-play-btn shrink-0 px-4 py-2 rounded-xl bg-bron-purple hover:bg-bron-purpleLight text-white text-xs font-extrabold transition">▶ Listen &amp; Audit</button>
@@ -2705,11 +2787,11 @@
               </div>
 
               ${isReviewer() ? `
-                <div class="space-y-3 pt-2 border-t border-zinc-800/70">
-                  <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs text-zinc-300">
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-zinc-300">
                     <label class="flex items-center gap-2 cursor-pointer"><input id="chk1-${t.id}" type="checkbox" class="accent-bron-gold" /> Listened to audio</label>
                     <label class="flex items-center gap-2 cursor-pointer"><input id="chk2-${t.id}" type="checkbox" class="accent-bron-gold" /> Rights declaration checked</label>
                     <label class="flex items-center gap-2 cursor-pointer"><input id="chk3-${t.id}" type="checkbox" class="accent-bron-gold" /> Safe for LeBronify</label>
+                    <label class="flex items-center gap-2 cursor-pointer text-bron-gold font-semibold"><input id="chk-lebron-${t.id}" type="checkbox" ${t.is_lebron_song !== false ? 'checked' : ''} class="accent-bron-gold" /> 🏀 Confirmed LeBron Song (Show on Front Page)</label>
                   </div>
                   <div class="flex flex-col sm:flex-row gap-2.5">
                     <input id="rev-notes-${t.id}" type="text" placeholder="Optional human reviewer notes..." class="flex-1 px-3.5 py-2 rounded-xl bg-zinc-900 border border-zinc-800 focus:border-bron-gold focus:outline-none text-xs text-white" />
