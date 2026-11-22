@@ -72,7 +72,7 @@
         </div>
         <div>
           <h1 class="text-base font-black tracking-tight bg-gradient-to-r from-bron-gold via-yellow-200 to-purple-300 bg-clip-text text-transparent leading-none">LeBronify</h1>
-          <p class="text-[10px] uppercase tracking-widest text-zinc-400 font-semibold mt-0.5">v2.9</p>
+          <p class="text-[10px] uppercase tracking-widest text-zinc-400 font-semibold mt-0.5">v2.9.1</p>
         </div>
       </div>
       <div class="flex items-center gap-2">
@@ -95,7 +95,7 @@
             <h1 class="text-xl font-black tracking-tight bg-gradient-to-r from-bron-gold via-yellow-200 to-purple-300 bg-clip-text text-transparent">
               LeBronify
             </h1>
-            <p class="text-[11px] uppercase tracking-widest text-zinc-400 font-semibold">King James Remixes · v2.9</p>
+            <p class="text-[11px] uppercase tracking-widest text-zinc-400 font-semibold">King James Remixes · v2.9.1</p>
           </div>
         </div>
 
@@ -716,6 +716,366 @@
     let isShuffle = false;
     let isRepeat = false;
     let npSidebarOpen = window.innerWidth >= 1280;
+
+    // =========================================================================
+    // INITIALIZATION & SUPABASE SESSION
+    // =========================================================================
+    async function initApp() {
+      setupDynamicFavicon();
+      setupAudioEvents();
+      audioEl.volume = 0.85;
+
+      const ownerCrown = document.getElementById('owner-panel-crown');
+      if (ownerCrown) ownerCrown.innerHTML = crownLogoHtml('w-6 h-6');
+
+      if (!window.supabase) {
+        showToast('Supabase SDK failed to load. Please refresh.', true);
+        renderAll();
+        return;
+      }
+
+      try {
+        sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const { data: { session } } = await sb.auth.getSession();
+        await handleSessionChange(session);
+
+        sb.auth.onAuthStateChange((_event, newSession) => {
+          handleSessionChange(newSession);
+        });
+
+        await fetchTracks();
+      } catch (err) {
+        showToast('Could not connect to Supabase: ' + err.message, true);
+        renderAll();
+      }
+    }
+
+    async function handleSessionChange(session) {
+      currentUser = session?.user || null;
+
+      if (!currentUser) {
+        userRole = 'member';
+        if (currentTrack) stopPlayback();
+        updateAuthUI();
+        await fetchPlaylists();
+        renderAll();
+        return;
+      }
+
+      await fetchModerators();
+      await fetchCurators();
+
+      if (currentUser.id === OWNER_UID) {
+        userRole = 'owner';
+      } else {
+        const modEntry = moderators.find(m => m.user_id === currentUser.id);
+        userRole = modEntry ? (modEntry.role || 'moderator') : 'member';
+      }
+
+      updateAuthUI();
+      await fetchPlaylists();
+      renderAll();
+    }
+
+    function isReviewer() {
+      return userRole === 'owner' || userRole === 'moderator';
+    }
+
+    function canMakePublicPlaylists() {
+      if (!currentUser) return false;
+      if (userRole === 'owner' || currentUser.id === OWNER_UID) return true;
+      return playlistCurators.some(c => c.user_id === currentUser.id);
+    }
+
+    // =========================================================================
+    // AUTHENTICATION UI & ACTIONS
+    // =========================================================================
+    function openAuthModal(mode = 'signin') {
+      setAuthMode(mode);
+      document.getElementById('auth-modal').classList.remove('hidden');
+    }
+
+    function closeAuthModal() {
+      document.getElementById('auth-modal').classList.add('hidden');
+    }
+
+    function setAuthMode(mode) {
+      authMode = mode;
+      const isSignIn = mode === 'signin';
+      document.getElementById('auth-modal-title').textContent = isSignIn ? 'Sign In to LeBronify' : 'Create a LeBronify Account';
+      document.getElementById('auth-submit-btn').textContent = isSignIn ? 'Sign In' : 'Create Account';
+      document.getElementById('tab-signin').className = isSignIn
+        ? 'py-2 rounded-lg text-xs font-extrabold bg-bron-gold text-black transition'
+        : 'py-2 rounded-lg text-xs font-bold text-zinc-400 hover:text-white transition';
+      document.getElementById('tab-signup').className = !isSignIn
+        ? 'py-2 rounded-lg text-xs font-extrabold bg-bron-gold text-black transition'
+        : 'py-2 rounded-lg text-xs font-bold text-zinc-400 hover:text-white transition';
+      document.getElementById('signup-verify-reminder').classList.toggle('hidden', isSignIn);
+    }
+
+    async function handleAuthSubmit(e) {
+      e.preventDefault();
+      if (!sb) return showToast('Supabase is not connected yet.', true);
+
+      const email = document.getElementById('auth-email').value.trim();
+      const password = document.getElementById('auth-password').value;
+      const btn = document.getElementById('auth-submit-btn');
+      btn.disabled = true;
+      btn.textContent = authMode === 'signin' ? 'Signing in...' : 'Creating account...';
+
+      try {
+        if (authMode === 'signup') {
+          const { error } = await sb.auth.signUp({ email, password });
+          if (error) throw error;
+          showToast('Account created! Please check your email (and spam folder) to verify your account before signing in.');
+          setAuthMode('signin');
+        } else {
+          const { error } = await sb.auth.signInWithPassword({ email, password });
+          if (error) {
+            if (/email not confirmed/i.test(error.message)) {
+              throw new Error('Please verify your email first! Check your inbox and spam folder for the confirmation link.');
+            }
+            throw error;
+          }
+          e.target.reset();
+          closeAuthModal();
+          showToast('Welcome back to LeBronify!');
+        }
+      } catch (err) {
+        showToast(err.message, true);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = authMode === 'signin' ? 'Sign In' : 'Create Account';
+      }
+    }
+
+    async function signOut() {
+      if (!sb) return;
+      stopPlayback();
+      await sb.auth.signOut();
+      showToast('Signed out.');
+    }
+
+    function copyMyUid() {
+      if (!currentUser) return;
+      const tmp = document.createElement('textarea');
+      tmp.value = currentUser.id;
+      tmp.style.position = 'fixed';
+      tmp.style.opacity = '0';
+      document.body.appendChild(tmp);
+      tmp.select();
+      try {
+        document.execCommand('copy');
+        showToast('Copied your User UID to clipboard!');
+      } catch (_) {
+        showToast('UID: ' + currentUser.id);
+      }
+      document.body.removeChild(tmp);
+    }
+
+    function updateAuthUI() {
+      const box = document.getElementById('sidebar-auth-box');
+      const mobileBtn = document.getElementById('mobile-auth-btn');
+      const playerArtist = document.getElementById('player-artist');
+
+      if (!currentUser) {
+        if (box) {
+          box.innerHTML = `
+            <button onclick="openAuthModal('signin')" class="w-full py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-bold transition">
+              Sign In / Create Account
+            </button>
+          `;
+        }
+        if (mobileBtn) {
+          mobileBtn.textContent = 'Sign In';
+          mobileBtn.onclick = () => openAuthModal('signin');
+        }
+        if (playerArtist && !currentTrack) {
+          playerArtist.textContent = 'Sign in to listen';
+        }
+        return;
+      }
+
+      const roleBadge = userRole === 'owner'
+        ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-bron-gold/15 border border-bron-gold/40 text-bron-gold text-[10px] font-extrabold">${crownLogoHtml('w-3.5 h-3.5')} Owner</span>`
+        : userRole === 'moderator'
+          ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-bron-purple/30 border border-bron-purple/50 text-purple-200 text-[10px] font-extrabold">🛡️ Moderator</span>`
+          : `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-zinc-800 text-zinc-400 text-[10px] font-bold">Member</span>`;
+
+      if (box) {
+        box.innerHTML = `
+          <div class="space-y-2">
+            <div class="flex items-center justify-between gap-2">
+              <p class="text-xs font-bold text-white truncate">${escapeHtml(currentUser.email)}</p>
+              ${roleBadge}
+            </div>
+            <div class="grid grid-cols-2 gap-1.5">
+              <button onclick="copyMyUid()" class="py-1.5 px-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-[11px] font-semibold transition">Copy My UID</button>
+              <button onclick="signOut()" class="py-1.5 px-2 rounded-lg bg-red-500/15 hover:bg-red-500/30 text-red-400 text-[11px] font-bold transition">Sign Out</button>
+            </div>
+          </div>
+        `;
+      }
+      if (mobileBtn) {
+        mobileBtn.textContent = 'Sign Out';
+        mobileBtn.onclick = () => signOut();
+      }
+      if (playerArtist && !currentTrack) {
+        playerArtist.textContent = 'Pick a verified remix';
+      }
+    }
+
+    // =========================================================================
+    // TRACKS & STREAM COUNTER
+    // =========================================================================
+    async function fetchTracks() {
+      if (!sb) return;
+      try {
+        const { data, error } = await sb
+          .from('tracks')
+          .select('*')
+          .order('created_at', { ascending: false });
+        if (error) throw error;
+        allTracks = data || [];
+        renderAll();
+      } catch (err) {
+        showToast('Could not load tracks: ' + err.message, true);
+      }
+    }
+
+    function getStreamCount(track) {
+      if (!track) return 0;
+      const dbCount = Number(track.play_count || 0);
+      const localCount = Number(localStreamCounts[track.id] || 0);
+      return Math.max(dbCount, localCount);
+    }
+
+    function formatStreams(count) {
+      const n = Number(count || 0);
+      if (n >= 1000000) return (n / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+      if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+      return n.toLocaleString();
+    }
+
+    async function recordStream(track) {
+      if (!track || !currentUser) return;
+      const nextCount = getStreamCount(track) + 1;
+      localStreamCounts[track.id] = nextCount;
+      track.play_count = nextCount;
+      safeSetStorage('lebronify_streams', localStreamCounts);
+
+      if (sb) {
+        try {
+          await sb.rpc('increment_stream', { p_track_id: track.id });
+        } catch (_) {}
+      }
+      renderAll();
+    }
+
+    // =========================================================================
+    // OWNER ACCESS CONTROL (MODERATORS & PUBLIC PLAYLIST CURATORS)
+    // =========================================================================
+    async function fetchModerators() {
+      if (!sb) return;
+      try {
+        const { data, error } = await sb.from('moderators').select('*').order('created_at', { ascending: true });
+        if (!error) moderators = data || [];
+      } catch (_) {}
+    }
+
+    async function addModerator(e) {
+      e.preventDefault();
+      if (!sb || userRole !== 'owner') return;
+      const userId = document.getElementById('mod-uid-input').value.trim();
+      const email = document.getElementById('mod-email-input').value.trim();
+      if (!userId || !email) return;
+
+      const { error } = await sb.from('moderators').upsert({ user_id: userId, email, role: 'moderator' });
+      if (error) return showToast('Could not add moderator: ' + error.message, true);
+      e.target.reset();
+      showToast(`Added ${email} as a Moderator!`);
+      await fetchModerators();
+      renderModerators();
+    }
+
+    async function removeModerator(userId) {
+      if (!sb || userRole !== 'owner') return;
+      const { error } = await sb.from('moderators').delete().eq('user_id', userId);
+      if (error) return showToast('Could not remove moderator: ' + error.message, true);
+      showToast('Moderator removed.');
+      await fetchModerators();
+      renderModerators();
+    }
+
+    function renderModerators() {
+      const container = document.getElementById('moderators-list');
+      if (!container) return;
+      if (moderators.length === 0) {
+        container.innerHTML = `<p class="text-xs text-zinc-500">No additional moderators added yet.</p>`;
+        return;
+      }
+      container.innerHTML = moderators.map(m => `
+        <div class="flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-xl bg-zinc-900/80 border border-zinc-800 text-xs">
+          <div class="min-w-0">
+            <p class="font-bold text-white truncate">${escapeHtml(m.email)} <span class="ml-1.5 px-1.5 py-0.5 rounded bg-bron-purple/30 text-purple-200 text-[10px] uppercase">${escapeHtml(m.role || 'moderator')}</span></p>
+            <p class="text-[10px] font-mono text-zinc-500 truncate">${escapeHtml(m.user_id)}</p>
+          </div>
+          ${m.user_id !== OWNER_UID && m.role !== 'owner'
+            ? `<button onclick="removeModerator('${escapeHtml(m.user_id)}')" class="shrink-0 px-2.5 py-1 rounded-lg bg-red-500/15 hover:bg-red-500/30 text-red-400 font-bold transition">Remove</button>`
+            : `<span class="text-[10px] text-bron-gold font-bold shrink-0">Owner</span>`}
+        </div>
+      `).join('');
+    }
+
+    async function fetchCurators() {
+      if (!sb) return;
+      try {
+        const { data, error } = await sb.from('playlist_curators').select('*').order('created_at', { ascending: true });
+        if (!error) playlistCurators = data || [];
+      } catch (_) {}
+    }
+
+    async function addCurator(e) {
+      e.preventDefault();
+      if (!sb || userRole !== 'owner') return;
+      const userId = document.getElementById('curator-uid-input').value.trim();
+      const email = document.getElementById('curator-email-input').value.trim();
+      if (!userId || !email) return;
+
+      const { error } = await sb.from('playlist_curators').upsert({ user_id: userId, email });
+      if (error) return showToast('Could not add curator: ' + error.message, true);
+      e.target.reset();
+      showToast(`Granted ${email} Public Playlist access!`);
+      await fetchCurators();
+      renderCurators();
+    }
+
+    async function removeCurator(userId) {
+      if (!sb || userRole !== 'owner') return;
+      const { error } = await sb.from('playlist_curators').delete().eq('user_id', userId);
+      if (error) return showToast('Could not remove curator: ' + error.message, true);
+      showToast('Public Playlist permission revoked.');
+      await fetchCurators();
+      renderCurators();
+    }
+
+    function renderCurators() {
+      const container = document.getElementById('curators-list');
+      if (!container) return;
+      if (playlistCurators.length === 0) {
+        container.innerHTML = `<p class="text-xs text-zinc-500">Only you (Owner) can create public playlists right now.</p>`;
+        return;
+      }
+      container.innerHTML = playlistCurators.map(c => `
+        <div class="flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-xl bg-zinc-900/80 border border-zinc-800 text-xs">
+          <div class="min-w-0">
+            <p class="font-bold text-white truncate">${escapeHtml(c.email)} <span class="ml-1.5 px-1.5 py-0.5 rounded bg-bron-gold/15 text-bron-gold text-[10px] uppercase">Public Curator</span></p>
+            <p class="text-[10px] font-mono text-zinc-500 truncate">${escapeHtml(c.user_id)}</p>
+          </div>
+          <button onclick="removeCurator('${escapeHtml(c.user_id)}')" class="shrink-0 px-2.5 py-1 rounded-lg bg-red-500/15 hover:bg-red-500/30 text-red-400 font-bold transition">Remove</button>
+        </div>
+      `).join('');
+    }
 
     // =========================================================================
     // UPLOAD REMIX (DIRECT FILE OR EXTERNAL URL)
