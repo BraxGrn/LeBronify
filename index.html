@@ -4,9 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>LeBronify — King James Remix Streaming</title>
-  <link rel="icon" type="image/jpeg" href="LBJf.jpg" />
-  <link rel="shortcut icon" type="image/jpeg" href="LBJf.jpg" />
-  <link rel="apple-touch-icon" href="LBJf.jpg" />
+  <link id="favicon-main" rel="icon" type="image/jpeg" href="./LBJf.jpg?v=2.7" />
+  <link id="favicon-shortcut" rel="shortcut icon" type="image/jpeg" href="./LBJf.jpg?v=2.7" />
+  <link rel="apple-touch-icon" href="./LBJf.jpg?v=2.7" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
@@ -134,7 +134,7 @@
           <h1 class="text-xl font-black tracking-tight bg-gradient-to-r from-bron-gold via-yellow-200 to-purple-300 bg-clip-text text-transparent">
             LeBronify
           </h1>
-          <p class="text-[11px] uppercase tracking-widest text-zinc-400 font-semibold">King James Remixes · v2.6</p>
+          <p class="text-[11px] uppercase tracking-widest text-zinc-400 font-semibold">King James Remixes · v2.7</p>
         </div>
       </div>
 
@@ -145,9 +145,15 @@
       </button>
 
       <!-- Navigation -->
-      <nav class="space-y-1.5 flex-1">
+      <nav class="space-y-1.5 flex-1 overflow-y-auto pr-1">
         <button data-nav="catalog" onclick="switchView('catalog')" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition">
           <span>🎵</span> Verified Catalog
+        </button>
+        <button data-nav="artists" onclick="switchView('artists')" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition">
+          <span>🎤</span> Artists
+        </button>
+        <button data-nav="playlists" onclick="switchView('playlists')" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition">
+          <span>🎶</span> Playlists
         </button>
         <button data-nav="liked" onclick="switchView('liked')" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition">
           <span>💛</span> Liked Remixes
@@ -159,6 +165,15 @@
           <span class="flex items-center gap-3"><span>🛡️</span> Copyright Review</span>
           <span id="pending-badge" class="hidden px-2 py-0.5 text-[11px] font-bold rounded-full bg-bron-gold text-black">0</span>
         </button>
+
+        <!-- Sidebar Quick Playlists -->
+        <div class="pt-4 mt-4 border-t border-zinc-800/80">
+          <div class="flex items-center justify-between px-2 mb-2">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-500">Your Playlists</span>
+            <button onclick="openCreatePlaylistModal()" title="Create Playlist" class="w-5 h-5 rounded-md bg-zinc-800 hover:bg-bron-gold hover:text-black text-zinc-300 flex items-center justify-center text-xs font-bold transition">+</button>
+          </div>
+          <div id="sidebar-playlists-list" class="space-y-1"></div>
+        </div>
       </nav>
 
       <!-- Account Card -->
@@ -212,6 +227,8 @@
       <!-- Mobile Nav Pills -->
       <div class="md:hidden flex gap-2 overflow-x-auto px-4 py-2.5 bg-bron-dark border-b border-zinc-800/70">
         <button data-nav="catalog" onclick="switchView('catalog')" class="nav-btn shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold">🎵 Catalog</button>
+        <button data-nav="artists" onclick="switchView('artists')" class="nav-btn shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold">🎤 Artists</button>
+        <button data-nav="playlists" onclick="switchView('playlists')" class="nav-btn shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold">🎶 Playlists</button>
         <button data-nav="liked" onclick="switchView('liked')" class="nav-btn shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold">💛 Liked</button>
         <button data-nav="my-uploads" onclick="switchView('my-uploads')" class="nav-btn shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold">📤 My Uploads</button>
         <button data-nav="review" onclick="switchView('review')" class="nav-btn shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold">🛡️ Review</button>
@@ -250,6 +267,41 @@
 
           <!-- Track Grid -->
           <div id="catalog-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        </section>
+
+        <!-- VIEW: ARTISTS DIRECTORY & PROFILE -->
+        <section id="view-artists" class="view-section hidden space-y-6">
+          <div id="artists-directory-view" class="space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h2 class="text-2xl font-black text-white">🎤 Verified Artists & Producers</h2>
+                <p class="text-sm text-zinc-400 mt-1">Browse every creator with approved remixes on LeBronify, ranked by total streams.</p>
+              </div>
+              <div class="relative w-full sm:w-64">
+                <input id="artist-search-input" type="text" oninput="renderArtistsView()" placeholder="Search artists..." class="w-full pl-9 pr-4 py-2 rounded-xl bg-bron-surface border border-zinc-800 focus:border-bron-gold focus:outline-none text-sm text-white placeholder-zinc-500" />
+                <svg class="w-4 h-4 text-zinc-500 absolute left-3 top-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/></svg>
+              </div>
+            </div>
+            <div id="artists-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+          </div>
+
+          <div id="artist-profile-view" class="hidden space-y-6"></div>
+        </section>
+
+        <!-- VIEW: PLAYLISTS -->
+        <section id="view-playlists" class="view-section hidden space-y-6">
+          <div id="playlists-directory-view" class="space-y-6">
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <h2 class="text-2xl font-black text-white">🎶 Your Playlists</h2>
+                <p class="text-sm text-zinc-400 mt-1">Build custom queues of your favorite verified LeBron James remixes.</p>
+              </div>
+              <button onclick="openCreatePlaylistModal()" class="shrink-0 px-4 py-2.5 rounded-xl bg-bron-gold hover:bg-bron-goldLight text-black text-sm font-extrabold transition">+ New Playlist</button>
+            </div>
+            <div id="playlists-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+          </div>
+
+          <div id="playlist-detail-view" class="hidden space-y-6"></div>
         </section>
 
         <!-- VIEW: LIKED REMIXES -->
@@ -542,6 +594,48 @@
   <!-- Toast Notification -->
   <div id="toast" class="hidden fixed top-5 right-5 z-50 px-4 py-3 rounded-xl bg-zinc-900 border border-bron-gold/50 text-sm font-semibold text-white shadow-2xl"></div>
 
+  <!-- CREATE PLAYLIST MODAL -->
+  <div id="create-playlist-modal" class="hidden fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-bron-surface border border-zinc-800 rounded-2xl w-full max-w-md p-6 space-y-5 shadow-2xl">
+      <div class="flex items-center justify-between">
+        <h3 class="text-xl font-black text-white">Create New Playlist</h3>
+        <button onclick="closeCreatePlaylistModal()" class="text-zinc-400 hover:text-white text-xl">&times;</button>
+      </div>
+      <form onsubmit="handleCreatePlaylist(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-zinc-400 mb-1.5">Playlist Name *</label>
+          <input id="pl-name-input" required maxlength="60" type="text" placeholder="e.g., 4th Quarter Bangers" class="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 focus:border-bron-gold focus:outline-none text-sm text-white" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-zinc-400 mb-1.5">Description (Optional)</label>
+          <textarea id="pl-desc-input" rows="2" maxlength="180" placeholder="What's the vibe of this playlist?" class="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 focus:border-bron-gold focus:outline-none text-sm text-white"></textarea>
+        </div>
+        <div class="flex justify-end gap-3 pt-1">
+          <button type="button" onclick="closeCreatePlaylistModal()" class="px-4 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-sm font-semibold">Cancel</button>
+          <button id="pl-create-btn" type="submit" class="px-5 py-2.5 rounded-xl bg-bron-gold hover:bg-bron-goldLight text-black font-extrabold text-sm transition">Create Playlist</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ADD TO PLAYLIST MODAL -->
+  <div id="add-to-playlist-modal" class="hidden fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-bron-surface border border-zinc-800 rounded-2xl w-full max-w-md p-6 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 class="text-lg font-black text-white">Add to Playlist</h3>
+          <p id="add-pl-track-name" class="text-xs text-zinc-400 truncate mt-0.5"></p>
+        </div>
+        <button onclick="closeAddToPlaylistModal()" class="text-zinc-400 hover:text-white text-xl">&times;</button>
+      </div>
+      <div id="add-pl-list" class="space-y-2 max-h-64 overflow-y-auto"></div>
+      <div class="pt-2 border-t border-zinc-800 flex items-center justify-between gap-2">
+        <button onclick="closeAddToPlaylistModal(); openCreatePlaylistModal();" class="text-xs font-bold text-bron-gold hover:text-bron-goldLight transition">+ Create New Playlist</button>
+        <button onclick="closeAddToPlaylistModal()" class="px-4 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-bold">Done</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     // =========================================================================
     // SAFE STORAGE HELPER (works on GitHub Pages & sandboxed preview iframes)
@@ -594,13 +688,26 @@
     let authMode = 'signin';
     let toastTimer = null;
     let pendingDeleteId = null;
+    let pendingPlaylistDeleteId = null;
     let isNowPlayingOpen = window.innerWidth >= 1280;
+    let selectedArtistName = null;
+    let selectedPlaylistId = null;
+    let addToPlaylistTrackId = null;
+    let userPlaylists = [];
+    let useCloudPlaylists = true;
 
     let likedIds = new Set();
     try {
       likedIds = new Set(JSON.parse(safeStorage.getItem('lebronify_likes') || '[]'));
     } catch (_) {
       likedIds = new Set();
+    }
+
+    let localStreamCounts = {};
+    try {
+      localStreamCounts = JSON.parse(safeStorage.getItem('lebronify_streams') || '{}') || {};
+    } catch (_) {
+      localStreamCounts = {};
     }
 
     // Audio Player State
@@ -635,7 +742,43 @@
     // =========================================================================
     // INITIALIZATION & SESSION
     // =========================================================================
+    function initFavicon() {
+      const svgFallback = `data:image/svg+xml,${encodeURIComponent(
+        `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><defs><linearGradient id="b" x1="15%" y1="50%" x2="95%" y2="50%"><stop offset="0%" stop-color="#1b00ff"/><stop offset="55%" stop-color="#4e00c2"/><stop offset="100%" stop-color="#e60023"/></linearGradient><linearGradient id="c" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" stop-color="#b80f38"/><stop offset="55%" stop-color="#df5d23"/><stop offset="100%" stop-color="#ffa812"/></linearGradient><clipPath id="p"><circle cx="256" cy="256" r="165"/></clipPath></defs><rect width="512" height="512" rx="112" fill="#000"/><path d="M88 222L28 148l58 20L58 58l100 38-12-62 66 60z" fill="url(#c)"/><circle cx="256" cy="256" r="165" fill="url(#b)"/><g clip-path="url(#p)" fill="none" stroke="#000" stroke-width="14" stroke-linecap="round"><path d="M70 220Q240 120 430 220"/><path d="M70 285Q245 190 435 285"/><path d="M80 355Q250 265 425 355"/><path d="M300 80Q405 245 255 435"/></g></svg>`
+      )}`;
+
+      const applyIcon = (href, type) => {
+        ['favicon-main', 'favicon-shortcut'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) {
+            el.href = href;
+            el.type = type;
+          }
+        });
+      };
+
+      const img = new Image();
+      img.onload = () => {
+        try {
+          const canvas = document.createElement('canvas');
+          canvas.width = 64;
+          canvas.height = 64;
+          const ctx = canvas.getContext('2d');
+          ctx.beginPath();
+          ctx.roundRect(0, 0, 64, 64, 14);
+          ctx.clip();
+          ctx.drawImage(img, 0, 0, 64, 64);
+          applyIcon(canvas.toDataURL('image/png'), 'image/png');
+        } catch (_) {
+          // Keep default LBJf.jpg href if canvas is tainted
+        }
+      };
+      img.onerror = () => applyIcon(svgFallback, 'image/svg+xml');
+      img.src = './LBJf.jpg?v=2.7';
+    }
+
     async function init() {
+      initFavicon();
       audioEl.volume = 0.85;
       setupAudioEvents();
       syncNowPlayingPanelVisibility();
@@ -676,6 +819,7 @@
 
       updateAuthUI();
       await fetchTracks();
+      await fetchPlaylists();
     }
 
     async function fetchTracks() {
@@ -1020,6 +1164,8 @@
     // =========================================================================
     function switchView(view) {
       currentView = view;
+      if (view !== 'artists') selectedArtistName = null;
+      if (view !== 'playlists') selectedPlaylistId = null;
       document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
       document.getElementById(`view-${view}`).classList.remove('hidden');
 
@@ -1045,10 +1191,594 @@
 
       renderGenreFilters();
       renderCatalog();
+      renderArtistsView();
+      renderPlaylistsView();
+      renderSidebarPlaylists();
       renderLiked();
       renderMyUploads();
       renderReviewView();
       renderNowPlayingPanel();
+    }
+
+    // =========================================================================
+    // STREAM COUNTER
+    // =========================================================================
+    function getStreamCount(track) {
+      if (!track) return 0;
+      const dbCount = Number(track.play_count) || 0;
+      const localCount = Number(localStreamCounts[track.id]) || 0;
+      return Math.max(dbCount, localCount);
+    }
+
+    function formatStreams(n) {
+      const num = Number(n) || 0;
+      if (num >= 1000000) return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+      if (num >= 1000) return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+      return num.toLocaleString();
+    }
+
+    async function recordStream(track) {
+      if (!track || !track.id) return;
+      const nextCount = getStreamCount(track) + 1;
+      track.play_count = nextCount;
+      localStreamCounts[track.id] = nextCount;
+      safeStorage.setItem('lebronify_streams', JSON.stringify(localStreamCounts));
+
+      if (sb) {
+        try {
+          await sb.rpc('increment_stream', { p_track_id: track.id });
+        } catch (_) {
+          // Silently use local fallback until optional SQL migration is run
+        }
+      }
+    }
+
+    // =========================================================================
+    // PLAYLIST SYSTEM (CLOUD WITH SEAMLESS LOCAL FALLBACK)
+    // =========================================================================
+    function getLocalPlaylistsKey() {
+      return `lebronify_playlists_${currentUser ? currentUser.id : 'guest'}`;
+    }
+
+    function loadLocalPlaylists() {
+      try {
+        return JSON.parse(safeStorage.getItem(getLocalPlaylistsKey()) || '[]') || [];
+      } catch (_) {
+        return [];
+      }
+    }
+
+    function saveLocalPlaylists() {
+      safeStorage.setItem(getLocalPlaylistsKey(), JSON.stringify(userPlaylists));
+    }
+
+    async function fetchPlaylists() {
+      if (!currentUser) {
+        userPlaylists = [];
+        renderPlaylistsView();
+        renderSidebarPlaylists();
+        return;
+      }
+
+      if (sb && useCloudPlaylists) {
+        try {
+          const { data: pls, error: plErr } = await sb
+            .from('playlists')
+            .select('*')
+            .eq('user_id', currentUser.id)
+            .order('created_at', { ascending: false });
+
+          if (plErr) throw plErr;
+
+          const { data: links, error: linkErr } = await sb
+            .from('playlist_tracks')
+            .select('*')
+            .order('added_at', { ascending: true });
+
+          if (linkErr) throw linkErr;
+
+          userPlaylists = (pls || []).map(pl => ({
+            ...pl,
+            trackIds: (links || []).filter(l => l.playlist_id === pl.id).map(l => l.track_id)
+          }));
+          renderPlaylistsView();
+          renderSidebarPlaylists();
+          return;
+        } catch (_) {
+          useCloudPlaylists = false;
+        }
+      }
+
+      userPlaylists = loadLocalPlaylists();
+      renderPlaylistsView();
+      renderSidebarPlaylists();
+    }
+
+    function openCreatePlaylistModal() {
+      if (!currentUser) {
+        showToast('Sign in to create playlists.');
+        openAuthModal('signin');
+        return;
+      }
+      document.getElementById('pl-name-input').value = '';
+      document.getElementById('pl-desc-input').value = '';
+      document.getElementById('create-playlist-modal').classList.remove('hidden');
+    }
+
+    function closeCreatePlaylistModal() {
+      document.getElementById('create-playlist-modal').classList.add('hidden');
+    }
+
+    async function handleCreatePlaylist(e) {
+      e.preventDefault();
+      if (!currentUser) return;
+      const name = document.getElementById('pl-name-input').value.trim();
+      const description = document.getElementById('pl-desc-input').value.trim();
+      if (!name) return;
+
+      const btn = document.getElementById('pl-create-btn');
+      btn.disabled = true;
+
+      try {
+        if (sb && useCloudPlaylists) {
+          const { data, error } = await sb
+            .from('playlists')
+            .insert({ user_id: currentUser.id, name, description })
+            .select()
+            .single();
+          if (error) throw error;
+          userPlaylists.unshift({ ...data, trackIds: [] });
+        } else {
+          userPlaylists.unshift({
+            id: 'pl_' + Date.now(),
+            name,
+            description,
+            trackIds: [],
+            created_at: new Date().toISOString()
+          });
+          saveLocalPlaylists();
+        }
+        closeCreatePlaylistModal();
+        showToast(`Created playlist "${name}"!`);
+        renderPlaylistsView();
+        renderSidebarPlaylists();
+      } catch (err) {
+        // Fallback to local if cloud insert fails
+        useCloudPlaylists = false;
+        userPlaylists.unshift({
+          id: 'pl_' + Date.now(),
+          name,
+          description,
+          trackIds: [],
+          created_at: new Date().toISOString()
+        });
+        saveLocalPlaylists();
+        closeCreatePlaylistModal();
+        showToast(`Created playlist "${name}"!`);
+        renderPlaylistsView();
+        renderSidebarPlaylists();
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function deletePlaylist(playlistId) {
+      if (pendingPlaylistDeleteId !== playlistId) {
+        pendingPlaylistDeleteId = playlistId;
+        showToast('Click Delete again within 5 seconds to confirm.', true);
+        setTimeout(() => {
+          if (pendingPlaylistDeleteId === playlistId) pendingPlaylistDeleteId = null;
+        }, 5000);
+        return;
+      }
+      pendingPlaylistDeleteId = null;
+
+      if (sb && useCloudPlaylists) {
+        try {
+          await sb.from('playlists').delete().eq('id', playlistId);
+        } catch (_) {
+          useCloudPlaylists = false;
+        }
+      }
+      userPlaylists = userPlaylists.filter(p => p.id !== playlistId);
+      if (!useCloudPlaylists) saveLocalPlaylists();
+      if (selectedPlaylistId === playlistId) selectedPlaylistId = null;
+      showToast('Playlist deleted.');
+      renderPlaylistsView();
+      renderSidebarPlaylists();
+    }
+
+    function openAddToPlaylistModal(trackId) {
+      if (!currentUser) {
+        showToast('Sign in to save remixes to playlists.');
+        openAuthModal('signin');
+        return;
+      }
+      const track = allTracks.find(t => t.id === trackId);
+      if (!track) return;
+      addToPlaylistTrackId = trackId;
+      document.getElementById('add-pl-track-name').textContent = `${track.title} — ${track.artist}`;
+      renderAddToPlaylistModalList();
+      document.getElementById('add-to-playlist-modal').classList.remove('hidden');
+    }
+
+    function closeAddToPlaylistModal() {
+      addToPlaylistTrackId = null;
+      document.getElementById('add-to-playlist-modal').classList.add('hidden');
+    }
+
+    function renderAddToPlaylistModalList() {
+      const container = document.getElementById('add-pl-list');
+      if (!container) return;
+      if (userPlaylists.length === 0) {
+        container.innerHTML = `<p class="text-xs text-zinc-400 text-center py-4">You don't have any playlists yet. Create one below!</p>`;
+        return;
+      }
+      container.innerHTML = userPlaylists.map(pl => {
+        const hasTrack = pl.trackIds.includes(addToPlaylistTrackId);
+        return `
+          <button onclick="toggleTrackInPlaylist('${pl.id}', '${addToPlaylistTrackId}')" class="w-full flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-xl border text-left transition ${hasTrack ? 'bg-bron-purple/25 border-bron-gold/50 text-white' : 'bg-zinc-900 border-zinc-800 text-zinc-300 hover:border-zinc-700'}">
+            <div class="min-w-0">
+              <p class="text-sm font-bold truncate">${escapeHtml(pl.name)}</p>
+              <p class="text-[11px] text-zinc-400">${pl.trackIds.length} ${pl.trackIds.length === 1 ? 'track' : 'tracks'}</p>
+            </div>
+            <span class="text-xs font-extrabold px-2.5 py-1 rounded-lg ${hasTrack ? 'bg-bron-gold text-black' : 'bg-zinc-800 text-zinc-300'}">${hasTrack ? '✓ Added' : '+ Add'}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    async function toggleTrackInPlaylist(playlistId, trackId) {
+      const pl = userPlaylists.find(p => p.id === playlistId);
+      if (!pl) return;
+      const exists = pl.trackIds.includes(trackId);
+
+      if (exists) {
+        pl.trackIds = pl.trackIds.filter(id => id !== trackId);
+        if (sb && useCloudPlaylists) {
+          try {
+            await sb.from('playlist_tracks').delete().eq('playlist_id', playlistId).eq('track_id', trackId);
+          } catch (_) {
+            useCloudPlaylists = false;
+          }
+        }
+        if (!useCloudPlaylists) saveLocalPlaylists();
+        showToast(`Removed from "${pl.name}".`);
+      } else {
+        pl.trackIds.push(trackId);
+        if (sb && useCloudPlaylists) {
+          try {
+            await sb.from('playlist_tracks').insert({ playlist_id: playlistId, track_id: trackId });
+          } catch (_) {
+            useCloudPlaylists = false;
+          }
+        }
+        if (!useCloudPlaylists) saveLocalPlaylists();
+        showToast(`Added to "${pl.name}"!`);
+      }
+
+      renderAddToPlaylistModalList();
+      renderPlaylistsView();
+      renderSidebarPlaylists();
+    }
+
+    function openPlaylistDetail(playlistId) {
+      selectedPlaylistId = playlistId;
+      if (currentView !== 'playlists') {
+        currentView = 'playlists';
+        document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+        document.getElementById('view-playlists').classList.remove('hidden');
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+          const active = btn.dataset.nav === 'playlists';
+          btn.className = btn.className.includes('rounded-full')
+            ? `nav-btn shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold transition ${active ? 'bg-bron-purple text-white' : 'bg-zinc-900 text-zinc-400'}`
+            : `nav-btn w-full flex items-center ${btn.dataset.nav === 'review' ? 'justify-between' : 'gap-3'} px-3.5 py-2.5 rounded-xl text-sm font-semibold transition ${active ? 'bg-bron-purple/30 text-bron-gold border border-bron-purple/50' : 'text-zinc-400 hover:bg-zinc-800/60 hover:text-white'}`;
+        });
+      }
+      renderPlaylistsView();
+    }
+
+    function playPlaylist(playlistId) {
+      const pl = userPlaylists.find(p => p.id === playlistId);
+      if (!pl) return;
+      const tracks = pl.trackIds
+        .map(id => allTracks.find(t => t.id === id && t.status === 'approved'))
+        .filter(Boolean);
+      if (!tracks.length) return showToast('This playlist has no playable verified tracks yet.');
+      playTrackById(tracks[0].id, tracks);
+    }
+
+    function renderSidebarPlaylists() {
+      const container = document.getElementById('sidebar-playlists-list');
+      if (!container) return;
+      if (!currentUser) {
+        container.innerHTML = `<p class="px-2 text-[11px] text-zinc-500">Sign in to build playlists.</p>`;
+        return;
+      }
+      if (userPlaylists.length === 0) {
+        container.innerHTML = `<p class="px-2 text-[11px] text-zinc-500">No playlists yet.</p>`;
+        return;
+      }
+      container.innerHTML = userPlaylists.slice(0, 8).map(pl => `
+        <button onclick="openPlaylistDetail('${pl.id}')" class="w-full flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs transition ${selectedPlaylistId === pl.id && currentView === 'playlists' ? 'bg-zinc-800 text-bron-gold font-bold' : 'text-zinc-400 hover:text-white hover:bg-zinc-800/50'}">
+          <span class="truncate">🎶 ${escapeHtml(pl.name)}</span>
+          <span class="text-[10px] text-zinc-500 shrink-0">${pl.trackIds.length}</span>
+        </button>
+      `).join('');
+    }
+
+    function renderPlaylistsView() {
+      const dirView = document.getElementById('playlists-directory-view');
+      const detailView = document.getElementById('playlist-detail-view');
+      const grid = document.getElementById('playlists-grid');
+      if (!dirView || !detailView || !grid) return;
+
+      if (!currentUser) {
+        dirView.classList.remove('hidden');
+        detailView.classList.add('hidden');
+        grid.innerHTML = `
+          <div class="col-span-full rounded-2xl bg-bron-surface border border-zinc-800 p-10 text-center space-y-3">
+            <div class="text-3xl">🎶</div>
+            <h3 class="text-lg font-bold text-white">Sign In to Create Playlists</h3>
+            <p class="text-sm text-zinc-400">Save and organize your favorite verified LeBron James remixes into custom playlists.</p>
+            <button onclick="openAuthModal('signin')" class="px-5 py-2.5 rounded-xl bg-bron-gold text-black font-bold text-sm">Sign In</button>
+          </div>
+        `;
+        return;
+      }
+
+      if (selectedPlaylistId) {
+        const pl = userPlaylists.find(p => p.id === selectedPlaylistId);
+        if (!pl) {
+          selectedPlaylistId = null;
+        } else {
+          dirView.classList.add('hidden');
+          detailView.classList.remove('hidden');
+          const tracks = pl.trackIds
+            .map(id => allTracks.find(t => t.id === id && t.status === 'approved'))
+            .filter(Boolean);
+          const totalStreams = tracks.reduce((sum, t) => sum + getStreamCount(t), 0);
+          const coverTrack = tracks.find(t => t.cover_url);
+
+          detailView.innerHTML = `
+            <button onclick="selectedPlaylistId = null; renderPlaylistsView();" class="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-400 hover:text-bron-gold transition">
+              ← Back to All Playlists
+            </button>
+            <div class="rounded-2xl p-6 md:p-8 bg-gradient-to-br from-bron-purple/50 via-bron-surface to-bron-card border border-bron-purple/30 flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+              <div class="flex items-center gap-5 min-w-0">
+                <div class="w-24 h-24 rounded-2xl bg-black border border-zinc-800 overflow-hidden shrink-0 flex items-center justify-center shadow-xl">
+                  ${coverTrack ? `<img src="${escapeHtml(coverTrack.cover_url)}" class="w-full h-full object-cover" />` : crownLogoHtml('w-16 h-16')}
+                </div>
+                <div class="min-w-0">
+                  <span class="text-[11px] uppercase tracking-widest text-bron-gold font-bold">Playlist</span>
+                  <h2 class="text-2xl md:text-3xl font-black text-white truncate">${escapeHtml(pl.name)}</h2>
+                  ${pl.description ? `<p class="text-sm text-zinc-300 mt-1">${escapeHtml(pl.description)}</p>` : ''}
+                  <p class="text-xs text-zinc-400 mt-2">${tracks.length} ${tracks.length === 1 ? 'track' : 'tracks'} • ${formatStreams(totalStreams)} total streams</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2.5 shrink-0">
+                <button onclick="playPlaylist('${pl.id}')" class="px-5 py-2.5 rounded-xl bg-bron-gold hover:bg-bron-goldLight text-black font-extrabold text-sm transition">▶ Play All</button>
+                <button onclick="deletePlaylist('${pl.id}')" class="px-3.5 py-2.5 rounded-xl bg-red-500/15 hover:bg-red-500/30 text-red-400 border border-red-500/30 text-xs font-bold transition">Delete</button>
+              </div>
+            </div>
+
+            ${tracks.length === 0 ? `
+              <div class="rounded-2xl border border-dashed border-zinc-800 p-10 text-center text-sm text-zinc-400">
+                This playlist is empty. Click the <strong>+</strong> button on any remix in the Verified Catalog to add it here.
+              </div>
+            ` : `
+              <div class="space-y-2">
+                ${tracks.map((t, idx) => `
+                  <div class="rounded-xl bg-bron-surface border ${currentTrack?.id === t.id ? 'border-bron-gold/60' : 'border-zinc-800/80'} p-3 flex items-center justify-between gap-3 hover:border-bron-purple/50 transition">
+                    <div class="flex items-center gap-3 min-w-0 flex-1">
+                      <span class="w-5 text-center text-xs font-mono text-zinc-500">${idx + 1}</span>
+                      <div class="w-11 h-11 rounded-lg bg-black border border-zinc-800 overflow-hidden shrink-0 flex items-center justify-center">
+                        ${t.cover_url ? `<img src="${escapeHtml(t.cover_url)}" class="w-full h-full object-cover" />` : crownLogoHtml('w-7 h-7')}
+                      </div>
+                      <div class="min-w-0">
+                        <p class="text-sm font-bold text-white truncate">${escapeHtml(t.title)}</p>
+                        <button onclick="openArtistProfile(${JSON.stringify(t.artist)})" class="text-xs text-zinc-400 hover:text-bron-gold hover:underline truncate block text-left">${escapeHtml(t.artist)}</button>
+                      </div>
+                    </div>
+                    <div class="flex items-center gap-3 shrink-0">
+                      <span class="hidden sm:inline text-xs text-zinc-400 font-mono">▶ ${formatStreams(getStreamCount(t))}</span>
+                      <button onclick='playPlaylistFrom("${pl.id}", "${t.id}")' class="px-3 py-1.5 rounded-lg bg-bron-gold hover:bg-bron-goldLight text-black text-xs font-extrabold transition">▶</button>
+                      <button onclick="toggleTrackInPlaylist('${pl.id}', '${t.id}')" title="Remove from playlist" class="px-2.5 py-1.5 rounded-lg bg-zinc-800 hover:bg-red-500/20 hover:text-red-400 text-zinc-400 text-xs font-bold transition">✕</button>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            `}
+          `;
+          return;
+        }
+      }
+
+      dirView.classList.remove('hidden');
+      detailView.classList.add('hidden');
+
+      if (userPlaylists.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full rounded-2xl border border-dashed border-zinc-800 p-12 text-center space-y-3">
+            <div class="text-4xl">🎶</div>
+            <h3 class="text-lg font-bold text-white">No playlists yet</h3>
+            <p class="text-sm text-zinc-400 max-w-md mx-auto">Create your first playlist to group your favorite LeBron James remixes together.</p>
+            <button onclick="openCreatePlaylistModal()" class="px-5 py-2.5 rounded-xl bg-bron-gold hover:bg-bron-goldLight text-black font-extrabold text-sm transition">+ Create Playlist</button>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = userPlaylists.map(pl => {
+        const tracks = pl.trackIds
+          .map(id => allTracks.find(t => t.id === id && t.status === 'approved'))
+          .filter(Boolean);
+        const totalStreams = tracks.reduce((sum, t) => sum + getStreamCount(t), 0);
+        const coverTrack = tracks.find(t => t.cover_url);
+        return `
+          <div onclick="openPlaylistDetail('${pl.id}')" class="cursor-pointer group rounded-2xl bg-bron-surface border border-zinc-800/80 hover:border-bron-gold/50 p-4 flex flex-col gap-3 transition">
+            <div class="relative aspect-square rounded-xl overflow-hidden bg-black border border-zinc-800 flex items-center justify-center">
+              ${coverTrack ? `<img src="${escapeHtml(coverTrack.cover_url)}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" />` : crownLogoHtml('w-24 h-24 group-hover:scale-105 transition duration-300')}
+              <button onclick="event.stopPropagation(); playPlaylist('${pl.id}')" title="Play Playlist" class="absolute bottom-3 right-3 w-11 h-11 rounded-full bg-bron-gold hover:bg-bron-goldLight text-black flex items-center justify-center shadow-xl transition transform group-hover:scale-105 active:scale-95">
+                <svg class="w-5 h-5 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              </button>
+            </div>
+            <div class="min-w-0">
+              <h3 class="font-bold text-white text-base truncate group-hover:text-bron-gold transition">${escapeHtml(pl.name)}</h3>
+              <p class="text-xs text-zinc-400 truncate mt-0.5">${escapeHtml(pl.description || 'Custom LeBronify playlist')}</p>
+            </div>
+            <div class="flex items-center justify-between text-[11px] text-zinc-500 pt-2 border-t border-zinc-800/70">
+              <span>${tracks.length} ${tracks.length === 1 ? 'track' : 'tracks'}</span>
+              <span>▶ ${formatStreams(totalStreams)} streams</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function playPlaylistFrom(playlistId, trackId) {
+      const pl = userPlaylists.find(p => p.id === playlistId);
+      if (!pl) return playTrackById(trackId);
+      const tracks = pl.trackIds
+        .map(id => allTracks.find(t => t.id === id && t.status === 'approved'))
+        .filter(Boolean);
+      playTrackById(trackId, tracks);
+    }
+
+    // =========================================================================
+    // ARTIST SYSTEM
+    // =========================================================================
+    function getArtistsList() {
+      const approved = allTracks.filter(t => t.status === 'approved');
+      const map = new Map();
+      for (const t of approved) {
+        const rawName = (t.artist || 'Unknown Artist').trim();
+        const key = rawName.toLowerCase();
+        if (!map.has(key)) {
+          map.set(key, {
+            name: rawName,
+            tracks: [],
+            totalStreams: 0,
+            genres: new Set(),
+            avatarUrl: null
+          });
+        }
+        const entry = map.get(key);
+        entry.tracks.push(t);
+        entry.totalStreams += getStreamCount(t);
+        if (t.genre) entry.genres.add(t.genre);
+        if (!entry.avatarUrl && t.cover_url) entry.avatarUrl = t.cover_url;
+      }
+      return [...map.values()].sort((a, b) => b.totalStreams - a.totalStreams || b.tracks.length - a.tracks.length);
+    }
+
+    function openArtistProfile(artistName) {
+      if (!artistName) return;
+      selectedArtistName = artistName.trim();
+      if (currentView !== 'artists') {
+        currentView = 'artists';
+        document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+        document.getElementById('view-artists').classList.remove('hidden');
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+          const active = btn.dataset.nav === 'artists';
+          btn.className = btn.className.includes('rounded-full')
+            ? `nav-btn shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold transition ${active ? 'bg-bron-purple text-white' : 'bg-zinc-900 text-zinc-400'}`
+            : `nav-btn w-full flex items-center ${btn.dataset.nav === 'review' ? 'justify-between' : 'gap-3'} px-3.5 py-2.5 rounded-xl text-sm font-semibold transition ${active ? 'bg-bron-purple/30 text-bron-gold border border-bron-purple/50' : 'text-zinc-400 hover:bg-zinc-800/60 hover:text-white'}`;
+        });
+      }
+      renderArtistsView();
+    }
+
+    function playArtistTracks(artistName) {
+      const artist = getArtistsList().find(a => a.name.toLowerCase() === artistName.toLowerCase());
+      if (!artist || !artist.tracks.length) return;
+      const sorted = [...artist.tracks].sort((a, b) => getStreamCount(b) - getStreamCount(a));
+      playTrackById(sorted[0].id, sorted);
+    }
+
+    function renderArtistsView() {
+      const dirView = document.getElementById('artists-directory-view');
+      const profileView = document.getElementById('artist-profile-view');
+      const grid = document.getElementById('artists-grid');
+      if (!dirView || !profileView || !grid) return;
+
+      const artists = getArtistsList();
+
+      if (selectedArtistName) {
+        const artist = artists.find(a => a.name.toLowerCase() === selectedArtistName.toLowerCase());
+        if (!artist) {
+          selectedArtistName = null;
+        } else {
+          dirView.classList.add('hidden');
+          profileView.classList.remove('hidden');
+          const sortedTracks = [...artist.tracks].sort((a, b) => getStreamCount(b) - getStreamCount(a));
+          const genresList = [...artist.genres].join(' • ');
+
+          profileView.innerHTML = `
+            <button onclick="selectedArtistName = null; renderArtistsView();" class="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-400 hover:text-bron-gold transition">
+              ← Back to All Artists
+            </button>
+            <div class="rounded-2xl p-6 md:p-8 bg-gradient-to-br from-bron-purple/50 via-bron-surface to-bron-card border border-bron-purple/30 flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+              <div class="flex items-center gap-5 min-w-0">
+                <div class="w-24 h-24 rounded-full bg-black border-2 border-bron-gold/60 overflow-hidden shrink-0 flex items-center justify-center shadow-xl">
+                  ${artist.avatarUrl ? `<img src="${escapeHtml(artist.avatarUrl)}" class="w-full h-full object-cover" />` : crownLogoHtml('w-16 h-16')}
+                </div>
+                <div class="min-w-0">
+                  <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[11px] font-bold mb-1.5">✓ Verified LeBronify Artist</span>
+                  <h2 class="text-2xl md:text-4xl font-black text-white truncate">${escapeHtml(artist.name)}</h2>
+                  <p class="text-xs text-zinc-300 mt-1.5">
+                    <strong>${formatStreams(artist.totalStreams)}</strong> total streams • <strong>${artist.tracks.length}</strong> verified ${artist.tracks.length === 1 ? 'remix' : 'remixes'}${genresList ? ` • ${escapeHtml(genresList)}` : ''}
+                  </p>
+                </div>
+              </div>
+              <button onclick="playArtistTracks(${JSON.stringify(artist.name)})" class="shrink-0 px-5 py-3 rounded-xl bg-bron-gold hover:bg-bron-goldLight text-black font-extrabold text-sm shadow-lg shadow-bron-gold/20 transition">
+                ▶ Play Top Tracks
+              </button>
+            </div>
+
+            <div class="space-y-3">
+              <h3 class="text-sm font-extrabold uppercase tracking-wider text-zinc-400">Popular Remixes</h3>
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                ${sortedTracks.map(t => renderTrackCard(t)).join('')}
+              </div>
+            </div>
+          `;
+          return;
+        }
+      }
+
+      dirView.classList.remove('hidden');
+      profileView.classList.add('hidden');
+
+      const q = (document.getElementById('artist-search-input')?.value || '').toLowerCase();
+      const filtered = artists.filter(a => !q || a.name.toLowerCase().includes(q));
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full rounded-2xl border border-dashed border-zinc-800 p-12 text-center space-y-2">
+            <div class="text-4xl">🎤</div>
+            <h3 class="text-lg font-bold text-white">No verified artists yet</h3>
+            <p class="text-sm text-zinc-400">Once remixes are approved in the Copyright Review queue, their artists automatically appear here.</p>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(a => `
+        <div onclick="openArtistProfile(${JSON.stringify(a.name)})" class="cursor-pointer group rounded-2xl bg-bron-surface border border-zinc-800/80 hover:border-bron-gold/50 p-5 flex items-center gap-4 transition">
+          <div class="w-16 h-16 rounded-full bg-black border-2 border-zinc-700 group-hover:border-bron-gold overflow-hidden shrink-0 flex items-center justify-center transition">
+            ${a.avatarUrl ? `<img src="${escapeHtml(a.avatarUrl)}" class="w-full h-full object-cover" />` : crownLogoHtml('w-11 h-11')}
+          </div>
+          <div class="min-w-0 flex-1">
+            <h3 class="font-extrabold text-white text-base truncate group-hover:text-bron-gold transition">${escapeHtml(a.name)}</h3>
+            <p class="text-xs text-zinc-400 mt-0.5">${a.tracks.length} verified ${a.tracks.length === 1 ? 'remix' : 'remixes'}</p>
+            <p class="text-[11px] text-bron-gold font-semibold mt-1">▶ ${formatStreams(a.totalStreams)} streams</p>
+          </div>
+          <button onclick="event.stopPropagation(); playArtistTracks(${JSON.stringify(a.name)})" title="Play Artist" class="w-10 h-10 rounded-full bg-zinc-800 group-hover:bg-bron-gold group-hover:text-black text-zinc-300 flex items-center justify-center transition shrink-0">
+            <svg class="w-4 h-4 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+        </div>
+      `).join('');
     }
 
     // =========================================================================
@@ -1150,11 +1880,14 @@
         <div class="flex items-start justify-between gap-3">
           <div class="min-w-0">
             <h3 class="text-lg font-black text-white leading-tight truncate">${escapeHtml(currentTrack.title)}</h3>
-            <p class="text-sm text-zinc-400 truncate mt-0.5">${escapeHtml(currentTrack.artist)}</p>
+            <button onclick="openArtistProfile(${JSON.stringify(currentTrack.artist)})" class="text-sm text-zinc-400 hover:text-bron-gold hover:underline truncate mt-0.5 block text-left max-w-full">${escapeHtml(currentTrack.artist)}</button>
           </div>
-          <button onclick="toggleLike('${currentTrack.id}')" class="text-xl transition hover:scale-110 shrink-0" title="Like">
-            ${isLiked ? '💛' : '🤍'}
-          </button>
+          <div class="flex items-center gap-1.5 shrink-0">
+            <button onclick="openAddToPlaylistModal('${currentTrack.id}')" class="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 hover:border-bron-gold/50 text-zinc-300 hover:text-bron-gold text-sm font-bold flex items-center justify-center transition" title="Add to Playlist">+</button>
+            <button onclick="toggleLike('${currentTrack.id}')" class="text-xl transition hover:scale-110 shrink-0" title="Like">
+              ${isLiked ? '💛' : '🤍'}
+            </button>
+          </div>
         </div>
 
         <!-- Track & Rights Credits Card -->
@@ -1163,7 +1896,11 @@
             <span class="font-bold text-zinc-300">Track Credits</span>
             ${statusBadge}
           </div>
-          <div class="grid grid-cols-2 gap-2 pt-1 border-t border-zinc-800/80">
+          <div class="grid grid-cols-3 gap-2 pt-1 border-t border-zinc-800/80">
+            <div>
+              <span class="text-[10px] uppercase tracking-wider text-zinc-500 block">Streams</span>
+              <span class="text-bron-gold font-bold">▶ ${formatStreams(getStreamCount(currentTrack))}</span>
+            </div>
             <div>
               <span class="text-[10px] uppercase tracking-wider text-zinc-500 block">Genre</span>
               <span class="text-zinc-200 font-semibold">${escapeHtml(currentTrack.genre)}</span>
@@ -1247,15 +1984,18 @@
           <div class="flex items-start justify-between gap-2 min-w-0">
             <div class="min-w-0">
               <h3 class="font-bold text-white text-sm truncate">${escapeHtml(t.title)}</h3>
-              <p class="text-xs text-zinc-400 truncate mt-0.5">${escapeHtml(t.artist)}</p>
+              <button onclick="openArtistProfile(${JSON.stringify(t.artist)})" class="text-xs text-zinc-400 hover:text-bron-gold hover:underline truncate mt-0.5 block text-left max-w-full">${escapeHtml(t.artist)}</button>
             </div>
-            <button onclick="toggleLike('${t.id}')" class="text-lg hover:scale-110 transition shrink-0" title="Like">
-              ${isLiked ? '💛' : '🤍'}
-            </button>
+            <div class="flex items-center gap-1.5 shrink-0">
+              <button onclick="openAddToPlaylistModal('${t.id}')" class="w-7 h-7 rounded-lg bg-zinc-900 border border-zinc-800 hover:border-bron-gold/50 text-zinc-300 hover:text-bron-gold text-xs font-bold flex items-center justify-center transition" title="Add to Playlist">+</button>
+              <button onclick="toggleLike('${t.id}')" class="text-lg hover:scale-110 transition shrink-0" title="Like">
+                ${isLiked ? '💛' : '🤍'}
+              </button>
+            </div>
           </div>
           <div class="flex items-center justify-between text-[11px] text-zinc-500 pt-2 border-t border-zinc-800/70">
             <span class="px-2 py-0.5 rounded-md bg-zinc-900 text-zinc-300 font-semibold">${escapeHtml(t.genre)}</span>
-            <span class="truncate ml-2">${escapeHtml(t.rights_basis)}</span>
+            <span class="font-mono text-zinc-400 shrink-0">▶ ${formatStreams(getStreamCount(t))}</span>
           </div>
         </div>
       `;
@@ -1431,7 +2171,7 @@
     // =========================================================================
     // AUDIO PLAYER & VISUALIZER
     // =========================================================================
-    function playTrackById(id) {
+    function playTrackById(id, customQueue = null) {
       if (!currentUser) {
         showToast('Sign in or create an account to listen.');
         openAuthModal('signin');
@@ -1447,11 +2187,18 @@
       }
 
       currentTrack = track;
-      playQueue = allTracks.filter(t => t.status === 'approved');
-      if (!playQueue.some(t => t.id === track.id)) playQueue = [track];
+      if (Array.isArray(customQueue) && customQueue.length > 0) {
+        playQueue = customQueue;
+      } else {
+        playQueue = allTracks.filter(t => t.status === 'approved');
+        if (!playQueue.some(t => t.id === track.id)) playQueue = [track];
+      }
+
+      recordStream(track);
 
       document.getElementById('player-title').textContent = track.title;
-      document.getElementById('player-artist').textContent = track.artist;
+      const artistEl = document.getElementById('player-artist');
+      artistEl.innerHTML = `<button onclick="openArtistProfile(${JSON.stringify(track.artist)})" class="hover:text-bron-gold hover:underline truncate max-w-full block text-left">${escapeHtml(track.artist)}</button>`;
       document.getElementById('player-cover').innerHTML = track.cover_url
         ? `<img src="${escapeHtml(track.cover_url)}" class="w-full h-full object-cover" />`
         : crownLogoHtml('w-full h-full p-1.5');
