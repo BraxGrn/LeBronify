@@ -72,7 +72,7 @@
         </div>
         <div>
           <h1 class="text-base font-black tracking-tight bg-gradient-to-r from-bron-gold via-yellow-200 to-purple-300 bg-clip-text text-transparent leading-none">LeBronify</h1>
-          <p class="text-[10px] uppercase tracking-widest text-zinc-400 font-semibold mt-0.5">v2.9.5</p>
+          <p class="text-[10px] uppercase tracking-widest text-zinc-400 font-semibold mt-0.5">v3.0</p>
         </div>
       </div>
       <div class="flex items-center gap-2">
@@ -95,7 +95,7 @@
             <h1 class="text-xl font-black tracking-tight bg-gradient-to-r from-bron-gold via-yellow-200 to-purple-300 bg-clip-text text-transparent">
               LeBronify
             </h1>
-            <p class="text-[11px] uppercase tracking-widest text-zinc-400 font-semibold">King James Remixes · v2.9.5</p>
+            <p class="text-[11px] uppercase tracking-widest text-zinc-400 font-semibold">King James Remixes · v3.0</p>
           </div>
         </div>
 
@@ -293,28 +293,28 @@
                   </button>
                 </form>
 
-                <div id="moderators-list" class="space-y-2"></div>
+          <!-- Owner Access Control Panel (Universal Verifiers) -->
+          <div id="owner-panel" class="hidden pt-6 border-t border-zinc-800/80">
+            <div class="rounded-2xl bg-bron-surface border border-bron-gold/40 p-5 md:p-6 space-y-5">
+              <div>
+                <h3 class="text-lg font-black text-white flex items-center gap-2">
+                  <span id="owner-panel-crown"></span>
+                  <span>Owner Access Control — Universal Verifiers</span>
+                </h3>
+                <p class="text-xs text-zinc-400 mt-1">
+                  Anyone you approve below gets <strong>Universal Verifier</strong> access: they can approve/reject songs, publish public playlists, set Artist PFPs, and upload Artist Albums.
+                </p>
               </div>
 
-              <!-- Public Playlist Curators Sub-Panel -->
-              <div class="pt-5 border-t border-zinc-800/80 space-y-4">
-                <div>
-                  <h4 class="text-base font-extrabold text-white flex items-center gap-2">
-                    <span>🌐</span> Public Playlist Curators
-                  </h4>
-                  <p class="text-xs text-zinc-400 mt-0.5">Only you (Owner) and the accounts listed here can publish public playlists visible to everyone.</p>
-                </div>
+              <form onsubmit="addModerator(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <input id="mod-uid-input" required type="text" placeholder="Verifier's User UID (uuid)" class="px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 focus:border-bron-gold focus:outline-none text-sm text-white" />
+                <input id="mod-email-input" required type="email" placeholder="Verifier's Email" class="px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 focus:border-bron-gold focus:outline-none text-sm text-white" />
+                <button type="submit" class="px-4 py-2.5 rounded-xl bg-bron-gold hover:bg-bron-goldLight text-black font-bold text-sm transition">
+                  + Approve Verifier
+                </button>
+              </form>
 
-                <form onsubmit="addCurator(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <input id="curator-uid-input" required type="text" placeholder="Curator's User UID (uuid)" class="px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 focus:border-bron-gold focus:outline-none text-sm text-white" />
-                  <input id="curator-email-input" required type="email" placeholder="Curator's Email" class="px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 focus:border-bron-gold focus:outline-none text-sm text-white" />
-                  <button type="submit" class="px-4 py-2.5 rounded-xl bg-bron-purple hover:bg-bron-purpleLight text-white font-bold text-sm transition">
-                    + Allow Public Playlists
-                  </button>
-                </form>
-
-                <div id="curators-list" class="space-y-2"></div>
-              </div>
+              <div id="moderators-list" class="space-y-2"></div>
             </div>
           </div>
         </section>
@@ -402,72 +402,41 @@
   <audio id="main-audio"></audio>
   <audio id="audit-audio"></audio>
 
-  <!-- Floating YouTube Mini-Player (automatically appears when playing a YouTube-linked remix) -->
-  <div id="yt-player-wrapper" class="hidden fixed bottom-24 right-4 z-40 w-64 rounded-2xl overflow-hidden bg-black border border-bron-gold/40 shadow-2xl transition-all">
-    <div class="px-3 py-1.5 bg-zinc-950 border-b border-zinc-800 flex items-center justify-between">
-      <span class="text-[10px] font-extrabold uppercase tracking-wider text-bron-gold flex items-center gap-1.5">▶ YouTube Stream</span>
-      <button id="yt-minimize-btn" type="button" onclick="toggleYtMiniPlayer()" class="text-[10px] font-bold text-zinc-400 hover:text-white transition">Hide</button>
+  <!-- Floating Embedded Media Mini-Player (YouTube, SoundCloud, Spotify, BandLab, Apple Music, Audiomack, etc.) -->
+  <div id="yt-player-wrapper" class="hidden fixed bottom-24 right-4 z-40 w-80 max-w-[calc(100vw-2rem)] rounded-2xl overflow-hidden bg-black border border-bron-gold/40 shadow-2xl transition-all">
+    <div class="px-3 py-1.5 bg-zinc-950 border-b border-zinc-800 flex items-center justify-between gap-2">
+      <span id="embed-provider-label" class="text-[10px] font-extrabold uppercase tracking-wider text-bron-gold flex items-center gap-1.5 truncate">▶ Embedded Stream</span>
+      <div class="flex items-center gap-2 shrink-0">
+        <a id="embed-open-link" href="#" target="_blank" rel="noopener noreferrer" class="hidden text-[10px] font-bold text-zinc-400 hover:text-bron-gold transition">Open ↗</a>
+        <button id="yt-minimize-btn" type="button" onclick="toggleYtMiniPlayer()" class="text-[10px] font-bold text-zinc-400 hover:text-white transition">Hide</button>
+      </div>
     </div>
-    <div id="yt-player-box" class="w-full aspect-video bg-black">
-      <div id="yt-player-host"></div>
+    <div id="yt-player-box" class="w-full bg-black transition-all">
+      <div id="yt-player-host" class="w-full aspect-video"></div>
+      <div id="generic-embed-host" class="hidden w-full"></div>
     </div>
   </div>
 
   <!-- MODAL: SIGN IN / CREATE ACCOUNT -->
-  <div id="auth-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="w-full max-w-md rounded-2xl bg-bron-surface border border-zinc-800 shadow-2xl overflow-hidden">
-      <div class="px-6 py-4 border-b border-zinc-800 flex items-center justify-between">
-        <h3 id="auth-modal-title" class="text-lg font-black text-white">Sign In to LeBronify</h3>
-        <button onclick="closeAuthModal()" class="text-zinc-400 hover:text-white text-sm">✕</button>
-      </div>
-      <div class="p-6 space-y-4">
-        <div class="grid grid-cols-2 gap-2 p-1 rounded-xl bg-zinc-900 border border-zinc-800">
-          <button id="tab-signin" onclick="setAuthMode('signin')" class="py-2 rounded-lg text-xs font-extrabold bg-bron-gold text-black transition">Sign In</button>
-          <button id="tab-signup" onclick="setAuthMode('signup')" class="py-2 rounded-lg text-xs font-bold text-zinc-400 hover:text-white transition">Create Account</button>
-        </div>
-
-        <!-- Email Verification Reminder -->
-        <div id="signup-verify-reminder" class="hidden rounded-xl bg-bron-purple/20 border border-bron-gold/40 p-3.5 text-xs text-zinc-200 space-y-1">
-          <p class="font-extrabold text-bron-gold">📧 Email Verification Required</p>
-          <p class="text-zinc-300">After creating your account, check your inbox (and spam folder) for the confirmation email and click the link before signing in.</p>
-        </div>
-
-        <form onsubmit="handleAuthSubmit(event)" class="space-y-3.5">
-          <div>
-            <label class="block text-xs font-semibold text-zinc-400 mb-1.5">Email Address</label>
-            <input id="auth-email" required type="email" placeholder="you@example.com" class="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 focus:border-bron-gold focus:outline-none text-sm text-white" />
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-zinc-400 mb-1.5">Password</label>
-            <input id="auth-password" required type="password" minlength="6" placeholder="At least 6 characters" class="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 focus:border-bron-gold focus:outline-none text-sm text-white" />
-          </div>
-          <button id="auth-submit-btn" type="submit" class="w-full py-3 rounded-xl bg-bron-gold hover:bg-bron-goldLight text-black font-extrabold text-sm transition">
-            Sign In
-          </button>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL: UPLOAD REMIX -->
+  <!-- MODAL: UPLOAD REMIX (WEB LINKS ONLY FOR NEW SUBMISSIONS; OLD UPLOADS STAY INTACT) -->
   <div id="upload-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
     <div class="w-full max-w-lg rounded-2xl bg-bron-surface border border-zinc-800 shadow-2xl overflow-hidden my-8">
       <div class="px-6 py-4 border-b border-zinc-800 flex items-center justify-between">
-          <!-- Mode 2: External Direct URL (YouTube, Cloudflare R2, Archive.org, etc.) -->
-          <div id="up-url-fields" class="hidden space-y-3">
-            <div>
-              <label class="block text-xs font-semibold text-zinc-400 mb-1.5">YouTube Link or Direct Audio URL (MP3/WAV) *</label>
-              <div class="flex gap-2">
-                <input id="up-audio-url" type="url" placeholder="https://www.youtube.com/watch?v=... or .mp3 link" class="flex-1 px-3.5 py-2.5 rounded-xl bg-zinc-950 border border-zinc-800 focus:border-bron-gold focus:outline-none text-sm text-white" />
-                <button id="btn-test-url" type="button" onclick="testExternalAudioUrl()" class="shrink-0 px-3 py-2.5 rounded-xl bg-bron-purple hover:bg-bron-purpleLight text-white text-xs font-bold transition">▶ Test</button>
-              </div>
-              <p id="up-url-test-status" class="hidden text-[11px] mt-1.5"></p>
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-zinc-400 mb-1.5">Cover Art Image URL (Optional — auto-filled for YouTube)</label>
-              <input id="up-cover-url" type="url" placeholder="https://your-host.com/cover.jpg" class="w-full px-3.5 py-2.5 rounded-xl bg-zinc-950 border border-zinc-800 focus:border-bron-gold focus:outline-none text-sm text-white" />
-            </div>
-            <p class="text-[11px] text-zinc-400">💡 Supports <strong>YouTube links</strong> (as long as embedding is enabled) and direct audio file links (Cloudflare R2, Catbox, Archive.org, Dropbox, GitHub raw).</p>
+        <div>
+          <h3 class="text-lg font-black text-white">⬆️ Submit a Remix (Web Links)</h3>
+          <p class="text-[11px] text-zinc-400">Paste a link from YouTube, SoundCloud, Spotify, BandLab, or 10+ other platforms.</p>
+        </div>
+        <button onclick="closeUploadModal()" class="text-zinc-400 hover:text-white text-sm">✕</button>
+      </div>
+      <form onsubmit="handleUploadSubmit(event)" class="p-6 space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-zinc-400 mb-1.5">Track Title *</label>
+            <input id="up-title" required maxlength="80" type="text" placeholder="e.g. Sunshine Overdrive (Bron Remix)" class="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 focus:border-bron-gold focus:outline-none text-sm text-white" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-zinc-400 mb-1.5">Artist / Remixer Name *</label>
+            <input id="up-artist" required maxlength="60" type="text" placeholder="e.g. DJ King James" class="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 focus:border-bron-gold focus:outline-none text-sm text-white" />
           </div>
         </div>
 
@@ -496,41 +465,23 @@
           </div>
         </div>
 
-        <!-- Audio Source Switcher: Direct Upload vs External URL -->
+        <!-- Web Link Inputs Only -->
         <div class="space-y-3 rounded-xl bg-zinc-900/60 border border-zinc-800 p-3.5">
-          <div class="grid grid-cols-2 gap-2 p-1 rounded-xl bg-zinc-950 border border-zinc-800">
-            <button id="tab-up-file" type="button" onclick="setUploadMode('file')" class="py-2 rounded-lg text-xs font-extrabold bg-bron-gold text-black transition">📁 Upload File</button>
-            <button id="tab-up-url" type="button" onclick="setUploadMode('url')" class="py-2 rounded-lg text-xs font-bold text-zinc-400 hover:text-white transition">🔗 Paste External URL</button>
+          <div>
+            <label class="block text-xs font-semibold text-zinc-400 mb-1.5">Song / Embed Web URL *</label>
+            <div class="flex gap-2">
+              <input id="up-audio-url" required type="url" placeholder="https://soundcloud.com/... or Spotify / YouTube / BandLab / .mp3" class="flex-1 px-3.5 py-2.5 rounded-xl bg-zinc-950 border border-zinc-800 focus:border-bron-gold focus:outline-none text-sm text-white" />
+              <button id="btn-test-url" type="button" onclick="testExternalAudioUrl()" class="shrink-0 px-3 py-2.5 rounded-xl bg-bron-purple hover:bg-bron-purpleLight text-white text-xs font-bold transition">▶ Test</button>
+            </div>
+            <p id="up-url-test-status" class="hidden text-[11px] mt-1.5"></p>
           </div>
-
-          <!-- Mode 1: Direct File Upload (Supabase Storage) -->
-          <div id="up-file-fields" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label class="block text-xs font-semibold text-zinc-400 mb-1.5">Audio File (MP3/WAV/M4A) *</label>
-              <input id="up-audio" required type="file" accept="audio/*" class="w-full text-xs text-zinc-300 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:bg-bron-purple file:text-white file:font-bold hover:file:bg-bron-purpleLight cursor-pointer" />
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-zinc-400 mb-1.5">Cover Art (Optional)</label>
-              <input id="up-cover" type="file" accept="image/*" class="w-full text-xs text-zinc-300 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:bg-zinc-800 file:text-zinc-200 file:font-bold hover:file:bg-zinc-700 cursor-pointer" />
-            </div>
+          <div>
+            <label class="block text-xs font-semibold text-zinc-400 mb-1.5">Cover Art Web URL (Optional — auto-filled for YouTube)</label>
+            <input id="up-cover-url" type="url" placeholder="https://i.imgur.com/your-cover.jpg" class="w-full px-3.5 py-2.5 rounded-xl bg-zinc-950 border border-zinc-800 focus:border-bron-gold focus:outline-none text-sm text-white" />
           </div>
-
-          <!-- Mode 2: External Direct URL (Cloudflare R2, Archive.org, etc.) -->
-          <div id="up-url-fields" class="hidden space-y-3">
-            <div>
-              <label class="block text-xs font-semibold text-zinc-400 mb-1.5">Direct Audio URL (MP3 / WAV / M4A / OGG) *</label>
-              <div class="flex gap-2">
-                <input id="up-audio-url" type="url" placeholder="https://files.catbox.moe/abc123.mp3" class="flex-1 px-3.5 py-2.5 rounded-xl bg-zinc-950 border border-zinc-800 focus:border-bron-gold focus:outline-none text-sm text-white" />
-                <button id="btn-test-url" type="button" onclick="testExternalAudioUrl()" class="shrink-0 px-3 py-2.5 rounded-xl bg-bron-purple hover:bg-bron-purpleLight text-white text-xs font-bold transition">▶ Test</button>
-              </div>
-              <p id="up-url-test-status" class="hidden text-[11px] mt-1.5"></p>
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-zinc-400 mb-1.5">Cover Art Image URL (Optional)</label>
-              <input id="up-cover-url" type="url" placeholder="https://your-host.com/cover.jpg" class="w-full px-3.5 py-2.5 rounded-xl bg-zinc-950 border border-zinc-800 focus:border-bron-gold focus:outline-none text-sm text-white" />
-            </div>
-            <p class="text-[11px] text-zinc-400">💡 Must be a direct audio file link (e.g. Cloudflare R2, Catbox, Archive.org, Dropbox, or GitHub raw). Webpage links like YouTube or SoundCloud cannot play directly.</p>
-          </div>
+          <p class="text-[11px] text-zinc-400 leading-relaxed">
+            🌐 <strong>Supported Sites:</strong> YouTube, SoundCloud, Spotify, BandLab, Apple Music, Audiomack, Mixcloud, Vimeo, Dailymotion, TikTok, Deezer, Tidal, Bandcamp, Internet Archive, plus direct <code class="text-zinc-300">.mp3/.wav</code> links (Catbox, Cloudflare R2, Dropbox, GitHub raw).
+          </p>
         </div>
 
         <div>
@@ -545,12 +496,76 @@
 
         <label class="flex items-start gap-2.5 text-xs text-zinc-300 bg-zinc-900/80 border border-zinc-800 p-3 rounded-xl cursor-pointer">
           <input id="up-attest" required type="checkbox" class="mt-0.5 accent-bron-gold" />
-          <span>I confirm that the copyright declaration above is accurate and understand a human moderator must verify this track before it goes live.</span>
+          <span>I confirm that the copyright declaration above is accurate and understand a verified reviewer must approve this track before it goes live.</span>
         </label>
 
         <div class="flex justify-end gap-3 pt-1">
           <button type="button" onclick="closeUploadModal()" class="px-4 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-sm font-semibold">Cancel</button>
           <button id="up-submit-btn" type="submit" class="px-5 py-2.5 rounded-xl bg-bron-gold hover:bg-bron-goldLight text-black font-extrabold text-sm transition">Submit for Review</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: SET ARTIST PFP (VERIFIERS ONLY) -->
+  <div id="artist-pfp-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="w-full max-w-md rounded-2xl bg-bron-surface border border-zinc-800 shadow-2xl overflow-hidden">
+      <div class="px-6 py-4 border-b border-zinc-800 flex items-center justify-between">
+        <h3 class="text-lg font-black text-white">🖼️ Set Artist Profile Picture</h3>
+        <button onclick="closeArtistPfpModal()" class="text-zinc-400 hover:text-white text-sm">✕</button>
+      </div>
+      <form onsubmit="handleSaveArtistPfp(event)" class="p-6 space-y-4">
+        <p id="pfp-artist-label" class="text-xs font-bold text-bron-gold"></p>
+        <div>
+          <label class="block text-xs font-semibold text-zinc-400 mb-1.5">Profile Picture Web URL *</label>
+          <input id="pfp-url-input" required type="url" placeholder="https://example.com/artist-pfp.jpg" class="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 focus:border-bron-gold focus:outline-none text-sm text-white" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-zinc-400 mb-1.5">Artist Bio (Optional)</label>
+          <textarea id="pfp-bio-input" rows="2" maxlength="220" placeholder="Short bio for this artist page..." class="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 focus:border-bron-gold focus:outline-none text-sm text-white"></textarea>
+        </div>
+        <div class="flex justify-end gap-3 pt-1">
+          <button type="button" onclick="closeArtistPfpModal()" class="px-4 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-sm font-semibold">Cancel</button>
+          <button id="pfp-save-btn" type="submit" class="px-5 py-2.5 rounded-xl bg-bron-gold hover:bg-bron-goldLight text-black font-extrabold text-sm transition">Save PFP</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: CREATE ARTIST ALBUM (VERIFIERS ONLY) -->
+  <div id="create-album-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+    <div class="w-full max-w-lg rounded-2xl bg-bron-surface border border-zinc-800 shadow-2xl overflow-hidden my-8">
+      <div class="px-6 py-4 border-b border-zinc-800 flex items-center justify-between">
+        <h3 class="text-lg font-black text-white">💿 Create Artist Album</h3>
+        <button onclick="closeCreateAlbumModal()" class="text-zinc-400 hover:text-white text-sm">✕</button>
+      </div>
+      <form onsubmit="handleCreateAlbum(event)" class="p-6 space-y-4">
+        <p id="album-artist-label" class="text-xs font-bold text-bron-gold"></p>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="sm:col-span-2">
+            <label class="block text-xs font-semibold text-zinc-400 mb-1.5">Album Title *</label>
+            <input id="album-title-input" required maxlength="80" type="text" placeholder="e.g. King James Chronicles" class="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 focus:border-bron-gold focus:outline-none text-sm text-white" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-zinc-400 mb-1.5">Year</label>
+            <input id="album-year-input" maxlength="10" type="text" placeholder="2026" class="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 focus:border-bron-gold focus:outline-none text-sm text-white" />
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-zinc-400 mb-1.5">Album Cover Web URL *</label>
+          <input id="album-cover-input" required type="url" placeholder="https://example.com/album-cover.jpg" class="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 focus:border-bron-gold focus:outline-none text-sm text-white" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-zinc-400 mb-1.5">Album Description (Optional)</label>
+          <textarea id="album-desc-input" rows="2" maxlength="200" placeholder="Notes about this album or mixtape..." class="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 focus:border-bron-gold focus:outline-none text-sm text-white"></textarea>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-zinc-400 mb-1.5">Select Artist Tracks to Include</label>
+          <div id="album-tracks-selector" class="space-y-1.5 max-h-44 overflow-y-auto rounded-xl bg-zinc-900/70 border border-zinc-800 p-2.5"></div>
+        </div>
+        <div class="flex justify-end gap-3 pt-1">
+          <button type="button" onclick="closeCreateAlbumModal()" class="px-4 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-sm font-semibold">Cancel</button>
+          <button id="album-create-btn" type="submit" class="px-5 py-2.5 rounded-xl bg-bron-gold hover:bg-bron-goldLight text-black font-extrabold text-sm transition">Publish Album</button>
         </div>
       </form>
     </div>
@@ -580,7 +595,7 @@
             <span class="text-zinc-400">Everyone on LeBronify will be able to browse and listen to this playlist.</span>
           </span>
         </label>
-        <p id="pl-private-note" class="text-[11px] text-zinc-500">🔒 Your playlists are private by default. Only the Owner and selected curators can publish public playlists.</p>
+        <p id="pl-private-note" class="text-[11px] text-zinc-500">🔒 Your playlists are private by default. Only the Owner and verified staff can publish public playlists.</p>
         <div class="flex justify-end gap-3 pt-1">
           <button type="button" onclick="closeCreatePlaylistModal()" class="px-4 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-sm font-semibold">Cancel</button>
           <button id="pl-create-btn" type="submit" class="px-5 py-2.5 rounded-xl bg-bron-gold hover:bg-bron-goldLight text-black font-extrabold text-sm transition">Create Playlist</button>
@@ -706,19 +721,20 @@
     // App State
     let sb = null;
     let currentUser = null;
-    let userRole = 'member'; // 'owner' | 'moderator' | 'member'
+    let userRole = 'member'; // 'owner' | 'verifier' | 'member'
     let allTracks = [];
     let moderators = [];
-    let playlistCurators = [];
+    let artistProfiles = {}; // { [artistNameLower]: { artist_name_key, artist_name, pfp_url, bio } }
+    let artistAlbums = [];   // [{ id, artist_name, artist_name_key, title, cover_url, release_year, description, trackIds: [] }]
     let userPlaylists = [];
     let useCloudPlaylists = true;
     let currentView = 'catalog';
     let selectedGenre = 'All';
     let selectedArtistName = null;
+    let selectedAlbumId = null;
     let selectedPlaylistId = null;
     let addToPlaylistTrackId = null;
     let authMode = 'signin';
-    let uploadMode = 'file'; // 'file' | 'url'
 
     let likedIds = new Set(safeGetStorage('lebronify_likes', []));
     let localStreamCounts = safeGetStorage('lebronify_streams', {});
@@ -732,8 +748,8 @@
     let isRepeat = false;
     let npSidebarOpen = window.innerWidth >= 1280;
 
-    // YouTube IFrame Player State
-    let activeSourceType = 'audio'; // 'audio' | 'youtube'
+    // Embedded / YouTube Player State
+    let activeSourceType = 'audio'; // 'audio' | 'youtube' | 'embed'
     let ytPlayer = null;
     let ytApiReady = false;
     let ytPlayerReady = false;
@@ -743,7 +759,7 @@
     let ytProgressTimer = null;
 
     // =========================================================================
-    // YOUTUBE IFRAME PLAYER INTEGRATION
+    // UNIVERSAL EMBEDDED MEDIA PARSER (14+ SITES + DIRECT AUDIO)
     // =========================================================================
     function extractYouTubeId(rawUrl) {
       if (!rawUrl) return null;
@@ -756,6 +772,215 @@
         if (m && m[1]) return m[1];
       }
       return null;
+    }
+
+    function detectMediaSource(rawUrl) {
+      if (!rawUrl) return { type: 'audio', provider: 'Audio', embedUrl: null, originalUrl: '' };
+      const url = String(rawUrl).trim();
+
+      // 1. YouTube / YouTube Music / Shorts
+      const ytId = extractYouTubeId(url);
+      if (ytId) {
+        return { type: 'youtube', provider: 'YouTube', videoId: ytId, originalUrl: url, height: 180 };
+      }
+
+      // 2. SoundCloud
+      if (/^https?:\/\/(?:www\.|m\.)?soundcloud\.com\/.+/i.test(url)) {
+        return {
+          type: 'embed',
+          provider: 'SoundCloud',
+          embedUrl: `https://w.soundcloud.com/player/?url=${encodeURIComponent(url)}&color=%23FDB927&auto_play=true&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false&visual=true`,
+          originalUrl: url,
+          height: 166
+        };
+      }
+
+      // 3. Spotify (track, album, episode, playlist)
+      const spMatch = url.match(/open\.spotify\.com\/(?:intl-[a-z]+\/)?(track|album|episode|playlist)\/([a-zA-Z0-9]+)/i);
+      if (spMatch) {
+        return {
+          type: 'embed',
+          provider: 'Spotify',
+          embedUrl: `https://open.spotify.com/embed/${spMatch[1].toLowerCase()}/${spMatch[2]}?utm_source=generator&theme=0`,
+          originalUrl: url,
+          height: 152
+        };
+      }
+
+      // 4. BandLab (embed, track, post, or revision link)
+      if (/bandlab\.com/i.test(url)) {
+        let blEmbed = url;
+        if (!/bandlab\.com\/embed/i.test(url)) {
+          const revMatch = url.match(/bandlab\.com\/(?:track|post|revisions)\/([a-zA-Z0-9_-]+)/i) || url.match(/bandlab\.com\/[^/]+\/([a-zA-Z0-9_-]+)/i);
+          blEmbed = revMatch ? `https://www.bandlab.com/embed/?id=${encodeURIComponent(revMatch[1])}` : `https://www.bandlab.com/embed/?url=${encodeURIComponent(url)}`;
+        }
+        return {
+          type: 'embed',
+          provider: 'BandLab',
+          embedUrl: blEmbed,
+          originalUrl: url,
+          height: 202
+        };
+      }
+
+      // 5. Apple Music
+      if (/music\.apple\.com\//i.test(url)) {
+        return {
+          type: 'embed',
+          provider: 'Apple Music',
+          embedUrl: url.replace(/^https?:\/\/music\.apple\.com/i, 'https://embed.music.apple.com'),
+          originalUrl: url,
+          height: 175
+        };
+      }
+
+      // 6. Audiomack
+      const amMatch = url.match(/audiomack\.com\/([^/]+)\/(song|album|playlist)\/([^/?#]+)/i);
+      if (amMatch) {
+        return {
+          type: 'embed',
+          provider: 'Audiomack',
+          embedUrl: `https://audiomack.com/embed/${amMatch[1]}/${amMatch[2]}/${amMatch[3]}?background=1`,
+          originalUrl: url,
+          height: 252
+        };
+      }
+
+      // 7. Mixcloud
+      const mcMatch = url.match(/mixcloud\.com(\/[^?#]+)/i);
+      if (mcMatch) {
+        return {
+          type: 'embed',
+          provider: 'Mixcloud',
+          embedUrl: `https://player-widget.mixcloud.com/widget/iframe/?hide_cover=1&autoplay=1&feed=${encodeURIComponent(mcMatch[1])}`,
+          originalUrl: url,
+          height: 120
+        };
+      }
+
+      // 8. Vimeo
+      const vimMatch = url.match(/vimeo\.com\/(?:video\/)?(\d+)/i);
+      if (vimMatch) {
+        return {
+          type: 'embed',
+          provider: 'Vimeo',
+          embedUrl: `https://player.vimeo.com/video/${vimMatch[1]}?autoplay=1`,
+          originalUrl: url,
+          height: 180
+        };
+      }
+
+      // 9. Dailymotion
+      const dmMatch = url.match(/(?:dailymotion\.com\/video\/|dai\.ly\/)([a-zA-Z0-9]+)/i);
+      if (dmMatch) {
+        return {
+          type: 'embed',
+          provider: 'Dailymotion',
+          embedUrl: `https://geo.dailymotion.com/player.html?video=${dmMatch[1]}`,
+          originalUrl: url,
+          height: 180
+        };
+      }
+
+      // 10. TikTok
+      const ttMatch = url.match(/tiktok\.com\/@[^/]+\/video\/(\d+)/i);
+      if (ttMatch) {
+        return {
+          type: 'embed',
+          provider: 'TikTok',
+          embedUrl: `https://www.tiktok.com/embed/v2/${ttMatch[1]}`,
+          originalUrl: url,
+          height: 320
+        };
+      }
+
+      // 11. Deezer
+      const dzMatch = url.match(/deezer\.com\/(?:[a-z]{2}\/)?(track|album|playlist)\/(\d+)/i);
+      if (dzMatch) {
+        return {
+          type: 'embed',
+          provider: 'Deezer',
+          embedUrl: `https://widget.deezer.com/widget/dark/${dzMatch[1].toLowerCase()}/${dzMatch[2]}`,
+          originalUrl: url,
+          height: 150
+        };
+      }
+
+      // 12. Tidal
+      const tdMatch = url.match(/tidal\.com\/(?:browse\/)?(track|album|playlist)\/([a-zA-Z0-9-]+)/i);
+      if (tdMatch) {
+        const plural = tdMatch[1].toLowerCase() + 's';
+        return {
+          type: 'embed',
+          provider: 'Tidal',
+          embedUrl: `https://embed.tidal.com/${plural}/${tdMatch[2]}`,
+          originalUrl: url,
+          height: 150
+        };
+      }
+
+      // 13. Bandcamp (EmbeddedPlayer links)
+      if (/bandcamp\.com\/EmbeddedPlayer/i.test(url)) {
+        return {
+          type: 'embed',
+          provider: 'Bandcamp',
+          embedUrl: url,
+          originalUrl: url,
+          height: 120
+        };
+      }
+
+      // 14. Internet Archive
+      const iaMatch = url.match(/archive\.org\/(?:details|embed)\/([^/?#]+)/i);
+      if (iaMatch) {
+        return {
+          type: 'embed',
+          provider: 'Internet Archive',
+          embedUrl: `https://archive.org/embed/${iaMatch[1]}`,
+          originalUrl: url,
+          height: 150
+        };
+      }
+
+      // Default: Direct Audio URL (.mp3, .wav, .m4a, .ogg, Dropbox, GitHub raw, Cloudflare R2, Catbox, old Supabase uploads)
+      return {
+        type: 'audio',
+        provider: 'Direct Audio',
+        embedUrl: null,
+        originalUrl: normalizeAudioUrl(url)
+      };
+    }
+
+    function showGenericEmbed(media) {
+      stopYouTubePlayback();
+      const ytHost = document.getElementById('yt-player-host');
+      const genHost = document.getElementById('generic-embed-host');
+      const label = document.getElementById('embed-provider-label');
+      const openLink = document.getElementById('embed-open-link');
+
+      if (ytHost) ytHost.classList.add('hidden');
+      if (genHost) {
+        genHost.classList.remove('hidden');
+        genHost.innerHTML = `<iframe src="${escapeHtml(media.embedUrl)}" width="100%" height="${media.height || 166}" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" allowfullscreen class="w-full block bg-black"></iframe>`;
+      }
+      if (label) label.textContent = `▶ ${media.provider} Embed`;
+      if (openLink) {
+        openLink.href = media.originalUrl;
+        openLink.classList.remove('hidden');
+      }
+      showYtWrapper(true);
+    }
+
+    function clearGenericEmbed() {
+      const ytHost = document.getElementById('yt-player-host');
+      const genHost = document.getElementById('generic-embed-host');
+      const openLink = document.getElementById('embed-open-link');
+      if (genHost) {
+        genHost.innerHTML = '';
+        genHost.classList.add('hidden');
+      }
+      if (ytHost) ytHost.classList.remove('hidden');
+      if (openLink) openLink.classList.add('hidden');
     }
 
     function loadYouTubeApi() {
@@ -778,6 +1003,9 @@
     };
 
     function ensureYouTubePlayer(videoId) {
+      clearGenericEmbed();
+      const label = document.getElementById('embed-provider-label');
+      if (label) label.textContent = '▶ YouTube Stream';
       ytPendingVideoId = videoId;
       showYtWrapper(true);
 
@@ -875,6 +1103,7 @@
       if (ytPlayer && ytPlayerReady) {
         try { ytPlayer.stopVideo(); } catch (_) {}
       }
+      clearGenericEmbed();
       showYtWrapper(false);
     }
 
@@ -903,7 +1132,80 @@
 
     function isTrackPlaying(trackId) {
       if (!currentTrack || currentTrack.id !== trackId) return false;
-      return activeSourceType === 'youtube' ? ytIsPlaying : !audioEl.paused;
+      if (activeSourceType === 'youtube') return ytIsPlaying;
+      if (activeSourceType === 'embed') return true;
+      return !audioEl.paused;
+    }
+
+    // =========================================================================
+    // INITIALIZATION & SUPABASE SESSION
+    // =========================================================================
+    async function initApp() {
+      setupDynamicFavicon();
+      setupAudioEvents();
+      loadYouTubeApi();
+      audioEl.volume = 0.85;
+
+      const ownerCrown = document.getElementById('owner-panel-crown');
+      if (ownerCrown) ownerCrown.innerHTML = crownLogoHtml('w-6 h-6');
+
+      if (!window.supabase) {
+        showToast('Supabase SDK failed to load. Please refresh.', true);
+        renderAll();
+        return;
+      }
+
+      try {
+        sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const { data: { session } } = await sb.auth.getSession();
+        await handleSessionChange(session);
+
+        sb.auth.onAuthStateChange((_event, newSession) => {
+          handleSessionChange(newSession);
+        });
+
+        await Promise.all([fetchTracks(), fetchArtistProfiles(), fetchAlbums()]);
+      } catch (err) {
+        showToast('Could not connect to Supabase: ' + err.message, true);
+        renderAll();
+      }
+    }
+
+    async function handleSessionChange(session) {
+      currentUser = session?.user || null;
+
+      if (!currentUser) {
+        userRole = 'member';
+        if (currentTrack) stopPlayback();
+        updateAuthUI();
+        await fetchPlaylists();
+        renderAll();
+        return;
+      }
+
+      await fetchModerators();
+
+      if (currentUser.id === OWNER_UID) {
+        userRole = 'owner';
+      } else {
+        const modEntry = moderators.find(m => m.user_id === currentUser.id);
+        userRole = modEntry ? 'verifier' : 'member';
+      }
+
+      updateAuthUI();
+      await fetchPlaylists();
+      renderAll();
+    }
+
+    // Universal Verifier Permission: Owner or anyone approved in moderators can do everything
+    function isVerifier() {
+      return userRole === 'owner' || userRole === 'verifier';
+    }
+    function isReviewer() {
+      return isVerifier();
+    }
+    function canMakePublicPlaylists() {
+      return isVerifier();
     }
 
     // =========================================================================
@@ -1088,8 +1390,8 @@
 
       const roleBadge = userRole === 'owner'
         ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-bron-gold/15 border border-bron-gold/40 text-bron-gold text-[10px] font-extrabold">${crownLogoHtml('w-3.5 h-3.5')} Owner</span>`
-        : userRole === 'moderator'
-          ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-bron-purple/30 border border-bron-purple/50 text-purple-200 text-[10px] font-extrabold">🛡️ Moderator</span>`
+        : userRole === 'verifier'
+          ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-bron-purple/30 border border-bron-purple/50 text-purple-200 text-[10px] font-extrabold">🛡️ Verifier</span>`
           : `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-zinc-800 text-zinc-400 text-[10px] font-bold">Member</span>`;
 
       if (box) {
@@ -1116,54 +1418,7 @@
     }
 
     // =========================================================================
-    // TRACKS & STREAM COUNTER
-    // =========================================================================
-    async function fetchTracks() {
-      if (!sb) return;
-      try {
-        const { data, error } = await sb
-          .from('tracks')
-          .select('*')
-          .order('created_at', { ascending: false });
-        if (error) throw error;
-        allTracks = data || [];
-        renderAll();
-      } catch (err) {
-        showToast('Could not load tracks: ' + err.message, true);
-      }
-    }
-
-    function getStreamCount(track) {
-      if (!track) return 0;
-      const dbCount = Number(track.play_count || 0);
-      const localCount = Number(localStreamCounts[track.id] || 0);
-      return Math.max(dbCount, localCount);
-    }
-
-    function formatStreams(count) {
-      const n = Number(count || 0);
-      if (n >= 1000000) return (n / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
-      if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
-      return n.toLocaleString();
-    }
-
-    async function recordStream(track) {
-      if (!track || !currentUser) return;
-      const nextCount = getStreamCount(track) + 1;
-      localStreamCounts[track.id] = nextCount;
-      track.play_count = nextCount;
-      safeSetStorage('lebronify_streams', localStreamCounts);
-
-      if (sb) {
-        try {
-          await sb.rpc('increment_stream', { p_track_id: track.id });
-        } catch (_) {}
-      }
-      renderAll();
-    }
-
-    // =========================================================================
-    // OWNER ACCESS CONTROL (MODERATORS & PUBLIC PLAYLIST CURATORS)
+    // OWNER ACCESS CONTROL (UNIVERSAL VERIFIERS)
     // =========================================================================
     async function fetchModerators() {
       if (!sb) return;
@@ -1181,9 +1436,9 @@
       if (!userId || !email) return;
 
       const { error } = await sb.from('moderators').upsert({ user_id: userId, email, role: 'moderator' });
-      if (error) return showToast('Could not add moderator: ' + error.message, true);
+      if (error) return showToast('Could not approve verifier: ' + error.message, true);
       e.target.reset();
-      showToast(`Added ${email} as a Moderator!`);
+      showToast(`Approved ${email} as a Universal Verifier!`);
       await fetchModerators();
       renderModerators();
     }
@@ -1191,8 +1446,8 @@
     async function removeModerator(userId) {
       if (!sb || userRole !== 'owner') return;
       const { error } = await sb.from('moderators').delete().eq('user_id', userId);
-      if (error) return showToast('Could not remove moderator: ' + error.message, true);
-      showToast('Moderator removed.');
+      if (error) return showToast('Could not remove verifier: ' + error.message, true);
+      showToast('Verifier access removed.');
       await fetchModerators();
       renderModerators();
     }
@@ -1201,13 +1456,13 @@
       const container = document.getElementById('moderators-list');
       if (!container) return;
       if (moderators.length === 0) {
-        container.innerHTML = `<p class="text-xs text-zinc-500">No additional moderators added yet.</p>`;
+        container.innerHTML = `<p class="text-xs text-zinc-500">No additional verifiers added yet. Only you (Owner) have verifier access.</p>`;
         return;
       }
       container.innerHTML = moderators.map(m => `
         <div class="flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-xl bg-zinc-900/80 border border-zinc-800 text-xs">
           <div class="min-w-0">
-            <p class="font-bold text-white truncate">${escapeHtml(m.email)} <span class="ml-1.5 px-1.5 py-0.5 rounded bg-bron-purple/30 text-purple-200 text-[10px] uppercase">${escapeHtml(m.role || 'moderator')}</span></p>
+            <p class="font-bold text-white truncate">${escapeHtml(m.email)} <span class="ml-1.5 px-1.5 py-0.5 rounded bg-bron-purple/30 text-purple-200 text-[10px] uppercase">Universal Verifier</span></p>
             <p class="text-[10px] font-mono text-zinc-500 truncate">${escapeHtml(m.user_id)}</p>
           </div>
           ${m.user_id !== OWNER_UID && m.role !== 'owner'
@@ -1217,58 +1472,225 @@
       `).join('');
     }
 
-    async function fetchCurators() {
+    // =========================================================================
+    // ARTIST PFPs & ARTIST ALBUMS (VERIFIERS ONLY)
+    // =========================================================================
+    async function fetchArtistProfiles() {
+      const localMap = safeGetStorage('lebronify_artist_profiles', {});
+      artistProfiles = { ...localMap };
       if (!sb) return;
       try {
-        const { data, error } = await sb.from('playlist_curators').select('*').order('created_at', { ascending: true });
-        if (!error) playlistCurators = data || [];
+        const { data, error } = await sb.from('artist_profiles').select('*');
+        if (!error && data) {
+          for (const row of data) {
+            artistProfiles[row.artist_name_key] = row;
+          }
+          safeSetStorage('lebronify_artist_profiles', artistProfiles);
+        }
       } catch (_) {}
+      renderArtistsView();
     }
 
-    async function addCurator(e) {
+    function openArtistPfpModal(artistName) {
+      if (!isVerifier()) return showToast('Only the Owner and verified staff can set Artist PFPs.', true);
+      const key = artistName.trim().toLowerCase();
+      const existing = artistProfiles[key] || {};
+      document.getElementById('pfp-artist-label').textContent = `Artist: ${artistName}`;
+      document.getElementById('pfp-url-input').value = existing.pfp_url || '';
+      document.getElementById('pfp-bio-input').value = existing.bio || '';
+      document.getElementById('artist-pfp-modal').dataset.artistName = artistName;
+      document.getElementById('artist-pfp-modal').classList.remove('hidden');
+    }
+
+    function closeArtistPfpModal() {
+      document.getElementById('artist-pfp-modal').classList.add('hidden');
+    }
+
+    async function handleSaveArtistPfp(e) {
       e.preventDefault();
-      if (!sb || userRole !== 'owner') return;
-      const userId = document.getElementById('curator-uid-input').value.trim();
-      const email = document.getElementById('curator-email-input').value.trim();
-      if (!userId || !email) return;
+      if (!isVerifier()) return;
+      const modal = document.getElementById('artist-pfp-modal');
+      const artistName = modal.dataset.artistName;
+      const key = artistName.trim().toLowerCase();
+      const pfpUrl = normalizeAudioUrl(document.getElementById('pfp-url-input').value.trim());
+      const bio = document.getElementById('pfp-bio-input').value.trim();
 
-      const { error } = await sb.from('playlist_curators').upsert({ user_id: userId, email });
-      if (error) return showToast('Could not add curator: ' + error.message, true);
-      e.target.reset();
-      showToast(`Granted ${email} Public Playlist access!`);
-      await fetchCurators();
-      renderCurators();
-    }
-
-    async function removeCurator(userId) {
-      if (!sb || userRole !== 'owner') return;
-      const { error } = await sb.from('playlist_curators').delete().eq('user_id', userId);
-      if (error) return showToast('Could not remove curator: ' + error.message, true);
-      showToast('Public Playlist permission revoked.');
-      await fetchCurators();
-      renderCurators();
-    }
-
-    function renderCurators() {
-      const container = document.getElementById('curators-list');
-      if (!container) return;
-      if (playlistCurators.length === 0) {
-        container.innerHTML = `<p class="text-xs text-zinc-500">Only you (Owner) can create public playlists right now.</p>`;
-        return;
+      if (!/^https?:\/\/.+/i.test(pfpUrl)) {
+        return showToast('Please enter a valid https:// image URL.', true);
       }
-      container.innerHTML = playlistCurators.map(c => `
-        <div class="flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-xl bg-zinc-900/80 border border-zinc-800 text-xs">
-          <div class="min-w-0">
-            <p class="font-bold text-white truncate">${escapeHtml(c.email)} <span class="ml-1.5 px-1.5 py-0.5 rounded bg-bron-gold/15 text-bron-gold text-[10px] uppercase">Public Curator</span></p>
-            <p class="text-[10px] font-mono text-zinc-500 truncate">${escapeHtml(c.user_id)}</p>
-          </div>
-          <button onclick="removeCurator('${escapeHtml(c.user_id)}')" class="shrink-0 px-2.5 py-1 rounded-lg bg-red-500/15 hover:bg-red-500/30 text-red-400 font-bold transition">Remove</button>
-        </div>
-      `).join('');
+
+      const btn = document.getElementById('pfp-save-btn');
+      btn.disabled = true;
+
+      const record = {
+        artist_name_key: key,
+        artist_name: artistName,
+        pfp_url: pfpUrl,
+        bio,
+        updated_by: currentUser.id,
+        updated_at: new Date().toISOString()
+      };
+
+      try {
+        if (sb) {
+          const { error } = await sb.from('artist_profiles').upsert(record);
+          if (error && !/does not exist|schema cache/i.test(error.message)) throw error;
+        }
+        artistProfiles[key] = record;
+        safeSetStorage('lebronify_artist_profiles', artistProfiles);
+        closeArtistPfpModal();
+        showToast(`Updated profile picture for ${artistName}!`);
+        renderArtistsView();
+      } catch (err) {
+        showToast('Could not save Artist PFP: ' + err.message, true);
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function fetchAlbums() {
+      artistAlbums = safeGetStorage('lebronify_albums', []);
+      if (!sb) return;
+      try {
+        const { data: albs, error: aErr } = await sb.from('albums').select('*').order('created_at', { ascending: false });
+        if (aErr) return;
+        const { data: links, error: lErr } = await sb.from('album_tracks').select('*').order('track_order', { ascending: true });
+        if (lErr) return;
+        artistAlbums = (albs || []).map(a => ({
+          ...a,
+          trackIds: (links || []).filter(l => l.album_id === a.id).map(l => l.track_id)
+        }));
+        safeSetStorage('lebronify_albums', artistAlbums);
+      } catch (_) {}
+      renderArtistsView();
+    }
+
+    function openCreateAlbumModal(artistName) {
+      if (!isVerifier()) return showToast('Only the Owner and verified staff can upload Albums.', true);
+      const artist = getArtistsList().find(a => a.name.toLowerCase() === artistName.toLowerCase());
+      const tracks = artist ? artist.tracks : [];
+      document.getElementById('album-artist-label').textContent = `Artist: ${artistName}`;
+      document.getElementById('album-title-input').value = '';
+      document.getElementById('album-year-input').value = String(new Date().getFullYear());
+      document.getElementById('album-cover-input').value = '';
+      document.getElementById('album-desc-input').value = '';
+      document.getElementById('create-album-modal').dataset.artistName = artistName;
+
+      const selector = document.getElementById('album-tracks-selector');
+      if (tracks.length === 0) {
+        selector.innerHTML = `<p class="text-xs text-zinc-500 p-2">No verified tracks for this artist yet.</p>`;
+      } else {
+        selector.innerHTML = tracks.map(t => `
+          <label class="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-zinc-800/70 cursor-pointer text-xs text-zinc-200">
+            <input type="checkbox" value="${t.id}" class="album-track-chk accent-bron-gold" checked />
+            <span class="truncate flex-1 font-semibold">${escapeHtml(t.title)}</span>
+            <span class="text-[10px] text-zinc-500 shrink-0">${escapeHtml(t.genre)}</span>
+          </label>
+        `).join('');
+      }
+      document.getElementById('create-album-modal').classList.remove('hidden');
+    }
+
+    function closeCreateAlbumModal() {
+      document.getElementById('create-album-modal').classList.add('hidden');
+    }
+
+    async function handleCreateAlbum(e) {
+      e.preventDefault();
+      if (!isVerifier()) return;
+      const modal = document.getElementById('create-album-modal');
+      const artistName = modal.dataset.artistName;
+      const artistKey = artistName.trim().toLowerCase();
+      const title = document.getElementById('album-title-input').value.trim();
+      const releaseYear = document.getElementById('album-year-input').value.trim();
+      const coverUrl = normalizeAudioUrl(document.getElementById('album-cover-input').value.trim());
+      const description = document.getElementById('album-desc-input').value.trim();
+      const selectedTrackIds = [...document.querySelectorAll('.album-track-chk:checked')].map(el => el.value);
+
+      if (!/^https?:\/\/.+/i.test(coverUrl)) {
+        return showToast('Album cover must be a valid https:// web link.', true);
+      }
+
+      const btn = document.getElementById('album-create-btn');
+      btn.disabled = true;
+
+      try {
+        let newAlbum = null;
+        if (sb) {
+          const { data, error } = await sb
+            .from('albums')
+            .insert({
+              artist_name: artistName,
+              artist_name_key: artistKey,
+              title,
+              cover_url: coverUrl,
+              release_year: releaseYear,
+              description,
+              created_by: currentUser.id
+            })
+            .select()
+            .single();
+
+          if (!error && data) {
+            if (selectedTrackIds.length > 0) {
+              const rows = selectedTrackIds.map((tid, i) => ({ album_id: data.id, track_id: tid, track_order: i }));
+              await sb.from('album_tracks').insert(rows);
+            }
+            newAlbum = { ...data, trackIds: selectedTrackIds };
+          } else if (error && !/does not exist|schema cache/i.test(error.message)) {
+            throw error;
+          }
+        }
+
+        if (!newAlbum) {
+          newAlbum = {
+            id: 'alb_' + Date.now(),
+            artist_name: artistName,
+            artist_name_key: artistKey,
+            title,
+            cover_url: coverUrl,
+            release_year: releaseYear,
+            description,
+            trackIds: selectedTrackIds,
+            created_at: new Date().toISOString()
+          };
+        }
+
+        artistAlbums.unshift(newAlbum);
+        safeSetStorage('lebronify_albums', artistAlbums);
+        closeCreateAlbumModal();
+        showToast(`Published album "${title}" on ${artistName}'s page!`);
+        renderArtistsView();
+      } catch (err) {
+        showToast('Could not create album: ' + err.message, true);
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function deleteAlbum(albumId) {
+      if (!isVerifier()) return;
+      if (sb && !String(albumId).startsWith('alb_')) {
+        const { error } = await sb.from('albums').delete().eq('id', albumId);
+        if (error) return showToast('Could not delete album: ' + error.message, true);
+      }
+      artistAlbums = artistAlbums.filter(a => a.id !== albumId);
+      safeSetStorage('lebronify_albums', artistAlbums);
+      if (selectedAlbumId === albumId) selectedAlbumId = null;
+      showToast('Album deleted.');
+      renderArtistsView();
+    }
+
+    function playAlbum(albumId, startTrackId = null) {
+      const alb = artistAlbums.find(a => a.id === albumId);
+      if (!alb) return;
+      const tracks = alb.trackIds.map(id => allTracks.find(t => t.id === id && t.status === 'approved')).filter(Boolean);
+      if (!tracks.length) return showToast('This album has no approved tracks yet.', true);
+      playTrackById(startTrackId || tracks[0].id, tracks);
     }
 
     // =========================================================================
-    // UPLOAD REMIX (DIRECT FILE OR EXTERNAL URL)
+    // UPLOAD REMIX (WEB LINKS ONLY FOR NEW SUBMISSIONS)
     // =========================================================================
     function normalizeAudioUrl(rawUrl) {
       if (!rawUrl) return rawUrl;
@@ -1301,15 +1723,16 @@
       const statusEl = document.getElementById('up-url-test-status');
       const btn = document.getElementById('btn-test-url');
       if (!rawUrl || !/^https?:\/\/.+/i.test(rawUrl)) {
-        return showToast('Paste a valid https:// audio or YouTube URL first.', true);
+        return showToast('Paste a valid https:// song or embed URL first.', true);
       }
 
-      const ytId = extractYouTubeId(rawUrl);
-      if (ytId) {
+      const media = detectMediaSource(rawUrl);
+
+      if (media.type === 'youtube') {
         audioEl.pause();
         auditAudioEl.pause();
         activeSourceType = 'youtube';
-        ensureYouTubePlayer(ytId);
+        ensureYouTubePlayer(media.videoId);
         if (statusEl) {
           statusEl.className = 'text-[11px] mt-1.5 text-emerald-400 font-semibold';
           statusEl.textContent = '✓ YouTube link detected! Playing preview in the mini-player (cover art will auto-fill).';
@@ -1318,7 +1741,20 @@
         return;
       }
 
-      const normalized = normalizeAudioUrl(rawUrl);
+      if (media.type === 'embed') {
+        audioEl.pause();
+        auditAudioEl.pause();
+        activeSourceType = 'embed';
+        showGenericEmbed(media);
+        if (statusEl) {
+          statusEl.className = 'text-[11px] mt-1.5 text-emerald-400 font-semibold';
+          statusEl.textContent = `✓ ${media.provider} embed detected! Preview loaded in the bottom-right player.`;
+          statusEl.classList.remove('hidden');
+        }
+        return;
+      }
+
+      const normalized = media.originalUrl;
       if (normalized !== rawUrl) {
         document.getElementById('up-audio-url').value = normalized;
       }
@@ -1330,9 +1766,10 @@
       }
 
       audioEl.pause();
+      stopYouTubePlayback();
       if (statusEl) {
         statusEl.className = 'text-[11px] mt-1.5 text-zinc-400';
-        statusEl.textContent = 'Testing audio stream...';
+        statusEl.textContent = 'Testing direct audio stream...';
         statusEl.classList.remove('hidden');
       }
 
@@ -1342,43 +1779,16 @@
           if (btn) btn.textContent = '❚❚ Stop';
           if (statusEl) {
             statusEl.className = 'text-[11px] mt-1.5 text-emerald-400 font-semibold';
-            statusEl.textContent = '✓ Audio link works! Ready to submit.';
+            statusEl.textContent = '✓ Direct audio link works! Ready to submit.';
           }
         })
         .catch(() => {
           if (btn) btn.textContent = '▶ Test';
           if (statusEl) {
             statusEl.className = 'text-[11px] mt-1.5 text-red-400 font-semibold';
-            statusEl.textContent = '✕ Browser could not play this URL. Make sure it is a direct .mp3/.wav/.m4a link (not a YouTube/SoundCloud/Drive webpage).';
+            statusEl.textContent = '✕ Browser could not play this URL. Use a supported embed site (YouTube, SoundCloud, Spotify, BandLab, etc.) or a direct .mp3/.wav link.';
           }
         });
-    }
-
-    function setUploadMode(mode) {
-      uploadMode = mode;
-      const isFile = mode === 'file';
-      const fileFields = document.getElementById('up-file-fields');
-      const urlFields = document.getElementById('up-url-fields');
-      const tabFile = document.getElementById('tab-up-file');
-      const tabUrl = document.getElementById('tab-up-url');
-      const audioInput = document.getElementById('up-audio');
-      const audioUrlInput = document.getElementById('up-audio-url');
-
-      if (fileFields) fileFields.classList.toggle('hidden', !isFile);
-      if (urlFields) urlFields.classList.toggle('hidden', isFile);
-      if (audioInput) audioInput.required = isFile;
-      if (audioUrlInput) audioUrlInput.required = !isFile;
-
-      if (tabFile) {
-        tabFile.className = isFile
-          ? 'py-2 rounded-lg text-xs font-extrabold bg-bron-gold text-black transition'
-          : 'py-2 rounded-lg text-xs font-bold text-zinc-400 hover:text-white transition';
-      }
-      if (tabUrl) {
-        tabUrl.className = !isFile
-          ? 'py-2 rounded-lg text-xs font-extrabold bg-bron-gold text-black transition'
-          : 'py-2 rounded-lg text-xs font-bold text-zinc-400 hover:text-white transition';
-      }
     }
 
     function openUploadModal() {
@@ -1387,7 +1797,8 @@
         openAuthModal('signin');
         return;
       }
-      setUploadMode('file');
+      const statusEl = document.getElementById('up-url-test-status');
+      if (statusEl) statusEl.classList.add('hidden');
       document.getElementById('upload-modal').classList.remove('hidden');
     }
 
@@ -1405,59 +1816,29 @@
       const rights = document.getElementById('up-rights').value;
       const samples = document.getElementById('up-samples').value.trim() || 'None declared';
       const notes = document.getElementById('up-notes').value.trim();
+      const rawAudioUrl = document.getElementById('up-audio-url').value.trim();
+      const rawCoverUrl = document.getElementById('up-cover-url').value.trim();
 
       const btn = document.getElementById('up-submit-btn');
       btn.disabled = true;
-      btn.textContent = uploadMode === 'url' ? 'Submitting...' : 'Uploading...';
+      btn.textContent = 'Submitting...';
 
       try {
-        let finalAudioUrl = null;
-        let finalCoverUrl = null;
+        if (!/^https?:\/\/.+/i.test(rawAudioUrl)) {
+          throw new Error('Please paste a valid song or embed URL starting with https:// or http://.');
+        }
+        if (rawCoverUrl && !/^https?:\/\/.+/i.test(rawCoverUrl)) {
+          throw new Error('Cover Art URL must start with https:// or http://.');
+        }
 
-        if (uploadMode === 'url') {
-          const rawAudioUrl = document.getElementById('up-audio-url').value.trim();
-          const rawCoverUrl = document.getElementById('up-cover-url').value.trim();
+        const media = detectMediaSource(rawAudioUrl);
+        let finalAudioUrl = media.type === 'youtube'
+          ? `https://www.youtube.com/watch?v=${media.videoId}`
+          : (media.type === 'embed' ? media.originalUrl : media.originalUrl);
 
-          if (!/^https?:\/\/.+/i.test(rawAudioUrl)) {
-            throw new Error('Please paste a valid YouTube or direct audio URL starting with https:// or http://.');
-          }
-          if (rawCoverUrl && !/^https?:\/\/.+/i.test(rawCoverUrl)) {
-            throw new Error('Cover Art URL must start with https:// or http://.');
-          }
-          const ytId = extractYouTubeId(rawAudioUrl);
-          if (ytId) {
-            finalAudioUrl = `https://www.youtube.com/watch?v=${ytId}`;
-            finalCoverUrl = rawCoverUrl ? normalizeAudioUrl(rawCoverUrl) : `https://i.ytimg.com/vi/${ytId}/hqdefault.jpg`;
-          } else {
-            finalAudioUrl = normalizeAudioUrl(rawAudioUrl);
-            finalCoverUrl = rawCoverUrl ? normalizeAudioUrl(rawCoverUrl) : null;
-          }
-        } else {
-          const audioFile = document.getElementById('up-audio').files[0];
-          const coverFile = document.getElementById('up-cover').files[0];
-
-          if (!audioFile) throw new Error('Please choose an audio file.');
-          if (audioFile.size > 25 * 1024 * 1024) throw new Error('Audio file must be under 25 MB.');
-
-          const ts = Date.now();
-          const safeAudioName = audioFile.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-          const audioPath = `${currentUser.id}/${ts}_${safeAudioName}`;
-
-          const { error: upErr } = await sb.storage.from('remixes').upload(audioPath, audioFile);
-          if (upErr) throw upErr;
-
-          const { data: audioPub } = sb.storage.from('remixes').getPublicUrl(audioPath);
-          finalAudioUrl = audioPub.publicUrl;
-
-          if (coverFile) {
-            const safeCoverName = coverFile.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-            const coverPath = `${currentUser.id}/covers/${ts}_${safeCoverName}`;
-            const { error: covErr } = await sb.storage.from('remixes').upload(coverPath, coverFile);
-            if (!covErr) {
-              const { data: covPub } = sb.storage.from('remixes').getPublicUrl(coverPath);
-              finalCoverUrl = covPub.publicUrl;
-            }
-          }
+        let finalCoverUrl = rawCoverUrl ? normalizeAudioUrl(rawCoverUrl) : null;
+        if (!finalCoverUrl && media.type === 'youtube') {
+          finalCoverUrl = `https://i.ytimg.com/vi/${media.videoId}/hqdefault.jpg`;
         }
 
         const { error: dbErr } = await sb.from('tracks').insert({
@@ -1477,7 +1858,6 @@
         if (dbErr) throw dbErr;
 
         e.target.reset();
-        setUploadMode('file');
         closeUploadModal();
         showToast('Remix submitted to the Human Copyright Verification Queue!');
         await fetchTracks();
@@ -1532,8 +1912,9 @@
     }
 
     function previewAuditAudio(url, btnEl) {
-      const ytId = extractYouTubeId(url);
-      if (ytId) {
+      const media = detectMediaSource(url);
+
+      if (media.type === 'youtube') {
         audioEl.pause();
         auditAudioEl.pause();
         if (activeSourceType === 'youtube' && ytIsPlaying) {
@@ -1542,14 +1923,24 @@
           return;
         }
         activeSourceType = 'youtube';
-        ensureYouTubePlayer(ytId);
+        ensureYouTubePlayer(media.videoId);
         document.querySelectorAll('.audit-play-btn').forEach(b => (b.textContent = '▶ Listen & Audit'));
         btnEl.textContent = '❚❚ Stop Audit';
         return;
       }
 
+      if (media.type === 'embed') {
+        audioEl.pause();
+        auditAudioEl.pause();
+        activeSourceType = 'embed';
+        showGenericEmbed(media);
+        document.querySelectorAll('.audit-play-btn').forEach(b => (b.textContent = '▶ Listen & Audit'));
+        btnEl.textContent = `▶ ${media.provider} Loaded`;
+        return;
+      }
+
       stopYouTubePlayback();
-      const playableUrl = normalizeAudioUrl(url);
+      const playableUrl = media.originalUrl;
       if (auditAudioEl.src === playableUrl && !auditAudioEl.paused) {
         auditAudioEl.pause();
         btnEl.textContent = '▶ Listen & Audit';
@@ -1559,7 +1950,7 @@
       auditAudioEl.src = playableUrl;
       auditAudioEl.play().catch(err => {
         const msg = /no supported source/i.test(err.message)
-          ? 'Could not play this link — make sure it is a YouTube link or a direct .mp3/.wav/.m4a file URL.'
+          ? 'Could not play this link — make sure it is a supported embed site or a direct .mp3/.wav/.m4a file URL.'
           : 'Could not play audio: ' + err.message;
         showToast(msg, true);
       });
@@ -1568,408 +1959,7 @@
     }
 
     // =========================================================================
-    // PLAYLIST SYSTEM (PRIVATE & OWNER/CURATOR PUBLIC PLAYLISTS)
-    // =========================================================================
-    function loadLocalPlaylists() {
-      return safeGetStorage(`lebronify_playlists_${currentUser?.id || 'guest'}`, []);
-    }
-    function saveLocalPlaylists() {
-      safeSetStorage(`lebronify_playlists_${currentUser?.id || 'guest'}`, userPlaylists);
-    }
-
-    async function fetchPlaylists() {
-      if (sb && useCloudPlaylists) {
-        try {
-          let query = sb
-            .from('playlists')
-            .select('*')
-            .order('created_at', { ascending: false });
-
-          if (!currentUser) {
-            query = query.eq('is_public', true);
-          }
-
-          const { data: pls, error: plErr } = await query;
-          if (plErr) throw plErr;
-
-          const { data: links, error: linkErr } = await sb
-            .from('playlist_tracks')
-            .select('*')
-            .order('added_at', { ascending: true });
-
-          if (linkErr) throw linkErr;
-
-          userPlaylists = (pls || []).map(pl => ({
-            ...pl,
-            is_public: Boolean(pl.is_public),
-            trackIds: (links || []).filter(l => l.playlist_id === pl.id).map(l => l.track_id)
-          }));
-          renderPlaylistsView();
-          renderSidebarPlaylists();
-          return;
-        } catch (_) {
-          useCloudPlaylists = false;
-        }
-      }
-
-      userPlaylists = currentUser ? loadLocalPlaylists() : [];
-      renderPlaylistsView();
-      renderSidebarPlaylists();
-    }
-
-    function openCreatePlaylistModal() {
-      if (!currentUser) {
-        showToast('Sign in to create playlists.');
-        openAuthModal('signin');
-        return;
-      }
-      document.getElementById('pl-name-input').value = '';
-      document.getElementById('pl-desc-input').value = '';
-      const publicToggle = document.getElementById('pl-public-input');
-      const publicWrapper = document.getElementById('pl-public-wrapper');
-      const privateNote = document.getElementById('pl-private-note');
-      if (publicToggle) publicToggle.checked = false;
-      const allowedPublic = canMakePublicPlaylists();
-      if (publicWrapper) publicWrapper.classList.toggle('hidden', !allowedPublic);
-      if (privateNote) privateNote.classList.toggle('hidden', allowedPublic);
-      document.getElementById('create-playlist-modal').classList.remove('hidden');
-    }
-
-    function closeCreatePlaylistModal() {
-      document.getElementById('create-playlist-modal').classList.add('hidden');
-    }
-
-    async function handleCreatePlaylist(e) {
-      e.preventDefault();
-      if (!currentUser) return;
-      const name = document.getElementById('pl-name-input').value.trim();
-      const description = document.getElementById('pl-desc-input').value.trim();
-      const isPublic = canMakePublicPlaylists() && Boolean(document.getElementById('pl-public-input')?.checked);
-      if (!name) return;
-
-      const btn = document.getElementById('pl-create-btn');
-      btn.disabled = true;
-
-      try {
-        if (sb && useCloudPlaylists) {
-          const payload = { user_id: currentUser.id, name, description, is_public: isPublic };
-          const { data, error } = await sb
-            .from('playlists')
-            .insert(payload)
-            .select()
-            .single();
-          if (error) throw error;
-          userPlaylists.unshift({ ...data, is_public: Boolean(data.is_public), trackIds: [] });
-        } else {
-          userPlaylists.unshift({
-            id: 'pl_' + Date.now(),
-            user_id: currentUser.id,
-            name,
-            description,
-            is_public: isPublic,
-            trackIds: [],
-            created_at: new Date().toISOString()
-          });
-          saveLocalPlaylists();
-        }
-        closeCreatePlaylistModal();
-        showToast(isPublic ? `Published public playlist "${name}"!` : `Created private playlist "${name}"!`);
-        renderPlaylistsView();
-        renderSidebarPlaylists();
-      } catch (err) {
-        showToast('Could not create playlist: ' + err.message, true);
-      } finally {
-        btn.disabled = false;
-      }
-    }
-
-    async function togglePlaylistVisibility(playlistId) {
-      if (!canMakePublicPlaylists()) {
-        return showToast('Only the Owner and selected curators can publish public playlists.', true);
-      }
-      const pl = userPlaylists.find(p => p.id === playlistId);
-      if (!pl || pl.user_id !== currentUser?.id) return;
-      const nextVal = !pl.is_public;
-
-      if (sb && useCloudPlaylists) {
-        const { error } = await sb.from('playlists').update({ is_public: nextVal }).eq('id', playlistId);
-        if (error) return showToast('Could not update visibility: ' + error.message, true);
-      }
-      pl.is_public = nextVal;
-      if (!useCloudPlaylists) saveLocalPlaylists();
-      showToast(nextVal ? 'Playlist is now Public!' : 'Playlist is now Private.');
-      renderPlaylistsView();
-      renderSidebarPlaylists();
-    }
-
-    async function deletePlaylist(playlistId) {
-      if (sb && useCloudPlaylists) {
-        const { error } = await sb.from('playlists').delete().eq('id', playlistId);
-        if (error) return showToast('Could not delete playlist: ' + error.message, true);
-      }
-      userPlaylists = userPlaylists.filter(p => p.id !== playlistId);
-      if (!useCloudPlaylists) saveLocalPlaylists();
-      if (selectedPlaylistId === playlistId) selectedPlaylistId = null;
-      showToast('Playlist deleted.');
-      renderPlaylistsView();
-      renderSidebarPlaylists();
-    }
-
-    function openAddToPlaylistModal(trackId) {
-      if (!currentUser) {
-        showToast('Sign in to add tracks to playlists.');
-        openAuthModal('signin');
-        return;
-      }
-      addToPlaylistTrackId = trackId;
-      renderAddToPlaylistModalList();
-      document.getElementById('add-to-playlist-modal').classList.remove('hidden');
-    }
-
-    function closeAddToPlaylistModal() {
-      document.getElementById('add-to-playlist-modal').classList.add('hidden');
-    }
-
-    function renderAddToPlaylistModalList() {
-      const container = document.getElementById('add-pl-list');
-      if (!container) return;
-      const myEditable = userPlaylists.filter(pl => !pl.user_id || pl.user_id === currentUser?.id);
-      if (myEditable.length === 0) {
-        container.innerHTML = `<p class="text-xs text-zinc-400 text-center py-4">You don't have any playlists yet. Create one below!</p>`;
-        return;
-      }
-      container.innerHTML = myEditable.map(pl => {
-        const hasTrack = pl.trackIds.includes(addToPlaylistTrackId);
-        return `
-          <button onclick="toggleTrackInPlaylist('${pl.id}', '${addToPlaylistTrackId}')" class="w-full flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-xl border text-left transition ${hasTrack ? 'bg-bron-purple/25 border-bron-gold/50 text-white' : 'bg-zinc-900 border-zinc-800 text-zinc-300 hover:border-zinc-700'}">
-            <div class="min-w-0">
-              <p class="text-sm font-bold truncate">${pl.is_public ? '🌐 ' : ''}${escapeHtml(pl.name)}</p>
-              <p class="text-[11px] text-zinc-400">${pl.trackIds.length} ${pl.trackIds.length === 1 ? 'track' : 'tracks'}</p>
-            </div>
-            <span class="text-xs font-extrabold px-2.5 py-1 rounded-lg ${hasTrack ? 'bg-bron-gold text-black' : 'bg-zinc-800 text-zinc-300'}">${hasTrack ? '✓ Added' : '+ Add'}</span>
-          </button>
-        `;
-      }).join('');
-    }
-
-    async function toggleTrackInPlaylist(playlistId, trackId) {
-      const pl = userPlaylists.find(p => p.id === playlistId);
-      if (!pl) return;
-      const exists = pl.trackIds.includes(trackId);
-
-      if (sb && useCloudPlaylists) {
-        if (exists) {
-          const { error } = await sb.from('playlist_tracks').delete().eq('playlist_id', playlistId).eq('track_id', trackId);
-          if (error) return showToast('Error updating playlist: ' + error.message, true);
-        } else {
-          const { error } = await sb.from('playlist_tracks').insert({ playlist_id: playlistId, track_id: trackId });
-          if (error) return showToast('Error updating playlist: ' + error.message, true);
-        }
-      }
-
-      if (exists) {
-        pl.trackIds = pl.trackIds.filter(id => id !== trackId);
-      } else {
-        pl.trackIds.push(trackId);
-      }
-      if (!useCloudPlaylists) saveLocalPlaylists();
-
-      renderAddToPlaylistModalList();
-      renderPlaylistsView();
-      renderSidebarPlaylists();
-    }
-
-    function openPlaylistDetail(playlistId) {
-      selectedPlaylistId = playlistId;
-      switchView('playlists');
-      renderPlaylistsView();
-      renderSidebarPlaylists();
-    }
-
-    function playPlaylist(playlistId) {
-      const pl = userPlaylists.find(p => p.id === playlistId);
-      if (!pl) return;
-      const tracks = pl.trackIds.map(id => allTracks.find(t => t.id === id && t.status === 'approved')).filter(Boolean);
-      if (!tracks.length) return showToast('This playlist has no tracks yet.', true);
-      playTrackById(tracks[0].id, tracks);
-    }
-
-    function playPlaylistFrom(playlistId, trackId) {
-      const pl = userPlaylists.find(p => p.id === playlistId);
-      if (!pl) return playTrackById(trackId);
-      const tracks = pl.trackIds.map(id => allTracks.find(t => t.id === id && t.status === 'approved')).filter(Boolean);
-      playTrackById(trackId, tracks);
-    }
-
-    function renderSidebarPlaylists() {
-      const container = document.getElementById('sidebar-playlists-list');
-      if (!container) return;
-      if (userPlaylists.length === 0) {
-        container.innerHTML = `<p class="px-2 text-[11px] text-zinc-500">${currentUser ? 'No playlists yet.' : 'No public playlists yet.'}</p>`;
-        return;
-      }
-      container.innerHTML = userPlaylists.slice(0, 8).map(pl => `
-        <button onclick="openPlaylistDetail('${pl.id}')" class="w-full flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs transition ${selectedPlaylistId === pl.id && currentView === 'playlists' ? 'bg-zinc-800 text-bron-gold font-bold' : 'text-zinc-400 hover:text-white hover:bg-zinc-800/50'}">
-          <span class="truncate">${pl.is_public ? '🌐' : '🎶'} ${escapeHtml(pl.name)}</span>
-          <span class="text-[10px] text-zinc-500 shrink-0">${pl.trackIds.length}</span>
-        </button>
-      `).join('');
-    }
-
-    function renderPlaylistCard(pl) {
-      const tracks = pl.trackIds
-        .map(id => allTracks.find(t => t.id === id && t.status === 'approved'))
-        .filter(Boolean);
-      const totalStreams = tracks.reduce((sum, t) => sum + getStreamCount(t), 0);
-      const coverTrack = tracks.find(t => t.cover_url);
-      return `
-        <div onclick="openPlaylistDetail('${pl.id}')" class="cursor-pointer group rounded-2xl bg-bron-surface border border-zinc-800/80 hover:border-bron-gold/50 p-4 flex flex-col gap-3 transition">
-          <div class="relative aspect-square rounded-xl overflow-hidden bg-black border border-zinc-800 flex items-center justify-center">
-            ${coverTrack ? `<img src="${escapeHtml(coverTrack.cover_url)}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" />` : crownLogoHtml('w-24 h-24 group-hover:scale-105 transition duration-300')}
-            <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-md bg-black/75 backdrop-blur text-[10px] font-bold ${pl.is_public ? 'text-bron-gold border border-bron-gold/40' : 'text-zinc-300 border border-zinc-700'}">
-              ${pl.is_public ? '🌐 Public' : '🔒 Private'}
-            </span>
-            <button onclick="event.stopPropagation(); playPlaylist('${pl.id}')" title="Play Playlist" class="absolute bottom-3 right-3 w-11 h-11 rounded-full bg-bron-gold hover:bg-bron-goldLight text-black flex items-center justify-center shadow-xl transition transform group-hover:scale-105 active:scale-95">
-              <svg class="w-5 h-5 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-            </button>
-          </div>
-          <div class="min-w-0">
-            <h3 class="font-bold text-white text-base truncate group-hover:text-bron-gold transition">${escapeHtml(pl.name)}</h3>
-            <p class="text-xs text-zinc-400 truncate mt-0.5">${escapeHtml(pl.description || (pl.is_public ? 'Official public LeBronify playlist' : 'Custom LeBronify playlist'))}</p>
-          </div>
-          <div class="flex items-center justify-between text-[11px] text-zinc-500 pt-2 border-t border-zinc-800/70">
-            <span>${tracks.length} ${tracks.length === 1 ? 'track' : 'tracks'}</span>
-            <span>▶ ${formatStreams(totalStreams)} streams</span>
-          </div>
-        </div>
-      `;
-    }
-
-    function renderPlaylistsView() {
-      const dirView = document.getElementById('playlists-directory-view');
-      const detailView = document.getElementById('playlist-detail-view');
-      const publicGrid = document.getElementById('public-playlists-grid');
-      const grid = document.getElementById('playlists-grid');
-      if (!dirView || !detailView || !grid) return;
-
-      if (selectedPlaylistId) {
-        const pl = userPlaylists.find(p => p.id === selectedPlaylistId);
-        if (!pl) {
-          selectedPlaylistId = null;
-        } else {
-          dirView.classList.add('hidden');
-          detailView.classList.remove('hidden');
-          const tracks = pl.trackIds
-            .map(id => allTracks.find(t => t.id === id && t.status === 'approved'))
-            .filter(Boolean);
-          const totalStreams = tracks.reduce((sum, t) => sum + getStreamCount(t), 0);
-          const coverTrack = tracks.find(t => t.cover_url);
-          const isMine = Boolean(currentUser && (!pl.user_id || pl.user_id === currentUser.id));
-          const canDelete = isMine || userRole === 'owner';
-
-          detailView.innerHTML = `
-            <button onclick="selectedPlaylistId = null; renderPlaylistsView();" class="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-400 hover:text-bron-gold transition">
-              ← Back to All Playlists
-            </button>
-            <div class="rounded-2xl p-6 md:p-8 bg-gradient-to-br from-bron-purple/50 via-bron-surface to-bron-card border border-bron-purple/30 flex flex-col sm:flex-row sm:items-center justify-between gap-5">
-              <div class="flex items-center gap-5 min-w-0">
-                <div class="w-24 h-24 rounded-2xl bg-black border border-zinc-800 overflow-hidden shrink-0 flex items-center justify-center shadow-xl">
-                  ${coverTrack ? `<img src="${escapeHtml(coverTrack.cover_url)}" class="w-full h-full object-cover" />` : crownLogoHtml('w-16 h-16')}
-                </div>
-                <div class="min-w-0">
-                  <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] uppercase tracking-widest font-bold ${pl.is_public ? 'bg-bron-gold/15 text-bron-gold border border-bron-gold/40' : 'bg-zinc-900 text-zinc-300 border border-zinc-700'}">
-                    ${pl.is_public ? '🌐 Public Playlist' : '🔒 Private Playlist'}
-                  </span>
-                  <h2 class="text-2xl md:text-3xl font-black text-white truncate mt-1.5">${escapeHtml(pl.name)}</h2>
-                  ${pl.description ? `<p class="text-sm text-zinc-300 mt-1">${escapeHtml(pl.description)}</p>` : ''}
-                  <p class="text-xs text-zinc-400 mt-2">${tracks.length} ${tracks.length === 1 ? 'track' : 'tracks'} • ${formatStreams(totalStreams)} total streams</p>
-                </div>
-              </div>
-              <div class="flex flex-wrap items-center gap-2.5 shrink-0">
-                <button onclick="playPlaylist('${pl.id}')" class="px-5 py-2.5 rounded-xl bg-bron-gold hover:bg-bron-goldLight text-black font-extrabold text-sm transition">▶ Play All</button>
-                ${isMine && canMakePublicPlaylists() ? `<button onclick="togglePlaylistVisibility('${pl.id}')" class="px-3.5 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-bold transition">${pl.is_public ? 'Make Private' : '🌐 Make Public'}</button>` : ''}
-                ${canDelete ? `<button onclick="deletePlaylist('${pl.id}')" class="px-3.5 py-2.5 rounded-xl bg-red-500/15 hover:bg-red-500/30 text-red-400 border border-red-500/30 text-xs font-bold transition">Delete</button>` : ''}
-              </div>
-            </div>
-
-            ${tracks.length === 0 ? `
-              <div class="rounded-2xl border border-dashed border-zinc-800 p-10 text-center text-sm text-zinc-400">
-                This playlist is empty.${isMine ? ' Click the <strong>+</strong> button on any remix in the Verified Catalog to add it here.' : ''}
-              </div>
-            ` : `
-              <div class="space-y-2">
-                ${tracks.map((t, idx) => `
-                  <div class="rounded-xl bg-bron-surface border ${currentTrack?.id === t.id ? 'border-bron-gold/60' : 'border-zinc-800/80'} p-3 flex items-center justify-between gap-3 hover:border-bron-purple/50 transition">
-                    <div class="flex items-center gap-3 min-w-0 flex-1">
-                      <span class="w-5 text-center text-xs font-mono text-zinc-500">${idx + 1}</span>
-                      <div class="w-11 h-11 rounded-lg bg-black border border-zinc-800 overflow-hidden shrink-0 flex items-center justify-center">
-                        ${t.cover_url ? `<img src="${escapeHtml(t.cover_url)}" class="w-full h-full object-cover" />` : crownLogoHtml('w-7 h-7')}
-                      </div>
-                      <div class="min-w-0">
-                        <p class="text-sm font-bold text-white truncate">${escapeHtml(t.title)}</p>
-                        <button onclick="openArtistProfile(decodeURIComponent('${encodeURIComponent(t.artist)}'))" class="text-xs text-zinc-400 hover:text-bron-gold hover:underline truncate block text-left">${escapeHtml(t.artist)}</button>
-                      </div>
-                    </div>
-                    <div class="flex items-center gap-3 shrink-0">
-                      <span class="hidden sm:inline text-xs text-zinc-400 font-mono">▶ ${formatStreams(getStreamCount(t))}</span>
-                      <button onclick="playPlaylistFrom('${pl.id}', '${t.id}')" class="px-3 py-1.5 rounded-lg bg-bron-gold hover:bg-bron-goldLight text-black text-xs font-extrabold transition">▶</button>
-                      ${isMine ? `<button onclick="toggleTrackInPlaylist('${pl.id}', '${t.id}')" title="Remove from playlist" class="px-2.5 py-1.5 rounded-lg bg-zinc-800 hover:bg-red-500/20 hover:text-red-400 text-zinc-400 text-xs font-bold transition">✕</button>` : ''}
-                    </div>
-                  </div>
-                `).join('')}
-              </div>
-            `}
-          `;
-          return;
-        }
-      }
-
-      dirView.classList.remove('hidden');
-      detailView.classList.add('hidden');
-
-      const publicPls = userPlaylists.filter(p => p.is_public);
-      const myPls = currentUser ? userPlaylists.filter(p => !p.user_id || p.user_id === currentUser.id) : [];
-
-      if (publicGrid) {
-        if (publicPls.length === 0) {
-          publicGrid.innerHTML = `
-            <div class="col-span-full rounded-2xl border border-dashed border-zinc-800 p-8 text-center text-sm text-zinc-400">
-              No public playlists published yet.${canMakePublicPlaylists() ? ' Click <strong>+ New Playlist</strong> and check <strong>Make Public Playlist</strong> to publish the first one!' : ''}
-            </div>
-          `;
-        } else {
-          publicGrid.innerHTML = publicPls.map(pl => renderPlaylistCard(pl)).join('');
-        }
-      }
-
-      if (!currentUser) {
-        grid.innerHTML = `
-          <div class="col-span-full rounded-2xl bg-bron-surface border border-zinc-800 p-8 text-center space-y-3">
-            <h3 class="text-base font-bold text-white">Sign In to Create Personal Playlists</h3>
-            <p class="text-xs text-zinc-400">Save and organize your favorite verified LeBron James remixes into your own playlists.</p>
-            <button onclick="openAuthModal('signin')" class="px-5 py-2 rounded-xl bg-bron-gold text-black font-bold text-xs">Sign In</button>
-          </div>
-        `;
-        return;
-      }
-
-      if (myPls.length === 0) {
-        grid.innerHTML = `
-          <div class="col-span-full rounded-2xl border border-dashed border-zinc-800 p-10 text-center space-y-3">
-            <div class="text-3xl">🎶</div>
-            <h3 class="text-base font-bold text-white">You haven't created any playlists yet</h3>
-            <p class="text-xs text-zinc-400 max-w-md mx-auto">Create your first playlist to group your favorite LeBron James remixes together.</p>
-            <button onclick="openCreatePlaylistModal()" class="px-5 py-2.5 rounded-xl bg-bron-gold hover:bg-bron-goldLight text-black font-extrabold text-xs transition">+ Create Playlist</button>
-          </div>
-        `;
-        return;
-      }
-
-      grid.innerHTML = myPls.map(pl => renderPlaylistCard(pl)).join('');
-    }
-
-    // =========================================================================
-    // ARTIST SYSTEM & DEDICATED ARTIST PAGES
+    // ARTIST SYSTEM, VERIFIER PFPs & VERIFIER ALBUMS
     // =========================================================================
     function getArtistsList() {
       const approved = allTracks.filter(t => t.status === 'approved');
@@ -1977,11 +1967,14 @@
       for (const t of approved) {
         const key = (t.artist || 'Unknown Artist').trim().toLowerCase();
         if (!map.has(key)) {
+          const prof = artistProfiles[key];
           map.set(key, {
+            key,
             name: (t.artist || 'Unknown Artist').trim(),
             tracks: [],
             totalStreams: 0,
-            avatarUrl: null,
+            avatarUrl: prof?.pfp_url || null,
+            bio: prof?.bio || '',
             genres: new Set()
           });
         }
@@ -1996,6 +1989,7 @@
 
     function openArtistProfile(artistName) {
       selectedArtistName = artistName;
+      selectedAlbumId = null;
       switchView('artists');
       renderArtistsView();
     }
@@ -2040,23 +2034,26 @@
           const encodedArtist = encodeURIComponent(artist.name);
           const artistTrackIds = new Set(artist.tracks.map(t => t.id));
           const featuredInPlaylists = userPlaylists.filter(pl => pl.trackIds.some(id => artistTrackIds.has(id)));
+          const myAlbums = artistAlbums.filter(a => a.artist_name_key === artist.key);
+          const activeAlbum = selectedAlbumId ? myAlbums.find(a => a.id === selectedAlbumId) : null;
 
           profileView.innerHTML = `
-            <button onclick="selectedArtistName = null; renderArtistsView();" class="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-400 hover:text-bron-gold transition">
+            <button onclick="selectedArtistName = null; selectedAlbumId = null; renderArtistsView();" class="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-400 hover:text-bron-gold transition">
               ← Back to All Artists
             </button>
 
             <!-- Artist Hero Banner -->
             <div class="rounded-2xl p-6 md:p-8 bg-gradient-to-br from-bron-purple/60 via-bron-surface to-bron-card border border-bron-purple/40 flex flex-col sm:flex-row sm:items-center justify-between gap-5 shadow-xl">
               <div class="flex items-center gap-5 min-w-0">
-                <div class="w-24 h-24 md:w-28 md:h-28 rounded-full bg-black border-2 border-bron-gold/70 overflow-hidden shrink-0 flex items-center justify-center shadow-2xl">
+                <div class="relative w-24 h-24 md:w-28 md:h-28 rounded-full bg-black border-2 border-bron-gold/70 overflow-hidden shrink-0 flex items-center justify-center shadow-2xl">
                   ${artist.avatarUrl ? `<img src="${escapeHtml(artist.avatarUrl)}" class="w-full h-full object-cover" />` : crownLogoHtml('w-16 h-16')}
                 </div>
                 <div class="min-w-0">
                   <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[11px] font-bold mb-2">✓ Verified LeBronify Artist</span>
                   <h2 class="text-2xl md:text-4xl font-black text-white truncate">${escapeHtml(artist.name)}</h2>
+                  ${artist.bio ? `<p class="text-xs text-zinc-300 mt-1 max-w-lg">${escapeHtml(artist.bio)}</p>` : ''}
                   <p class="text-xs md:text-sm text-zinc-300 mt-1.5">
-                    <strong class="text-bron-gold">${formatStreams(artist.totalStreams)}</strong> total streams • <strong>${artist.tracks.length}</strong> verified ${artist.tracks.length === 1 ? 'remix' : 'remixes'}${genresList ? ` • ${escapeHtml(genresList)}` : ''}
+                    <strong class="text-bron-gold">${formatStreams(artist.totalStreams)}</strong> total streams • <strong>${artist.tracks.length}</strong> verified ${artist.tracks.length === 1 ? 'remix' : 'remixes'}${myAlbums.length ? ` • <strong>${myAlbums.length}</strong> ${myAlbums.length === 1 ? 'album' : 'albums'}` : ''}${genresList ? ` • ${escapeHtml(genresList)}` : ''}
                   </p>
                 </div>
               </div>
@@ -2067,8 +2064,90 @@
                 <button onclick="playArtistTracks(decodeURIComponent('${encodedArtist}'), true)" class="px-4 py-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white font-bold text-sm border border-zinc-700 transition">
                   🔀 Shuffle
                 </button>
+                ${isVerifier() ? `
+                  <button onclick="openArtistPfpModal(decodeURIComponent('${encodedArtist}'))" class="px-3.5 py-3 rounded-xl bg-bron-purple/30 hover:bg-bron-purple/50 text-purple-100 border border-bron-purple/60 font-bold text-xs transition">
+                    🖼️ Set PFP
+                  </button>
+                  <button onclick="openCreateAlbumModal(decodeURIComponent('${encodedArtist}'))" class="px-3.5 py-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-bron-gold border border-bron-gold/40 font-bold text-xs transition">
+                    💿 + Album
+                  </button>
+                ` : ''}
               </div>
             </div>
+
+            <!-- Selected Album Detail View -->
+            ${activeAlbum ? (() => {
+              const albTracks = activeAlbum.trackIds.map(id => allTracks.find(t => t.id === id && t.status === 'approved')).filter(Boolean);
+              return `
+                <div class="rounded-2xl bg-bron-surface border border-bron-gold/40 p-5 md:p-6 space-y-4">
+                  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="flex items-center gap-4 min-w-0">
+                      <img src="${escapeHtml(activeAlbum.cover_url)}" alt="${escapeHtml(activeAlbum.title)}" class="w-20 h-20 rounded-xl object-cover border border-zinc-800 shrink-0" />
+                      <div class="min-w-0">
+                        <span class="text-[10px] uppercase tracking-widest font-extrabold text-bron-gold">💿 Official Album ${activeAlbum.release_year ? '· ' + escapeHtml(activeAlbum.release_year) : ''}</span>
+                        <h3 class="text-xl font-black text-white truncate">${escapeHtml(activeAlbum.title)}</h3>
+                        ${activeAlbum.description ? `<p class="text-xs text-zinc-400 mt-0.5">${escapeHtml(activeAlbum.description)}</p>` : ''}
+                      </div>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                      <button onclick="playAlbum('${activeAlbum.id}')" class="px-4 py-2 rounded-xl bg-bron-gold hover:bg-bron-goldLight text-black font-extrabold text-xs transition">▶ Play Album</button>
+                      ${isVerifier() ? `<button onclick="deleteAlbum('${activeAlbum.id}')" class="px-3 py-2 rounded-xl bg-red-500/15 hover:bg-red-500/30 text-red-400 font-bold text-xs transition">Delete</button>` : ''}
+                      <button onclick="selectedAlbumId = null; renderArtistsView();" class="px-3 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold text-xs transition">✕ Close</button>
+                    </div>
+                  </div>
+                  <div class="space-y-1.5">
+                    ${albTracks.length === 0 ? `<p class="text-xs text-zinc-500">No tracks in this album yet.</p>` : albTracks.map((t, i) => `
+                      <div class="rounded-xl bg-zinc-900/70 border border-zinc-800/80 px-3.5 py-2.5 flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-3 min-w-0">
+                          <span class="w-5 text-center text-xs font-mono text-zinc-500">${i + 1}</span>
+                          <span class="text-sm font-bold text-white truncate">${escapeHtml(t.title)}</span>
+                        </div>
+                        <div class="flex items-center gap-3 shrink-0">
+                          <span class="text-xs text-zinc-400 font-mono">▶ ${formatStreams(getStreamCount(t))}</span>
+                          <button onclick="playAlbum('${activeAlbum.id}', '${t.id}')" class="px-3 py-1 rounded-lg bg-bron-gold text-black text-xs font-extrabold">▶</button>
+                        </div>
+                      </div>
+                    `).join('')}
+                  </div>
+                </div>
+              `;
+            })() : ''}
+
+            <!-- Artist Albums Section (Uploaded ONLY by Verifiers) -->
+            ${(myAlbums.length > 0 || isVerifier()) ? `
+              <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                  <h3 class="text-sm font-extrabold uppercase tracking-wider text-bron-gold">💿 Official Albums</h3>
+                  ${isVerifier() ? `<button onclick="openCreateAlbumModal(decodeURIComponent('${encodedArtist}'))" class="text-xs font-bold text-bron-gold hover:underline">+ Upload Album</button>` : ''}
+                </div>
+                ${myAlbums.length === 0 ? `
+                  <div class="rounded-2xl border border-dashed border-zinc-800 p-6 text-center text-xs text-zinc-400">
+                    No official albums yet. As a Verifier, click <strong>+ Upload Album</strong> to publish one on this artist's page.
+                  </div>
+                ` : `
+                  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    ${myAlbums.map(alb => {
+                      const count = alb.trackIds.filter(id => allTracks.some(t => t.id === id && t.status === 'approved')).length;
+                      return `
+                        <div onclick="selectedAlbumId = '${alb.id}'; renderArtistsView();" class="cursor-pointer group rounded-2xl bg-bron-surface border ${selectedAlbumId === alb.id ? 'border-bron-gold' : 'border-zinc-800/80 hover:border-bron-gold/50'} p-4 flex flex-col gap-3 transition">
+                          <div class="relative aspect-square rounded-xl overflow-hidden bg-black border border-zinc-800">
+                            <img src="${escapeHtml(alb.cover_url)}" alt="${escapeHtml(alb.title)}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
+                            <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-md bg-black/75 backdrop-blur border border-bron-gold/40 text-bron-gold text-[10px] font-bold">💿 Album</span>
+                            <button onclick="event.stopPropagation(); playAlbum('${alb.id}')" title="Play Album" class="absolute bottom-3 right-3 w-11 h-11 rounded-full bg-bron-gold hover:bg-bron-goldLight text-black flex items-center justify-center shadow-xl transition transform group-hover:scale-105">
+                              <svg class="w-5 h-5 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            </button>
+                          </div>
+                          <div class="min-w-0">
+                            <h4 class="font-extrabold text-white text-sm truncate group-hover:text-bron-gold transition">${escapeHtml(alb.title)}</h4>
+                            <p class="text-xs text-zinc-400 mt-0.5">${alb.release_year ? escapeHtml(alb.release_year) + ' • ' : ''}${count} ${count === 1 ? 'track' : 'tracks'}</p>
+                          </div>
+                        </div>
+                      `;
+                    }).join('')}
+                  </div>
+                `}
+              </div>
+            ` : ''}
 
             <!-- Popular Tracks Ranked List -->
             <div class="space-y-3">
@@ -2287,11 +2366,11 @@
       const rolePill = document.getElementById('reviewer-role-pill');
       if (rolePill) {
         if (userRole === 'owner') {
-          rolePill.innerHTML = `<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-bron-gold/15 border border-bron-gold/40 text-bron-gold text-xs font-extrabold">${crownLogoHtml('w-4 h-4')} Owner Verification Active</span>`;
-        } else if (userRole === 'moderator') {
-          rolePill.innerHTML = `<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-bron-purple/30 border border-bron-purple/50 text-purple-200 text-xs font-extrabold">🛡️ Moderator Access Active</span>`;
+          rolePill.innerHTML = `<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-bron-gold/15 border border-bron-gold/40 text-bron-gold text-xs font-extrabold">${crownLogoHtml('w-4 h-4')} Owner Universal Access</span>`;
+        } else if (userRole === 'verifier') {
+          rolePill.innerHTML = `<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-bron-purple/30 border border-bron-purple/50 text-purple-200 text-xs font-extrabold">🛡️ Universal Verifier Active</span>`;
         } else {
-          rolePill.innerHTML = `<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 text-xs font-bold">🔒 View-Only (Owner/Mods Confirm)</span>`;
+          rolePill.innerHTML = `<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 text-xs font-bold">🔒 View-Only (Verifiers Only)</span>`;
         }
       }
 
@@ -2369,7 +2448,6 @@
         if (userRole === 'owner') {
           ownerPanel.classList.remove('hidden');
           renderModerators();
-          renderCurators();
         } else {
           ownerPanel.classList.add('hidden');
         }
@@ -2509,22 +2587,30 @@
       auditAudioEl.pause();
       currentTrack = track;
 
-      const ytId = extractYouTubeId(track.audio_url);
-      if (ytId) {
+      const media = detectMediaSource(track.audio_url);
+      if (media.type === 'youtube') {
         audioEl.pause();
         audioEl.removeAttribute('src');
         activeSourceType = 'youtube';
         document.getElementById('seek-bar').value = 0;
         document.getElementById('time-current').textContent = '0:00';
         document.getElementById('time-duration').textContent = '0:00';
-        ensureYouTubePlayer(ytId);
+        ensureYouTubePlayer(media.videoId);
+      } else if (media.type === 'embed') {
+        audioEl.pause();
+        audioEl.removeAttribute('src');
+        activeSourceType = 'embed';
+        document.getElementById('seek-bar').value = 0;
+        document.getElementById('time-current').textContent = '0:00';
+        document.getElementById('time-duration').textContent = media.provider;
+        showGenericEmbed(media);
       } else {
         stopYouTubePlayback();
         activeSourceType = 'audio';
-        audioEl.src = normalizeAudioUrl(track.audio_url);
+        audioEl.src = media.originalUrl;
         audioEl.play().catch(err => {
           const msg = /no supported source/i.test(err.message)
-            ? 'No supported audio source found. This track URL is likely a webpage or blocked host instead of a direct .mp3/.wav file.'
+            ? 'No supported audio source found. Use a supported embed platform (YouTube, SoundCloud, Spotify, BandLab, etc.) or a direct .mp3/.wav file.'
             : 'Playback error: ' + err.message;
           showToast(msg, true);
         });
@@ -2559,6 +2645,11 @@
           else ytPlayer.playVideo();
         }
         updatePlayIcons();
+        return;
+      }
+      if (activeSourceType === 'embed') {
+        showYtWrapper(true);
+        showToast('Use the embedded player in the bottom-right corner to play/pause this platform.');
         return;
       }
       if (audioEl.paused) {
@@ -2644,7 +2735,11 @@
     }
 
     function updatePlayIcons() {
-      const playing = Boolean(currentTrack) && (activeSourceType === 'youtube' ? ytIsPlaying : !audioEl.paused);
+      const playing = Boolean(currentTrack) && (
+        activeSourceType === 'youtube' ? ytIsPlaying :
+        activeSourceType === 'embed' ? true :
+        !audioEl.paused
+      );
       document.getElementById('icon-play').classList.toggle('hidden', playing);
       document.getElementById('icon-pause').classList.toggle('hidden', !playing);
       renderCatalog();
