@@ -4,9 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>LeBronify — King James Remix Streaming</title>
-  <link rel="icon" type="image/jpeg" href="LBJ.jpg" />
-
-  <!-- Google Font: Inter -->
+  <link rel="icon" type="image/jpeg" href="LBJf.jpg" />
+  <link rel="shortcut icon" type="image/jpeg" href="LBJf.jpg" />
+  <link rel="apple-touch-icon" href="LBJf.jpg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
@@ -103,8 +103,8 @@
       <!-- Logo -->
       <div class="flex items-center gap-3 mb-7">
         <div class="w-11 h-11 rounded-xl bg-black border border-zinc-800 flex items-center justify-center shadow-lg shadow-bron-purple/30 overflow-hidden shrink-0">
-          <img src="LBJ.jpg" alt="LeBronify Logo" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');" />
-          <!-- Vector fallback matching LBJ.jpg for Preview before LBJ.jpg is uploaded -->
+          <img src="LBJf.jpg" alt="LeBronify Logo" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');" />
+          <!-- Vector fallback matching LBJf.jpg for Preview before LBJf.jpg is uploaded -->
           <svg class="hidden w-full h-full" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <defs>
               <linearGradient id="lbjBallSide" x1="15%" y1="50%" x2="95%" y2="50%">
@@ -134,7 +134,7 @@
           <h1 class="text-xl font-black tracking-tight bg-gradient-to-r from-bron-gold via-yellow-200 to-purple-300 bg-clip-text text-transparent">
             LeBronify
           </h1>
-          <p class="text-[11px] uppercase tracking-widest text-zinc-400 font-semibold">King James Remixes · v2.5</p>
+          <p class="text-[11px] uppercase tracking-widest text-zinc-400 font-semibold">King James Remixes · v2.6</p>
         </div>
       </div>
 
@@ -194,7 +194,7 @@
       <header class="md:hidden flex items-center justify-between px-4 py-3 bg-bron-surface border-b border-zinc-800 sticky top-0 z-30">
         <div class="flex items-center gap-2.5">
           <div class="w-8 h-8 rounded-lg bg-black border border-zinc-800 overflow-hidden shrink-0 flex items-center justify-center">
-            <img src="LBJ.jpg" alt="LeBronify Logo" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');" />
+            <img src="LBJf.jpg" alt="LeBronify Logo" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');" />
             <svg class="hidden w-full h-full" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <rect width="512" height="512" fill="#000000" />
               <path d="M 88 222 L 28 148 L 86 168 L 58 58 L 158 96 L 146 34 L 212 94 Z" fill="#f07818" />
@@ -310,7 +310,17 @@
             <div id="owner-panel" class="hidden rounded-2xl bg-bron-surface border border-bron-gold/30 p-6 space-y-5">
               <div class="flex items-center justify-between gap-3">
                 <div>
-                  <h3 class="text-lg font-extrabold text-bron-gold flex items-center gap-2">👑 Owner Access Control</h3>
+                  <h3 class="text-lg font-extrabold text-bron-gold flex items-center gap-2">
+                    <span class="inline-flex w-5 h-5 rounded overflow-hidden bg-black shrink-0 items-center justify-center">
+                      <img src="LBJ%20Crown.jpg" alt="Crown" class="w-full h-full object-contain" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');" />
+                      <svg class="hidden w-full h-full" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <defs><linearGradient id="ownerCrownGrad" x1="10%" y1="60%" x2="90%" y2="40%"><stop offset="0%" stop-color="#b50d3a"/><stop offset="50%" stop-color="#df5a24"/><stop offset="100%" stop-color="#ffa812"/></linearGradient></defs>
+                        <rect width="512" height="512" fill="#000000"/>
+                        <path d="M 62 418 L 82 186 L 145 298 L 262 96 L 364 296 L 435 186 L 450 418 Z" fill="url(#ownerCrownGrad)"/>
+                      </svg>
+                    </span>
+                    Owner Access Control
+                  </h3>
                   <p class="text-xs text-zinc-400 mt-0.5">Grant or revoke song confirmation permissions for other accounts.</p>
                 </div>
               </div>
@@ -356,7 +366,12 @@
     <!-- Now Playing Info -->
     <div class="flex items-center gap-3 min-w-0 w-1/3 md:w-1/4">
       <div id="player-cover" class="w-12 h-12 rounded-xl bg-black border border-zinc-700 flex items-center justify-center text-xl shrink-0 overflow-hidden">
-        <img src="LBJ.jpg" alt="LeBronify" class="w-full h-full object-cover" onerror="this.parentElement.textContent='👑';" />
+        <img src="LBJf.jpg" alt="LeBronify" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');" />
+        <svg class="hidden w-full h-full" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs><linearGradient id="playerCrownFallback" x1="10%" y1="60%" x2="90%" y2="40%"><stop offset="0%" stop-color="#b50d3a"/><stop offset="50%" stop-color="#df5a24"/><stop offset="100%" stop-color="#ffa812"/></linearGradient></defs>
+          <rect width="512" height="512" fill="#000000"/>
+          <path d="M 62 418 L 82 186 L 145 298 L 262 96 L 364 296 L 435 186 L 450 418 Z" fill="url(#playerCrownFallback)"/>
+        </svg>
       </div>
       <div class="min-w-0">
         <p id="player-title" class="text-sm font-bold text-white truncate">No track playing</p>
@@ -755,7 +770,7 @@
       playQueue = [];
       document.getElementById('player-title').textContent = 'No track playing';
       document.getElementById('player-artist').textContent = 'Sign in to listen';
-      document.getElementById('player-cover').innerHTML = '👑';
+      document.getElementById('player-cover').innerHTML = defaultLogoHtml('w-full h-full object-cover');
       document.getElementById('seek-bar').value = 0;
       document.getElementById('time-current').textContent = '0:00';
       document.getElementById('time-duration').textContent = '0:00';
@@ -777,7 +792,7 @@
 
         const badge = document.getElementById('user-role-badge');
         if (userRole === 'owner') {
-          badge.textContent = '👑 Owner';
+          badge.innerHTML = `<span class="inline-flex items-center gap-1.5">${crownLogoHtml('w-3.5 h-3.5 rounded-sm')}<span>Owner</span></span>`;
           badge.className = 'inline-block mt-1 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-md bg-bron-gold/20 text-bron-gold border border-bron-gold/40';
         } else if (userRole === 'moderator') {
           badge.textContent = '🛡️ Moderator';
@@ -1081,7 +1096,9 @@
       if (!currentTrack) {
         container.innerHTML = `
           <div class="flex-1 flex flex-col items-center justify-center text-center py-12 px-4 space-y-3">
-            <div class="w-16 h-16 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-3xl">👑</div>
+            <div class="w-16 h-16 rounded-2xl bg-black border border-zinc-800 flex items-center justify-center overflow-hidden p-2">
+              ${crownLogoHtml('w-full h-full')}
+            </div>
             <p class="text-sm font-bold text-white">Nothing Playing Yet</p>
             <p class="text-xs text-zinc-400">Play any verified LeBron remix to see full track artwork, copyright credits, and your Up Next queue here.</p>
           </div>
@@ -1093,7 +1110,7 @@
       const isPlaying = !audioEl.paused;
       const coverHtml = currentTrack.cover_url
         ? `<img src="${escapeHtml(currentTrack.cover_url)}" alt="" class="w-full h-full object-cover" />`
-        : `<div class="w-full h-full bg-gradient-to-br from-bron-purple via-bron-card to-zinc-900 flex items-center justify-center text-6xl">👑</div>`;
+        : `<div class="w-full h-full bg-black flex items-center justify-center p-8">${crownLogoHtml('w-full h-full')}</div>`;
 
       const statusBadge = currentTrack.status === 'approved'
         ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold">✓ Human Copyright Verified</span>`
@@ -1108,8 +1125,8 @@
       const queueHtml = upNext.length > 0
         ? upNext.map(t => `
             <button onclick='playTrackById("${t.id}")' class="w-full flex items-center gap-3 p-2 rounded-xl hover:bg-zinc-800/70 text-left transition group">
-              <div class="w-10 h-10 rounded-lg bg-zinc-900 border border-zinc-800 overflow-hidden shrink-0 flex items-center justify-center text-sm">
-                ${t.cover_url ? `<img src="${escapeHtml(t.cover_url)}" class="w-full h-full object-cover" />` : '👑'}
+              <div class="w-10 h-10 rounded-lg bg-black border border-zinc-800 overflow-hidden shrink-0 flex items-center justify-center">
+                ${t.cover_url ? `<img src="${escapeHtml(t.cover_url)}" class="w-full h-full object-cover" />` : crownLogoHtml('w-7 h-7')}
               </div>
               <div class="min-w-0 flex-1">
                 <p class="text-xs font-bold text-zinc-200 group-hover:text-bron-gold truncate">${escapeHtml(t.title)}</p>
@@ -1208,7 +1225,7 @@
       const isLocked = !currentUser;
       const cover = t.cover_url
         ? `<img src="${escapeHtml(t.cover_url)}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" />`
-        : `<div class="w-full h-full bg-gradient-to-br from-bron-purple via-bron-card to-zinc-900 flex items-center justify-center text-4xl">👑</div>`;
+        : `<div class="w-full h-full bg-black flex items-center justify-center p-8">${crownLogoHtml('w-full h-full group-hover:scale-105 transition duration-300')}</div>`;
 
       const actionIcon = isLocked
         ? '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a5 5 0 00-5 5v3H6a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2v-8a2 2 0 00-2-2h-1V7a5 5 0 00-5-5zm-3 8V7a3 3 0 016 0v3H9z"/></svg>'
@@ -1437,7 +1454,7 @@
       document.getElementById('player-artist').textContent = track.artist;
       document.getElementById('player-cover').innerHTML = track.cover_url
         ? `<img src="${escapeHtml(track.cover_url)}" class="w-full h-full object-cover" />`
-        : '👑';
+        : crownLogoHtml('w-full h-full p-1.5');
 
       audioEl.src = track.audio_url;
       setupVisualizer();
@@ -1549,6 +1566,55 @@
     // =========================================================================
     // HELPERS
     // =========================================================================
+    function crownLogoHtml(sizeClass = 'w-5 h-5') {
+      return `
+        <span class="inline-flex ${sizeClass} items-center justify-center overflow-hidden bg-black shrink-0">
+          <img src="LBJ%20Crown.jpg" alt="Crown" class="w-full h-full object-contain" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');" />
+          <svg class="hidden w-full h-full" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <defs>
+              <linearGradient id="crownLogoFallback" x1="10%" y1="60%" x2="90%" y2="40%">
+                <stop offset="0%" stop-color="#b50d3a" />
+                <stop offset="50%" stop-color="#df5a24" />
+                <stop offset="100%" stop-color="#ffa812" />
+              </linearGradient>
+            </defs>
+            <rect width="512" height="512" fill="#000000" />
+            <path d="M 62 418 L 82 186 L 145 298 L 262 96 L 364 296 L 435 186 L 450 418 Z" fill="url(#crownLogoFallback)" />
+          </svg>
+        </span>
+      `;
+    }
+
+    function defaultLogoHtml(sizeClass = 'w-full h-full') {
+      return `
+        <img src="LBJf.jpg" alt="LeBronify" class="${sizeClass}" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');" />
+        <svg class="hidden ${sizeClass}" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs>
+            <linearGradient id="lbjfBallFallback" x1="15%" y1="50%" x2="95%" y2="50%">
+              <stop offset="0%" stop-color="#1b00ff" />
+              <stop offset="55%" stop-color="#4e00c2" />
+              <stop offset="100%" stop-color="#e60023" />
+            </linearGradient>
+            <linearGradient id="lbjfCrownFallback" x1="0%" y1="100%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#b80f38" />
+              <stop offset="55%" stop-color="#df5d23" />
+              <stop offset="100%" stop-color="#ffa812" />
+            </linearGradient>
+            <clipPath id="lbjfClipFallback"><circle cx="256" cy="256" r="165" /></clipPath>
+          </defs>
+          <rect width="512" height="512" fill="#000000" />
+          <path d="M 88 222 L 28 148 L 86 168 L 58 58 L 158 96 L 146 34 L 212 94 Z" fill="url(#lbjfCrownFallback)" />
+          <circle cx="256" cy="256" r="165" fill="url(#lbjfBallFallback)" />
+          <g clip-path="url(#lbjfClipFallback)" fill="none" stroke="#000000" stroke-width="14" stroke-linecap="round">
+            <path d="M 70 220 Q 240 120 430 220" />
+            <path d="M 70 285 Q 245 190 435 285" />
+            <path d="M 80 355 Q 250 265 425 355" />
+            <path d="M 300 80 Q 405 245 255 435" />
+          </g>
+        </svg>
+      `;
+    }
+
     function toggleLike(id) {
       if (likedIds.has(id)) likedIds.delete(id);
       else likedIds.add(id);
