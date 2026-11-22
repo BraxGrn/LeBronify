@@ -72,7 +72,7 @@
         </div>
         <div>
           <h1 class="text-base font-black tracking-tight bg-gradient-to-r from-bron-gold via-yellow-200 to-purple-300 bg-clip-text text-transparent leading-none">LeBronify</h1>
-          <p class="text-[10px] uppercase tracking-widest text-zinc-400 font-semibold mt-0.5">v2.9.3</p>
+          <p class="text-[10px] uppercase tracking-widest text-zinc-400 font-semibold mt-0.5">v2.9.4</p>
         </div>
       </div>
       <div class="flex items-center gap-2">
@@ -95,7 +95,7 @@
             <h1 class="text-xl font-black tracking-tight bg-gradient-to-r from-bron-gold via-yellow-200 to-purple-300 bg-clip-text text-transparent">
               LeBronify
             </h1>
-            <p class="text-[11px] uppercase tracking-widest text-zinc-400 font-semibold">King James Remixes · v2.9.3</p>
+            <p class="text-[11px] uppercase tracking-widest text-zinc-400 font-semibold">King James Remixes · v2.9.4</p>
           </div>
         </div>
 
@@ -508,13 +508,17 @@
           <div id="up-url-fields" class="hidden space-y-3">
             <div>
               <label class="block text-xs font-semibold text-zinc-400 mb-1.5">Direct Audio URL (MP3 / WAV / M4A / OGG) *</label>
-              <input id="up-audio-url" type="url" placeholder="https://your-host.com/lebron-remix.mp3" class="w-full px-3.5 py-2.5 rounded-xl bg-zinc-950 border border-zinc-800 focus:border-bron-gold focus:outline-none text-sm text-white" />
+              <div class="flex gap-2">
+                <input id="up-audio-url" type="url" placeholder="https://files.catbox.moe/abc123.mp3" class="flex-1 px-3.5 py-2.5 rounded-xl bg-zinc-950 border border-zinc-800 focus:border-bron-gold focus:outline-none text-sm text-white" />
+                <button id="btn-test-url" type="button" onclick="testExternalAudioUrl()" class="shrink-0 px-3 py-2.5 rounded-xl bg-bron-purple hover:bg-bron-purpleLight text-white text-xs font-bold transition">▶ Test</button>
+              </div>
+              <p id="up-url-test-status" class="hidden text-[11px] mt-1.5"></p>
             </div>
             <div>
               <label class="block text-xs font-semibold text-zinc-400 mb-1.5">Cover Art Image URL (Optional)</label>
               <input id="up-cover-url" type="url" placeholder="https://your-host.com/cover.jpg" class="w-full px-3.5 py-2.5 rounded-xl bg-zinc-950 border border-zinc-800 focus:border-bron-gold focus:outline-none text-sm text-white" />
             </div>
-            <p class="text-[11px] text-zinc-400">💡 Uses 0 MB of your Supabase storage. Works with direct audio links from Cloudflare R2, Archive.org, Catbox, or any HTTPS host.</p>
+            <p class="text-[11px] text-zinc-400">💡 Must be a direct audio file link (e.g. Cloudflare R2, Catbox, Archive.org, Dropbox, or GitHub raw). Webpage links like YouTube or SoundCloud cannot play directly.</p>
           </div>
         </div>
 
@@ -1080,6 +1084,76 @@
     // =========================================================================
     // UPLOAD REMIX (DIRECT FILE OR EXTERNAL URL)
     // =========================================================================
+    function normalizeAudioUrl(rawUrl) {
+      if (!rawUrl) return rawUrl;
+      let url = rawUrl.trim();
+
+      // Convert Dropbox share links (?dl=0 / ?dl=1) to direct raw streams
+      if (/dropbox\.com/i.test(url)) {
+        url = url.replace(/[?&]dl=[01]/i, '');
+        url += (url.includes('?') ? '&' : '?') + 'raw=1';
+        return url;
+      }
+
+      // Convert GitHub file viewer links to raw.githubusercontent.com
+      const ghMatch = url.match(/^https?:\/\/github\.com\/([^/]+)\/([^/]+)\/blob\/(.+)$/i);
+      if (ghMatch) {
+        return `https://raw.githubusercontent.com/${ghMatch[1]}/${ghMatch[2]}/${ghMatch[3]}`;
+      }
+
+      // Convert Google Drive share links to direct download stream
+      const gdMatch = url.match(/drive\.google\.com\/file\/d\/([^/?#]+)/i) || url.match(/drive\.google\.com\/open\?id=([^&]+)/i);
+      if (gdMatch) {
+        return `https://drive.google.com/uc?export=download&id=${gdMatch[1]}`;
+      }
+
+      return url;
+    }
+
+    function testExternalAudioUrl() {
+      const rawUrl = document.getElementById('up-audio-url')?.value.trim();
+      const statusEl = document.getElementById('up-url-test-status');
+      const btn = document.getElementById('btn-test-url');
+      if (!rawUrl || !/^https?:\/\/.+/i.test(rawUrl)) {
+        return showToast('Paste a valid https:// audio URL first.', true);
+      }
+
+      const normalized = normalizeAudioUrl(rawUrl);
+      if (normalized !== rawUrl) {
+        document.getElementById('up-audio-url').value = normalized;
+      }
+
+      if (auditAudioEl.src === normalized && !auditAudioEl.paused) {
+        auditAudioEl.pause();
+        if (btn) btn.textContent = '▶ Test';
+        return;
+      }
+
+      audioEl.pause();
+      if (statusEl) {
+        statusEl.className = 'text-[11px] mt-1.5 text-zinc-400';
+        statusEl.textContent = 'Testing audio stream...';
+        statusEl.classList.remove('hidden');
+      }
+
+      auditAudioEl.src = normalized;
+      auditAudioEl.play()
+        .then(() => {
+          if (btn) btn.textContent = '❚❚ Stop';
+          if (statusEl) {
+            statusEl.className = 'text-[11px] mt-1.5 text-emerald-400 font-semibold';
+            statusEl.textContent = '✓ Audio link works! Ready to submit.';
+          }
+        })
+        .catch(() => {
+          if (btn) btn.textContent = '▶ Test';
+          if (statusEl) {
+            statusEl.className = 'text-[11px] mt-1.5 text-red-400 font-semibold';
+            statusEl.textContent = '✕ Browser could not play this URL. Make sure it is a direct .mp3/.wav/.m4a link (not a YouTube/SoundCloud/Drive webpage).';
+          }
+        });
+    }
+
     function setUploadMode(mode) {
       uploadMode = mode;
       const isFile = mode === 'file';
@@ -1150,8 +1224,8 @@
           if (rawCoverUrl && !/^https?:\/\/.+/i.test(rawCoverUrl)) {
             throw new Error('Cover Art URL must start with https:// or http://.');
           }
-          finalAudioUrl = rawAudioUrl;
-          finalCoverUrl = rawCoverUrl || null;
+          finalAudioUrl = normalizeAudioUrl(rawAudioUrl);
+          finalCoverUrl = rawCoverUrl ? normalizeAudioUrl(rawCoverUrl) : null;
         } else {
           const audioFile = document.getElementById('up-audio').files[0];
           const coverFile = document.getElementById('up-cover').files[0];
@@ -1252,14 +1326,20 @@
     }
 
     function previewAuditAudio(url, btnEl) {
-      if (auditAudioEl.src === url && !auditAudioEl.paused) {
+      const playableUrl = normalizeAudioUrl(url);
+      if (auditAudioEl.src === playableUrl && !auditAudioEl.paused) {
         auditAudioEl.pause();
         btnEl.textContent = '▶ Listen & Audit';
         return;
       }
       audioEl.pause();
-      auditAudioEl.src = url;
-      auditAudioEl.play().catch(err => showToast('Could not play audio: ' + err.message, true));
+      auditAudioEl.src = playableUrl;
+      auditAudioEl.play().catch(err => {
+        const msg = /no supported source/i.test(err.message)
+          ? 'Could not play this link — make sure it is a direct .mp3/.wav/.m4a file URL (not a webpage).'
+          : 'Could not play audio: ' + err.message;
+        showToast(msg, true);
+      });
       document.querySelectorAll('.audit-play-btn').forEach(b => (b.textContent = '▶ Listen & Audit'));
       btnEl.textContent = '❚❚ Pause Audit';
     }
@@ -2205,8 +2285,13 @@
 
       auditAudioEl.pause();
       currentTrack = track;
-      audioEl.src = track.audio_url;
-      audioEl.play().catch(err => showToast('Playback error: ' + err.message, true));
+      audioEl.src = normalizeAudioUrl(track.audio_url);
+      audioEl.play().catch(err => {
+        const msg = /no supported source/i.test(err.message)
+          ? 'No supported audio source found. This track URL is likely a webpage or blocked host instead of a direct .mp3/.wav file.'
+          : 'Playback error: ' + err.message;
+        showToast(msg, true);
+      });
 
       document.getElementById('player-title').textContent = track.title;
       const artistEl = document.getElementById('player-artist');
