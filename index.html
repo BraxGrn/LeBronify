@@ -72,7 +72,7 @@
         </div>
         <div>
           <h1 class="text-base font-black tracking-tight bg-gradient-to-r from-bron-gold via-yellow-200 to-purple-300 bg-clip-text text-transparent leading-none">LeBronify</h1>
-          <p class="text-[10px] uppercase tracking-widest text-zinc-400 font-semibold mt-0.5">v2.9.4</p>
+          <p class="text-[10px] uppercase tracking-widest text-zinc-400 font-semibold mt-0.5">v2.9.5</p>
         </div>
       </div>
       <div class="flex items-center gap-2">
@@ -95,7 +95,7 @@
             <h1 class="text-xl font-black tracking-tight bg-gradient-to-r from-bron-gold via-yellow-200 to-purple-300 bg-clip-text text-transparent">
               LeBronify
             </h1>
-            <p class="text-[11px] uppercase tracking-widest text-zinc-400 font-semibold">King James Remixes · v2.9.4</p>
+            <p class="text-[11px] uppercase tracking-widest text-zinc-400 font-semibold">King James Remixes · v2.9.5</p>
           </div>
         </div>
 
@@ -402,6 +402,17 @@
   <audio id="main-audio"></audio>
   <audio id="audit-audio"></audio>
 
+  <!-- Floating YouTube Mini-Player (automatically appears when playing a YouTube-linked remix) -->
+  <div id="yt-player-wrapper" class="hidden fixed bottom-24 right-4 z-40 w-64 rounded-2xl overflow-hidden bg-black border border-bron-gold/40 shadow-2xl transition-all">
+    <div class="px-3 py-1.5 bg-zinc-950 border-b border-zinc-800 flex items-center justify-between">
+      <span class="text-[10px] font-extrabold uppercase tracking-wider text-bron-gold flex items-center gap-1.5">▶ YouTube Stream</span>
+      <button id="yt-minimize-btn" type="button" onclick="toggleYtMiniPlayer()" class="text-[10px] font-bold text-zinc-400 hover:text-white transition">Hide</button>
+    </div>
+    <div id="yt-player-box" class="w-full aspect-video bg-black">
+      <div id="yt-player-host"></div>
+    </div>
+  </div>
+
   <!-- MODAL: SIGN IN / CREATE ACCOUNT -->
   <div id="auth-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="w-full max-w-md rounded-2xl bg-bron-surface border border-zinc-800 shadow-2xl overflow-hidden">
@@ -442,21 +453,21 @@
   <div id="upload-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
     <div class="w-full max-w-lg rounded-2xl bg-bron-surface border border-zinc-800 shadow-2xl overflow-hidden my-8">
       <div class="px-6 py-4 border-b border-zinc-800 flex items-center justify-between">
-        <div>
-          <h3 class="text-lg font-black text-white">⬆️ Upload a LeBron Remix</h3>
-          <p class="text-xs text-zinc-400">Submitted to the Human Copyright Verification Queue</p>
-        </div>
-        <button onclick="closeUploadModal()" class="text-zinc-400 hover:text-white text-sm">✕</button>
-      </div>
-      <form onsubmit="handleUploadSubmit(event)" class="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-semibold text-zinc-400 mb-1.5">Track Title *</label>
-            <input id="up-title" required type="text" placeholder="e.g. Sunshine Drill Remix" class="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 focus:border-bron-gold focus:outline-none text-sm text-white" />
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-zinc-400 mb-1.5">Artist / Remixer *</label>
-            <input id="up-artist" required type="text" placeholder="e.g. DJ King James" class="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 focus:border-bron-gold focus:outline-none text-sm text-white" />
+          <!-- Mode 2: External Direct URL (YouTube, Cloudflare R2, Archive.org, etc.) -->
+          <div id="up-url-fields" class="hidden space-y-3">
+            <div>
+              <label class="block text-xs font-semibold text-zinc-400 mb-1.5">YouTube Link or Direct Audio URL (MP3/WAV) *</label>
+              <div class="flex gap-2">
+                <input id="up-audio-url" type="url" placeholder="https://www.youtube.com/watch?v=... or .mp3 link" class="flex-1 px-3.5 py-2.5 rounded-xl bg-zinc-950 border border-zinc-800 focus:border-bron-gold focus:outline-none text-sm text-white" />
+                <button id="btn-test-url" type="button" onclick="testExternalAudioUrl()" class="shrink-0 px-3 py-2.5 rounded-xl bg-bron-purple hover:bg-bron-purpleLight text-white text-xs font-bold transition">▶ Test</button>
+              </div>
+              <p id="up-url-test-status" class="hidden text-[11px] mt-1.5"></p>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-zinc-400 mb-1.5">Cover Art Image URL (Optional — auto-filled for YouTube)</label>
+              <input id="up-cover-url" type="url" placeholder="https://your-host.com/cover.jpg" class="w-full px-3.5 py-2.5 rounded-xl bg-zinc-950 border border-zinc-800 focus:border-bron-gold focus:outline-none text-sm text-white" />
+            </div>
+            <p class="text-[11px] text-zinc-400">💡 Supports <strong>YouTube links</strong> (as long as embedding is enabled) and direct audio file links (Cloudflare R2, Catbox, Archive.org, Dropbox, GitHub raw).</p>
           </div>
         </div>
 
@@ -721,12 +732,187 @@
     let isRepeat = false;
     let npSidebarOpen = window.innerWidth >= 1280;
 
+    // YouTube IFrame Player State
+    let activeSourceType = 'audio'; // 'audio' | 'youtube'
+    let ytPlayer = null;
+    let ytApiReady = false;
+    let ytPlayerReady = false;
+    let ytIsPlaying = false;
+    let ytMinimized = false;
+    let ytPendingVideoId = null;
+    let ytProgressTimer = null;
+
+    // =========================================================================
+    // YOUTUBE IFRAME PLAYER INTEGRATION
+    // =========================================================================
+    function extractYouTubeId(rawUrl) {
+      if (!rawUrl) return null;
+      const str = String(rawUrl).trim();
+      const patterns = [
+        /(?:youtube\.com\/watch\?.*v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/|music\.youtube\.com\/watch\?.*v=)([a-zA-Z0-9_-]{11})/i
+      ];
+      for (const rx of patterns) {
+        const m = str.match(rx);
+        if (m && m[1]) return m[1];
+      }
+      return null;
+    }
+
+    function loadYouTubeApi() {
+      if (window.YT && window.YT.Player) {
+        ytApiReady = true;
+        return;
+      }
+      if (document.getElementById('yt-iframe-api-script')) return;
+      const tag = document.createElement('script');
+      tag.id = 'yt-iframe-api-script';
+      tag.src = 'https://www.youtube.com/iframe_api';
+      document.head.appendChild(tag);
+    }
+
+    window.onYouTubeIframeAPIReady = function () {
+      ytApiReady = true;
+      if (ytPendingVideoId) {
+        ensureYouTubePlayer(ytPendingVideoId);
+      }
+    };
+
+    function ensureYouTubePlayer(videoId) {
+      ytPendingVideoId = videoId;
+      showYtWrapper(true);
+
+      if (!ytApiReady || !window.YT || !window.YT.Player) {
+        loadYouTubeApi();
+        return;
+      }
+
+      if (ytPlayer && ytPlayerReady) {
+        ytPlayer.loadVideoById(videoId);
+        ytPlayer.setVolume(Math.round((audioEl.volume || 0.85) * 100));
+        return;
+      }
+
+      if (ytPlayer) return;
+
+      ytPlayer = new window.YT.Player('yt-player-host', {
+        width: '100%',
+        height: '100%',
+        videoId: videoId,
+        playerVars: {
+          autoplay: 1,
+          controls: 1,
+          rel: 0,
+          modestbranding: 1,
+          playsinline: 1
+        },
+        events: {
+          onReady: (ev) => {
+            ytPlayerReady = true;
+            ev.target.setVolume(Math.round((audioEl.volume || 0.85) * 100));
+            if (ytPendingVideoId) {
+              ev.target.loadVideoById(ytPendingVideoId);
+              ytPendingVideoId = null;
+            }
+          },
+          onStateChange: (ev) => {
+            const YTState = window.YT.PlayerState;
+            if (ev.data === YTState.PLAYING) {
+              ytIsPlaying = true;
+              startYtProgressPoller();
+              updatePlayIcons();
+            } else if (ev.data === YTState.PAUSED || ev.data === YTState.BUFFERING) {
+              if (ev.data === YTState.PAUSED) ytIsPlaying = false;
+              updatePlayIcons();
+            } else if (ev.data === YTState.ENDED) {
+              ytIsPlaying = false;
+              stopYtProgressPoller();
+              if (activeSourceType === 'youtube' && currentTrack) {
+                if (isRepeat) {
+                  ytPlayer.seekTo(0, true);
+                  ytPlayer.playVideo();
+                } else {
+                  playNext();
+                }
+              }
+              updatePlayIcons();
+            }
+          },
+          onError: (ev) => {
+            ytIsPlaying = false;
+            stopYtProgressPoller();
+            updatePlayIcons();
+            const code = ev.data;
+            const msg = (code === 101 || code === 150)
+              ? 'The YouTube uploader disabled embedding for this video. Try a different YouTube link or upload an MP3.'
+              : 'YouTube playback error (code ' + code + '). Check that the video is public and valid.';
+            showToast(msg, true);
+          }
+        }
+      });
+    }
+
+    function showYtWrapper(visible) {
+      const wrap = document.getElementById('yt-player-wrapper');
+      if (!wrap) return;
+      wrap.classList.toggle('hidden', !visible);
+    }
+
+    function toggleYtMiniPlayer() {
+      ytMinimized = !ytMinimized;
+      const box = document.getElementById('yt-player-box');
+      const btn = document.getElementById('yt-minimize-btn');
+      if (box) {
+        box.style.height = ytMinimized ? '1px' : '';
+        box.style.opacity = ytMinimized ? '0' : '1';
+      }
+      if (btn) btn.textContent = ytMinimized ? 'Show' : 'Hide';
+    }
+
+    function stopYouTubePlayback() {
+      ytIsPlaying = false;
+      ytPendingVideoId = null;
+      stopYtProgressPoller();
+      if (ytPlayer && ytPlayerReady) {
+        try { ytPlayer.stopVideo(); } catch (_) {}
+      }
+      showYtWrapper(false);
+    }
+
+    function startYtProgressPoller() {
+      stopYtProgressPoller();
+      ytProgressTimer = setInterval(() => {
+        if (activeSourceType !== 'youtube' || !ytPlayer || !ytPlayerReady) return;
+        try {
+          const cur = ytPlayer.getCurrentTime() || 0;
+          const dur = ytPlayer.getDuration() || 0;
+          if (dur > 0) {
+            document.getElementById('seek-bar').value = (cur / dur) * 100;
+            document.getElementById('time-current').textContent = formatTime(cur);
+            document.getElementById('time-duration').textContent = formatTime(dur);
+          }
+        } catch (_) {}
+      }, 400);
+    }
+
+    function stopYtProgressPoller() {
+      if (ytProgressTimer) {
+        clearInterval(ytProgressTimer);
+        ytProgressTimer = null;
+      }
+    }
+
+    function isTrackPlaying(trackId) {
+      if (!currentTrack || currentTrack.id !== trackId) return false;
+      return activeSourceType === 'youtube' ? ytIsPlaying : !audioEl.paused;
+    }
+
     // =========================================================================
     // INITIALIZATION & SUPABASE SESSION
     // =========================================================================
     async function initApp() {
       setupDynamicFavicon();
       setupAudioEvents();
+      loadYouTubeApi();
       audioEl.volume = 0.85;
 
       const ownerCrown = document.getElementById('owner-panel-crown');
@@ -1115,7 +1301,21 @@
       const statusEl = document.getElementById('up-url-test-status');
       const btn = document.getElementById('btn-test-url');
       if (!rawUrl || !/^https?:\/\/.+/i.test(rawUrl)) {
-        return showToast('Paste a valid https:// audio URL first.', true);
+        return showToast('Paste a valid https:// audio or YouTube URL first.', true);
+      }
+
+      const ytId = extractYouTubeId(rawUrl);
+      if (ytId) {
+        audioEl.pause();
+        auditAudioEl.pause();
+        activeSourceType = 'youtube';
+        ensureYouTubePlayer(ytId);
+        if (statusEl) {
+          statusEl.className = 'text-[11px] mt-1.5 text-emerald-400 font-semibold';
+          statusEl.textContent = '✓ YouTube link detected! Playing preview in the mini-player (cover art will auto-fill).';
+          statusEl.classList.remove('hidden');
+        }
+        return;
       }
 
       const normalized = normalizeAudioUrl(rawUrl);
@@ -1219,13 +1419,19 @@
           const rawCoverUrl = document.getElementById('up-cover-url').value.trim();
 
           if (!/^https?:\/\/.+/i.test(rawAudioUrl)) {
-            throw new Error('Please paste a valid direct audio URL starting with https:// or http://.');
+            throw new Error('Please paste a valid YouTube or direct audio URL starting with https:// or http://.');
           }
           if (rawCoverUrl && !/^https?:\/\/.+/i.test(rawCoverUrl)) {
             throw new Error('Cover Art URL must start with https:// or http://.');
           }
-          finalAudioUrl = normalizeAudioUrl(rawAudioUrl);
-          finalCoverUrl = rawCoverUrl ? normalizeAudioUrl(rawCoverUrl) : null;
+          const ytId = extractYouTubeId(rawAudioUrl);
+          if (ytId) {
+            finalAudioUrl = `https://www.youtube.com/watch?v=${ytId}`;
+            finalCoverUrl = rawCoverUrl ? normalizeAudioUrl(rawCoverUrl) : `https://i.ytimg.com/vi/${ytId}/hqdefault.jpg`;
+          } else {
+            finalAudioUrl = normalizeAudioUrl(rawAudioUrl);
+            finalCoverUrl = rawCoverUrl ? normalizeAudioUrl(rawCoverUrl) : null;
+          }
         } else {
           const audioFile = document.getElementById('up-audio').files[0];
           const coverFile = document.getElementById('up-cover').files[0];
@@ -1326,6 +1532,23 @@
     }
 
     function previewAuditAudio(url, btnEl) {
+      const ytId = extractYouTubeId(url);
+      if (ytId) {
+        audioEl.pause();
+        auditAudioEl.pause();
+        if (activeSourceType === 'youtube' && ytIsPlaying) {
+          stopYouTubePlayback();
+          btnEl.textContent = '▶ Listen & Audit';
+          return;
+        }
+        activeSourceType = 'youtube';
+        ensureYouTubePlayer(ytId);
+        document.querySelectorAll('.audit-play-btn').forEach(b => (b.textContent = '▶ Listen & Audit'));
+        btnEl.textContent = '❚❚ Stop Audit';
+        return;
+      }
+
+      stopYouTubePlayback();
       const playableUrl = normalizeAudioUrl(url);
       if (auditAudioEl.src === playableUrl && !auditAudioEl.paused) {
         auditAudioEl.pause();
@@ -1336,7 +1559,7 @@
       auditAudioEl.src = playableUrl;
       auditAudioEl.play().catch(err => {
         const msg = /no supported source/i.test(err.message)
-          ? 'Could not play this link — make sure it is a direct .mp3/.wav/.m4a file URL (not a webpage).'
+          ? 'Could not play this link — make sure it is a YouTube link or a direct .mp3/.wav/.m4a file URL.'
           : 'Could not play audio: ' + err.message;
         showToast(msg, true);
       });
@@ -1852,7 +2075,7 @@
               <h3 class="text-sm font-extrabold uppercase tracking-wider text-zinc-400">Popular Tracks</h3>
               <div class="space-y-2">
                 ${sortedTracks.slice(0, 5).map((t, idx) => {
-                  const isPlaying = currentTrack?.id === t.id && !audioEl.paused;
+                  const isPlaying = isTrackPlaying(t.id);
                   const isLiked = likedIds.has(t.id);
                   return `
                     <div class="rounded-xl bg-bron-surface border ${currentTrack?.id === t.id ? 'border-bron-gold/60' : 'border-zinc-800/80'} p-3 flex items-center justify-between gap-3 hover:border-bron-purple/50 transition">
@@ -1952,7 +2175,7 @@
     }
 
     function renderTrackCard(t) {
-      const isPlaying = currentTrack?.id === t.id && !audioEl.paused;
+      const isPlaying = isTrackPlaying(t.id);
       const isLiked = likedIds.has(t.id);
       const encodedArtist = encodeURIComponent(t.artist || 'Unknown Artist');
       return `
@@ -2285,13 +2508,27 @@
 
       auditAudioEl.pause();
       currentTrack = track;
-      audioEl.src = normalizeAudioUrl(track.audio_url);
-      audioEl.play().catch(err => {
-        const msg = /no supported source/i.test(err.message)
-          ? 'No supported audio source found. This track URL is likely a webpage or blocked host instead of a direct .mp3/.wav file.'
-          : 'Playback error: ' + err.message;
-        showToast(msg, true);
-      });
+
+      const ytId = extractYouTubeId(track.audio_url);
+      if (ytId) {
+        audioEl.pause();
+        audioEl.removeAttribute('src');
+        activeSourceType = 'youtube';
+        document.getElementById('seek-bar').value = 0;
+        document.getElementById('time-current').textContent = '0:00';
+        document.getElementById('time-duration').textContent = '0:00';
+        ensureYouTubePlayer(ytId);
+      } else {
+        stopYouTubePlayback();
+        activeSourceType = 'audio';
+        audioEl.src = normalizeAudioUrl(track.audio_url);
+        audioEl.play().catch(err => {
+          const msg = /no supported source/i.test(err.message)
+            ? 'No supported audio source found. This track URL is likely a webpage or blocked host instead of a direct .mp3/.wav file.'
+            : 'Playback error: ' + err.message;
+          showToast(msg, true);
+        });
+      }
 
       document.getElementById('player-title').textContent = track.title;
       const artistEl = document.getElementById('player-artist');
@@ -2316,6 +2553,14 @@
         if (first) playTrackById(first.id);
         return;
       }
+      if (activeSourceType === 'youtube') {
+        if (ytPlayer && ytPlayerReady) {
+          if (ytIsPlaying) ytPlayer.pauseVideo();
+          else ytPlayer.playVideo();
+        }
+        updatePlayIcons();
+        return;
+      }
       if (audioEl.paused) {
         audioEl.play().catch(() => {});
       } else {
@@ -2327,6 +2572,8 @@
     function stopPlayback() {
       audioEl.pause();
       audioEl.removeAttribute('src');
+      stopYouTubePlayback();
+      activeSourceType = 'audio';
       currentTrack = null;
       document.getElementById('player-title').textContent = 'No Track Selected';
       document.getElementById('player-artist').textContent = currentUser ? 'Pick a verified remix' : 'Sign in to listen';
@@ -2352,8 +2599,12 @@
 
     function playPrev() {
       if (!currentUser || !playQueue.length) return;
-      if (audioEl.currentTime > 3) {
-        audioEl.currentTime = 0;
+      const curTime = activeSourceType === 'youtube' && ytPlayer && ytPlayerReady
+        ? (ytPlayer.getCurrentTime() || 0)
+        : (audioEl.currentTime || 0);
+      if (curTime > 3) {
+        if (activeSourceType === 'youtube' && ytPlayer && ytPlayerReady) ytPlayer.seekTo(0, true);
+        else audioEl.currentTime = 0;
         return;
       }
       const idx = playQueue.findIndex(t => t.id === currentTrack?.id);
@@ -2374,16 +2625,26 @@
     }
 
     function seekAudio(val) {
+      if (activeSourceType === 'youtube') {
+        if (!ytPlayer || !ytPlayerReady) return;
+        const dur = ytPlayer.getDuration() || 0;
+        if (dur > 0) ytPlayer.seekTo((val / 100) * dur, true);
+        return;
+      }
       if (!audioEl.duration) return;
       audioEl.currentTime = (val / 100) * audioEl.duration;
     }
 
     function setVolume(val) {
-      audioEl.volume = Number(val);
+      const v = Number(val);
+      audioEl.volume = v;
+      if (ytPlayer && ytPlayerReady) {
+        try { ytPlayer.setVolume(Math.round(v * 100)); } catch (_) {}
+      }
     }
 
     function updatePlayIcons() {
-      const playing = !audioEl.paused && Boolean(currentTrack);
+      const playing = Boolean(currentTrack) && (activeSourceType === 'youtube' ? ytIsPlaying : !audioEl.paused);
       document.getElementById('icon-play').classList.toggle('hidden', playing);
       document.getElementById('icon-pause').classList.toggle('hidden', !playing);
       renderCatalog();
