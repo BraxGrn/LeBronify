@@ -72,7 +72,7 @@
         </div>
         <div>
           <h1 class="text-base font-black tracking-tight bg-gradient-to-r from-bron-gold via-yellow-200 to-purple-300 bg-clip-text text-transparent leading-none">LeBronify</h1>
-          <p class="text-[10px] uppercase tracking-widest text-zinc-400 font-semibold mt-0.5">v3.0</p>
+          <p class="text-[10px] uppercase tracking-widest text-zinc-400 font-semibold mt-0.5">v3.0.1</p>
         </div>
       </div>
       <div class="flex items-center gap-2">
@@ -95,7 +95,7 @@
             <h1 class="text-xl font-black tracking-tight bg-gradient-to-r from-bron-gold via-yellow-200 to-purple-300 bg-clip-text text-transparent">
               LeBronify
             </h1>
-            <p class="text-[11px] uppercase tracking-widest text-zinc-400 font-semibold">King James Remixes · v3.0</p>
+            <p class="text-[11px] uppercase tracking-widest text-zinc-400 font-semibold">King James Remixes · v3.0.1</p>
           </div>
         </div>
 
@@ -265,34 +265,6 @@
             <div id="reviewed-list" class="space-y-2.5"></div>
           </div>
 
-          <!-- Owner Access Control Panel -->
-          <div id="owner-panel" class="hidden pt-6 border-t border-zinc-800/80">
-            <div class="rounded-2xl bg-bron-surface border border-bron-gold/40 p-5 md:p-6 space-y-6">
-              <div>
-                <h3 class="text-lg font-black text-white flex items-center gap-2">
-                  <span id="owner-panel-crown"></span>
-                  <span>Owner Access Control</span>
-                </h3>
-                <p class="text-xs text-zinc-400 mt-1">Grant or revoke Moderator confirmation rights and Public Playlist permissions using each person's User UID.</p>
-              </div>
-
-              <!-- Moderators Sub-Panel -->
-              <div class="space-y-4">
-                <div>
-                  <h4 class="text-base font-extrabold text-white flex items-center gap-2">
-                    <span>🛡️</span> Song Verification Moderators
-                  </h4>
-                  <p class="text-xs text-zinc-400 mt-0.5">Moderators can approve or reject uploaded songs in the Copyright Review queue.</p>
-                </div>
-
-                <form onsubmit="addModerator(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <input id="mod-uid-input" required type="text" placeholder="Friend's User UID (uuid)" class="px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 focus:border-bron-gold focus:outline-none text-sm text-white" />
-                  <input id="mod-email-input" required type="email" placeholder="Friend's Email" class="px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 focus:border-bron-gold focus:outline-none text-sm text-white" />
-                  <button type="submit" class="px-4 py-2.5 rounded-xl bg-bron-gold hover:bg-bron-goldLight text-black font-bold text-sm transition">
-                    + Add Moderator
-                  </button>
-                </form>
-
           <!-- Owner Access Control Panel (Universal Verifiers) -->
           <div id="owner-panel" class="hidden pt-6 border-t border-zinc-800/80">
             <div class="rounded-2xl bg-bron-surface border border-bron-gold/40 p-5 md:p-6 space-y-5">
@@ -418,6 +390,35 @@
   </div>
 
   <!-- MODAL: SIGN IN / CREATE ACCOUNT -->
+  <div id="auth-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="w-full max-w-md rounded-2xl bg-bron-surface border border-zinc-800 shadow-2xl overflow-hidden">
+      <div class="px-6 py-4 border-b border-zinc-800 flex items-center justify-between">
+        <h3 id="auth-modal-title" class="text-lg font-black text-white">Sign In to LeBronify</h3>
+        <button onclick="closeAuthModal()" class="text-zinc-400 hover:text-white text-sm">✕</button>
+      </div>
+      <div class="p-6 space-y-4">
+        <div class="grid grid-cols-2 gap-2 p-1 rounded-xl bg-zinc-900 border border-zinc-800">
+          <button id="tab-signin" type="button" onclick="setAuthMode('signin')" class="py-2 rounded-lg text-xs font-extrabold bg-bron-gold text-black transition">Sign In</button>
+          <button id="tab-signup" type="button" onclick="setAuthMode('signup')" class="py-2 rounded-lg text-xs font-bold text-zinc-400 hover:text-white transition">Create Account</button>
+        </div>
+        <p id="signup-verify-reminder" class="hidden text-xs text-bron-gold bg-bron-gold/10 border border-bron-gold/30 rounded-xl p-3">
+          After signing up, check your email inbox (and spam folder) to verify your account before signing in.
+        </p>
+        <form onsubmit="handleAuthSubmit(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-zinc-400 mb-1.5">Email Address</label>
+            <input id="auth-email" required type="email" placeholder="you@example.com" class="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 focus:border-bron-gold focus:outline-none text-sm text-white" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-zinc-400 mb-1.5">Password</label>
+            <input id="auth-password" required minlength="6" type="password" placeholder="••••••••" class="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 focus:border-bron-gold focus:outline-none text-sm text-white" />
+          </div>
+          <button id="auth-submit-btn" type="submit" class="w-full py-2.5 rounded-xl bg-bron-gold hover:bg-bron-goldLight text-black font-extrabold text-sm transition">Sign In</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL: UPLOAD REMIX (WEB LINKS ONLY FOR NEW SUBMISSIONS; OLD UPLOADS STAY INTACT) -->
   <div id="upload-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
     <div class="w-full max-w-lg rounded-2xl bg-bron-surface border border-zinc-800 shadow-2xl overflow-hidden my-8">
@@ -1209,74 +1210,376 @@
     }
 
     // =========================================================================
-    // INITIALIZATION & SUPABASE SESSION
+    // TRACKS & STREAM COUNTER
     // =========================================================================
-    async function initApp() {
-      setupDynamicFavicon();
-      setupAudioEvents();
-      loadYouTubeApi();
-      audioEl.volume = 0.85;
-
-      const ownerCrown = document.getElementById('owner-panel-crown');
-      if (ownerCrown) ownerCrown.innerHTML = crownLogoHtml('w-6 h-6');
-
-      if (!window.supabase) {
-        showToast('Supabase SDK failed to load. Please refresh.', true);
+    async function fetchTracks() {
+      if (!sb) return;
+      try {
+        const { data, error } = await sb.from('tracks').select('*').order('created_at', { ascending: false });
+        if (error) throw error;
+        allTracks = data || [];
         renderAll();
+      } catch (err) {
+        showToast('Could not load tracks: ' + err.message, true);
+      }
+    }
+
+    function getStreamCount(track) {
+      if (!track) return 0;
+      const dbCount = Number(track.play_count || 0);
+      const localCount = Number(localStreamCounts[track.id] || 0);
+      return Math.max(dbCount, localCount);
+    }
+
+    function formatStreams(n) {
+      const num = Number(n || 0);
+      if (num >= 1000000) return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+      if (num >= 1000) return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+      return num.toLocaleString();
+    }
+
+    async function recordStream(track) {
+      if (!track) return;
+      const nextCount = getStreamCount(track) + 1;
+      track.play_count = nextCount;
+      localStreamCounts[track.id] = nextCount;
+      safeSetStorage('lebronify_streams', localStreamCounts);
+
+      if (sb && currentUser) {
+        try {
+          await sb.rpc('increment_stream', { p_track_id: track.id });
+        } catch (_) {}
+      }
+    }
+
+    // =========================================================================
+    // PLAYLIST SYSTEM (PRIVATE + VERIFIER-ONLY PUBLIC PLAYLISTS)
+    // =========================================================================
+    function getLocalPlaylistsKey() {
+      return 'lebronify_playlists_' + (currentUser ? currentUser.id : 'guest');
+    }
+
+    async function fetchPlaylists() {
+      const localList = safeGetStorage(getLocalPlaylistsKey(), []);
+      if (!sb) {
+        userPlaylists = localList;
+        renderPlaylistsView();
+        renderSidebarPlaylists();
         return;
       }
 
       try {
-        sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        const { data: { session } } = await sb.auth.getSession();
-        await handleSessionChange(session);
+        const { data: pls, error: pErr } = await sb.from('playlists').select('*').order('created_at', { ascending: false });
+        if (pErr) throw pErr;
+        const { data: pts, error: ptErr } = await sb.from('playlist_tracks').select('*').order('added_at', { ascending: true });
+        if (ptErr) throw ptErr;
 
-        sb.auth.onAuthStateChange((_event, newSession) => {
-          handleSessionChange(newSession);
-        });
-
-        await fetchTracks();
-      } catch (err) {
-        showToast('Could not connect to Supabase: ' + err.message, true);
-        renderAll();
+        useCloudPlaylists = true;
+        userPlaylists = (pls || []).map(pl => ({
+          ...pl,
+          is_public: Boolean(pl.is_public),
+          trackIds: (pts || []).filter(pt => pt.playlist_id === pl.id).map(pt => pt.track_id)
+        }));
+      } catch (_) {
+        useCloudPlaylists = false;
+        userPlaylists = localList;
       }
+
+      renderPlaylistsView();
+      renderSidebarPlaylists();
     }
 
-    async function handleSessionChange(session) {
-      currentUser = session?.user || null;
-
+    function openCreatePlaylistModal() {
       if (!currentUser) {
-        userRole = 'member';
-        if (currentTrack) stopPlayback();
-        updateAuthUI();
-        await fetchPlaylists();
-        renderAll();
+        showToast('Please sign in to create a playlist.');
+        openAuthModal('signin');
         return;
       }
+      const canPub = canMakePublicPlaylists();
+      const pubWrap = document.getElementById('pl-public-wrapper');
+      const pubChk = document.getElementById('pl-public-input');
+      const privNote = document.getElementById('pl-private-note');
+      if (pubWrap) pubWrap.classList.toggle('hidden', !canPub);
+      if (pubChk) pubChk.checked = false;
+      if (privNote) privNote.classList.toggle('hidden', canPub);
+      document.getElementById('create-playlist-modal').classList.remove('hidden');
+    }
 
-      await fetchModerators();
-      await fetchCurators();
+    function closeCreatePlaylistModal() {
+      document.getElementById('create-playlist-modal').classList.add('hidden');
+    }
 
-      if (currentUser.id === OWNER_UID) {
-        userRole = 'owner';
-      } else {
-        const modEntry = moderators.find(m => m.user_id === currentUser.id);
-        userRole = modEntry ? (modEntry.role || 'moderator') : 'member';
+    async function handleCreatePlaylist(e) {
+      e.preventDefault();
+      if (!currentUser) return;
+
+      const name = document.getElementById('pl-name-input').value.trim();
+      const description = document.getElementById('pl-desc-input').value.trim();
+      const isPublic = canMakePublicPlaylists() && Boolean(document.getElementById('pl-public-input')?.checked);
+      if (!name) return;
+
+      const btn = document.getElementById('pl-create-btn');
+      btn.disabled = true;
+
+      try {
+        if (sb && useCloudPlaylists) {
+          const { data, error } = await sb
+            .from('playlists')
+            .insert({ user_id: currentUser.id, name, description, is_public: isPublic })
+            .select()
+            .single();
+          if (error) throw error;
+          userPlaylists.unshift({ ...data, is_public: Boolean(data.is_public), trackIds: [] });
+        } else {
+          const pl = {
+            id: 'pl_' + Date.now(),
+            user_id: currentUser.id,
+            name,
+            description,
+            is_public: isPublic,
+            trackIds: [],
+            created_at: new Date().toISOString()
+          };
+          userPlaylists.unshift(pl);
+          safeSetStorage(getLocalPlaylistsKey(), userPlaylists);
+        }
+
+        e.target.reset();
+        closeCreatePlaylistModal();
+        showToast(isPublic ? `Published public playlist "${name}"!` : `Created playlist "${name}"!`);
+        renderPlaylistsView();
+        renderSidebarPlaylists();
+      } catch (err) {
+        showToast('Could not create playlist: ' + err.message, true);
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function deletePlaylist(playlistId) {
+      const pl = userPlaylists.find(p => p.id === playlistId);
+      if (!pl) return;
+      if (currentUser && pl.user_id !== currentUser.id && userRole !== 'owner') {
+        return showToast('You can only delete your own playlists.', true);
       }
 
-      updateAuthUI();
-      await fetchPlaylists();
-      renderAll();
+      if (sb && useCloudPlaylists && !String(playlistId).startsWith('pl_')) {
+        const { error } = await sb.from('playlists').delete().eq('id', playlistId);
+        if (error) return showToast('Could not delete playlist: ' + error.message, true);
+      }
+      userPlaylists = userPlaylists.filter(p => p.id !== playlistId);
+      if (!useCloudPlaylists) safeSetStorage(getLocalPlaylistsKey(), userPlaylists);
+      if (selectedPlaylistId === playlistId) selectedPlaylistId = null;
+      showToast('Playlist deleted.');
+      renderPlaylistsView();
+      renderSidebarPlaylists();
     }
 
-    function isReviewer() {
-      return userRole === 'owner' || userRole === 'moderator';
+    function openPlaylistDetail(playlistId) {
+      selectedPlaylistId = playlistId;
+      switchView('playlists');
+      renderPlaylistsView();
     }
 
-    function canMakePublicPlaylists() {
-      if (!currentUser) return false;
-      if (userRole === 'owner' || currentUser.id === OWNER_UID) return true;
-      return playlistCurators.some(c => c.user_id === currentUser.id);
+    function playPlaylist(playlistId, startTrackId = null) {
+      const pl = userPlaylists.find(p => p.id === playlistId);
+      if (!pl) return;
+      const tracks = pl.trackIds.map(id => allTracks.find(t => t.id === id && t.status === 'approved')).filter(Boolean);
+      if (!tracks.length) return showToast('This playlist has no tracks yet.', true);
+      playTrackById(startTrackId || tracks[0].id, tracks);
+    }
+
+    function openAddToPlaylistModal(trackId) {
+      if (!currentUser) {
+        showToast('Please sign in to add tracks to playlists.');
+        openAuthModal('signin');
+        return;
+      }
+      addToPlaylistTrackId = trackId;
+      const list = document.getElementById('add-pl-list');
+      const ownPlaylists = userPlaylists.filter(pl => pl.user_id === currentUser.id);
+      if (ownPlaylists.length === 0) {
+        list.innerHTML = `<p class="text-xs text-zinc-400 text-center py-4">You haven't created any playlists yet.</p>`;
+      } else {
+        list.innerHTML = ownPlaylists.map(pl => {
+          const alreadyIn = pl.trackIds.includes(trackId);
+          return `
+            <button onclick="addTrackToPlaylist('${pl.id}', '${trackId}')" class="w-full flex items-center justify-between gap-2 px-3.5 py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-left text-xs transition">
+              <span class="font-bold text-white truncate">${pl.is_public ? '🌐' : '🔒'} ${escapeHtml(pl.name)}</span>
+              <span class="shrink-0 font-bold ${alreadyIn ? 'text-emerald-400' : 'text-bron-gold'}">${alreadyIn ? '✓ Added' : '+ Add'}</span>
+            </button>
+          `;
+        }).join('');
+      }
+      document.getElementById('add-to-playlist-modal').classList.remove('hidden');
+    }
+
+    function closeAddToPlaylistModal() {
+      document.getElementById('add-to-playlist-modal').classList.add('hidden');
+    }
+
+    async function addTrackToPlaylist(playlistId, trackId) {
+      const pl = userPlaylists.find(p => p.id === playlistId);
+      if (!pl) return;
+      if (pl.trackIds.includes(trackId)) {
+        closeAddToPlaylistModal();
+        return showToast(`Already in "${pl.name}".`);
+      }
+
+      if (sb && useCloudPlaylists && !String(playlistId).startsWith('pl_')) {
+        const { error } = await sb.from('playlist_tracks').insert({ playlist_id: playlistId, track_id: trackId });
+        if (error) return showToast('Could not add track: ' + error.message, true);
+      }
+
+      pl.trackIds.push(trackId);
+      if (!useCloudPlaylists) safeSetStorage(getLocalPlaylistsKey(), userPlaylists);
+      closeAddToPlaylistModal();
+      showToast(`Added to "${pl.name}"!`);
+      renderPlaylistsView();
+      renderSidebarPlaylists();
+    }
+
+    async function removeTrackFromPlaylist(playlistId, trackId) {
+      const pl = userPlaylists.find(p => p.id === playlistId);
+      if (!pl) return;
+
+      if (sb && useCloudPlaylists && !String(playlistId).startsWith('pl_')) {
+        const { error } = await sb.from('playlist_tracks').delete().eq('playlist_id', playlistId).eq('track_id', trackId);
+        if (error) return showToast('Could not remove track: ' + error.message, true);
+      }
+
+      pl.trackIds = pl.trackIds.filter(id => id !== trackId);
+      if (!useCloudPlaylists) safeSetStorage(getLocalPlaylistsKey(), userPlaylists);
+      showToast('Removed track from playlist.');
+      renderPlaylistsView();
+      renderSidebarPlaylists();
+    }
+
+    function renderSidebarPlaylists() {
+      const container = document.getElementById('sidebar-playlists-list');
+      if (!container) return;
+      if (userPlaylists.length === 0) {
+        container.innerHTML = `<p class="text-[11px] text-zinc-500 px-2 py-1">No playlists yet.</p>`;
+        return;
+      }
+      container.innerHTML = userPlaylists.map(pl => `
+        <button onclick="openPlaylistDetail('${pl.id}')" class="w-full flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs text-zinc-400 hover:text-white hover:bg-zinc-800/60 transition text-left">
+          <span class="truncate">${pl.is_public ? '🌐' : '🎶'} ${escapeHtml(pl.name)}</span>
+          <span class="text-[10px] text-zinc-500 shrink-0">${pl.trackIds.length}</span>
+        </button>
+      `).join('');
+    }
+
+    function renderPlaylistCard(pl) {
+      const tracks = pl.trackIds.map(id => allTracks.find(t => t.id === id && t.status === 'approved')).filter(Boolean);
+      const coverTrack = tracks.find(t => t.cover_url);
+      return `
+        <div onclick="openPlaylistDetail('${pl.id}')" class="cursor-pointer group rounded-2xl bg-bron-surface border border-zinc-800/80 hover:border-bron-gold/50 p-4 flex flex-col gap-3 transition">
+          <div class="relative aspect-square rounded-xl overflow-hidden bg-black border border-zinc-800 flex items-center justify-center">
+            ${coverTrack ? `<img src="${escapeHtml(coverTrack.cover_url)}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" />` : crownLogoHtml('w-20 h-20')}
+            <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-md bg-black/75 backdrop-blur border ${pl.is_public ? 'border-bron-gold/40 text-bron-gold' : 'border-zinc-700 text-zinc-300'} text-[10px] font-bold">
+              ${pl.is_public ? '🌐 Public' : '🔒 Private'}
+            </span>
+            <button onclick="event.stopPropagation(); playPlaylist('${pl.id}')" title="Play Playlist" class="absolute bottom-3 right-3 w-11 h-11 rounded-full bg-bron-gold hover:bg-bron-goldLight text-black flex items-center justify-center shadow-xl transition transform group-hover:scale-105">
+              <svg class="w-5 h-5 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+          </div>
+          <div class="min-w-0">
+            <h4 class="font-extrabold text-white text-sm truncate group-hover:text-bron-gold transition">${escapeHtml(pl.name)}</h4>
+            <p class="text-xs text-zinc-400 truncate mt-0.5">${tracks.length} ${tracks.length === 1 ? 'track' : 'tracks'}${pl.description ? ' • ' + escapeHtml(pl.description) : ''}</p>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderPlaylistsView() {
+      const dirView = document.getElementById('playlists-directory-view');
+      const detailView = document.getElementById('playlist-detail-view');
+      const pubGrid = document.getElementById('public-playlists-grid');
+      const privGrid = document.getElementById('playlists-grid');
+      if (!dirView || !detailView || !pubGrid || !privGrid) return;
+
+      if (selectedPlaylistId) {
+        const pl = userPlaylists.find(p => p.id === selectedPlaylistId);
+        if (!pl) {
+          selectedPlaylistId = null;
+        } else {
+          dirView.classList.add('hidden');
+          detailView.classList.remove('hidden');
+          const tracks = pl.trackIds.map(id => allTracks.find(t => t.id === id && t.status === 'approved')).filter(Boolean);
+          const canEdit = Boolean(currentUser && (pl.user_id === currentUser.id || userRole === 'owner'));
+          const coverTrack = tracks.find(t => t.cover_url);
+
+          detailView.innerHTML = `
+            <button onclick="selectedPlaylistId = null; renderPlaylistsView();" class="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-400 hover:text-bron-gold transition">
+              ← Back to All Playlists
+            </button>
+
+            <div class="rounded-2xl p-6 bg-gradient-to-br from-bron-purple/50 via-bron-surface to-bron-card border border-bron-purple/40 flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+              <div class="flex items-center gap-4 min-w-0">
+                <div class="w-24 h-24 rounded-2xl bg-black border border-bron-gold/40 overflow-hidden shrink-0 flex items-center justify-center">
+                  ${coverTrack ? `<img src="${escapeHtml(coverTrack.cover_url)}" class="w-full h-full object-cover" />` : crownLogoHtml('w-14 h-14')}
+                </div>
+                <div class="min-w-0">
+                  <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-black/40 border border-bron-gold/30 text-bron-gold text-[10px] font-bold mb-1.5">
+                    ${pl.is_public ? '🌐 Official Public Playlist' : '🔒 Private Playlist'}
+                  </span>
+                  <h2 class="text-2xl md:text-3xl font-black text-white truncate">${escapeHtml(pl.name)}</h2>
+                  ${pl.description ? `<p class="text-xs text-zinc-300 mt-1">${escapeHtml(pl.description)}</p>` : ''}
+                  <p class="text-xs text-zinc-400 mt-1">${tracks.length} ${tracks.length === 1 ? 'track' : 'tracks'}</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2.5 shrink-0">
+                <button onclick="playPlaylist('${pl.id}')" class="px-5 py-2.5 rounded-xl bg-bron-gold hover:bg-bron-goldLight text-black font-extrabold text-sm transition">▶ Play All</button>
+                ${canEdit ? `<button onclick="deletePlaylist('${pl.id}')" class="px-3.5 py-2.5 rounded-xl bg-red-500/15 hover:bg-red-500/30 text-red-400 font-bold text-xs transition">Delete</button>` : ''}
+              </div>
+            </div>
+
+            <div class="space-y-2">
+              ${tracks.length === 0 ? `
+                <div class="rounded-2xl border border-dashed border-zinc-800 p-10 text-center text-sm text-zinc-400">
+                  No tracks in this playlist yet. Click the <strong>+</strong> button on any verified remix to add it here.
+                </div>
+              ` : tracks.map((t, i) => `
+                <div class="rounded-xl bg-bron-surface border ${currentTrack?.id === t.id ? 'border-bron-gold/60' : 'border-zinc-800/80'} p-3 flex items-center justify-between gap-3">
+                  <div class="flex items-center gap-3 min-w-0 flex-1">
+                    <span class="w-5 text-center text-xs font-mono text-zinc-500">${i + 1}</span>
+                    <div class="w-11 h-11 rounded-lg bg-black border border-zinc-800 overflow-hidden shrink-0 flex items-center justify-center">
+                      ${t.cover_url ? `<img src="${escapeHtml(t.cover_url)}" class="w-full h-full object-cover" />` : crownLogoHtml('w-7 h-7')}
+                    </div>
+                    <div class="min-w-0">
+                      <p class="text-sm font-bold text-white truncate">${escapeHtml(t.title)}</p>
+                      <button onclick="openArtistProfile(decodeURIComponent('${encodeURIComponent(t.artist)}'))" class="text-xs text-zinc-400 hover:text-bron-gold hover:underline truncate block text-left max-w-full">${escapeHtml(t.artist)}</button>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2.5 shrink-0">
+                    <span class="hidden sm:inline text-xs text-zinc-400 font-mono">▶ ${formatStreams(getStreamCount(t))}</span>
+                    <button onclick="playPlaylist('${pl.id}', '${t.id}')" class="px-3 py-1.5 rounded-lg bg-bron-gold hover:bg-bron-goldLight text-black text-xs font-extrabold transition">${isTrackPlaying(t.id) ? '❚❚' : '▶'}</button>
+                    ${canEdit ? `<button onclick="removeTrackFromPlaylist('${pl.id}', '${t.id}')" title="Remove" class="px-2.5 py-1.5 rounded-lg bg-zinc-800 hover:bg-red-500/25 text-zinc-400 hover:text-red-400 text-xs font-bold transition">✕</button>` : ''}
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          `;
+          return;
+        }
+      }
+
+      dirView.classList.remove('hidden');
+      detailView.classList.add('hidden');
+
+      const publicPls = userPlaylists.filter(p => p.is_public);
+      const personalPls = userPlaylists.filter(p => !p.is_public && currentUser && p.user_id === currentUser.id);
+
+      pubGrid.innerHTML = publicPls.length === 0
+        ? `<div class="col-span-full rounded-2xl border border-dashed border-zinc-800 p-8 text-center text-xs text-zinc-400">No public playlists published yet.</div>`
+        : publicPls.map(pl => renderPlaylistCard(pl)).join('');
+
+      privGrid.innerHTML = !currentUser
+        ? `<div class="col-span-full rounded-2xl border border-dashed border-zinc-800 p-8 text-center text-xs text-zinc-400">Sign in to create and save your own private playlists.</div>`
+        : personalPls.length === 0
+          ? `<div class="col-span-full rounded-2xl border border-dashed border-zinc-800 p-8 text-center text-xs text-zinc-400">You haven't created any private playlists yet. Click <strong>+ New Playlist</strong> to start one.</div>`
+          : personalPls.map(pl => renderPlaylistCard(pl)).join('');
     }
 
     // =========================================================================
